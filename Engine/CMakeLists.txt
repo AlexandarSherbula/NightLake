@@ -14,9 +14,13 @@ file(
     "src/*.hpp"
 )
 
+
+
 add_library(Engine STATIC ${ENGINE_SRC})
 target_compile_features(Engine PRIVATE cxx_std_20)
 
+#make folders visible in IDE
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${ENGINE_SRC})
 
 if(WIN32)
     target_compile_definitions(Engine PUBLIC NLK_WINDOWS)
