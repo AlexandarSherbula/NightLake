@@ -46,9 +46,21 @@ set(SDL_STATIC ON CACHE BOOL "" FORCE) # build static SDL
 add_subdirectory(vendor/SDL EXCLUDE_FROM_ALL)
 target_link_libraries(Engine PRIVATE SDL3::SDL3)
 
+# GLAD setup
+set(GLAD_SRC
+    "vendor/glad/include/glad/glad.h"
+    "vendor/glad/src/glad.c"
+)
+
+add_library(glad STATIC ${GLAD_SRC})
+target_include_directories(glad PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/glad/include)
+target_link_libraries(Engine PRIVATE glad)
+
 # Put SDL submodules under Dependencies folder
 foreach(t SDL3-static SDL3_test SDL3_Headers SDL_uclibc)
     if (TARGET ${t})
         set_target_properties(${t} PROPERTIES FOLDER "Dependencies")
     endif()
 endforeach()
+
+set_target_properties(glad PROPERTIES FOLDER "Dependencies")
