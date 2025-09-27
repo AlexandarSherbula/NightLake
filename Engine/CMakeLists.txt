@@ -39,3 +39,16 @@ target_compile_definitions(Engine PUBLIC
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/Source)
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/spdlog/include)
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/glm)
+
+# SDL setup
+set(SDL_SHARED OFF CACHE BOOL "" FORCE)  
+set(SDL_STATIC ON CACHE BOOL "" FORCE) # build static SDL
+add_subdirectory(vendor/SDL EXCLUDE_FROM_ALL)
+target_link_libraries(Engine PRIVATE SDL3::SDL3)
+
+# Put SDL submodules under Dependencies folder
+foreach(t SDL3-static SDL3_test SDL3_Headers SDL_uclibc)
+    if (TARGET ${t})
+        set_target_properties(${t} PROPERTIES FOLDER "Dependencies")
+    endif()
+endforeach()

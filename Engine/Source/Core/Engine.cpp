@@ -1,23 +1,6 @@
 #include "nle_pch.hpp"
 #include "Engine.hpp"
 
-#include <glm/vec3.hpp> // glm::vec3
-#include <glm/vec4.hpp> // glm::vec4
-#include <glm/mat4x4.hpp> // glm::mat4
-#include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
-#include <glm/ext/matrix_clip_space.hpp> // glm::perspective
-#include <glm/ext/scalar_constants.hpp> // glm::pi
-
-glm::mat4 camera(float Translate, glm::vec2 const& Rotate)
-{
-	glm::mat4 Projection = glm::perspective(glm::pi<float>() * 0.25f, 4.0f / 3.0f, 0.1f, 100.f);
-	glm::mat4 View = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -Translate));
-	View = glm::rotate(View, Rotate.y, glm::vec3(-1.0f, 0.0f, 0.0f));
-	View = glm::rotate(View, Rotate.x, glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 Model = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f));
-	return Projection * View * Model;
-}
-
 namespace nle
 {
 	static Engine* sInstance = nullptr;
@@ -25,6 +8,8 @@ namespace nle
 	Engine::Engine()
 	{
 		sInstance = this;
+
+		NLE_ASSERT(SDL_Init(SDL_INIT_VIDEO), "Failed to initalize SDL");
 
 		mRunning = true;
 		Log::Initialize();
@@ -37,9 +22,28 @@ namespace nle
 
 	void Engine::Run()
 	{
+		SDL_Window* window = SDL_CreateWindow("NightLake Engine", 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		NLE_ASSERT(window, "Failed to create a window: {0}\n", SDL_GetError());
+
+		SDL_GLContext glcontext = SDL_GL_CreateContext(window);
+		NLE_ASSERT(glcontext, "Failed to create GL context");
+
+		SDL_GL_MakeCurrent(window, glcontext);
+
+		SDL_Event event;
+
+		NLE_LOG_INFO("Starting Engine");
 		while (mRunning)
 		{
+			while (SDL_PollEvent(&event)) 
+			{
+				if (event.type == SDL_EVENT_KEY_DOWN ||
+					event.type == SDL_EVENT_QUIT) {
+					Stop();
+				}
+			}
 
+			SDL_GL_SwapWindow(window);
 		}
 	}
 

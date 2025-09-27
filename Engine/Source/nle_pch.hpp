@@ -16,6 +16,9 @@
 
 #include "Core/Log.hpp"
 
+#define SDL_MAIN_HANDLED 1
+#include "SDL3/SDL.h"
+
 #ifdef NLE_WINDOWS
 	#define WIN32_LEAN_AND_MEAN
 	#include <Windows.h>
