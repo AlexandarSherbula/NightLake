@@ -1,7 +1,7 @@
+#include "nle_pch.hpp"
 #include "Engine.hpp"
-#include <iostream>
 
-namespace nlk
+namespace nle
 {
 	Engine::Engine()
 	{

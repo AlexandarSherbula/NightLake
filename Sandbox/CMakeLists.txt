@@ -10,8 +10,8 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 
 file(
     GLOB_RECURSE SANDBOX_SRC
-    "src/*.cpp"
-    "src/*.hpp"
+    "Source/*.cpp"
+    "Source/*.hpp"
 )
 
 add_executable(Sandbox ${SANDBOX_SRC})
