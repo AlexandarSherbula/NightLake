@@ -28,6 +28,8 @@ if(MSVC)
     
     set(CMAKE_EXE_LINKER_FLAGS_DEBUG "/DEBUG") # Debug and Release will still have the console
     set(CMAKE_EXE_LINKER_FLAGS_DIST "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup") # Dist will have the console stripped
+	
+    add_compile_options(/utf-8)
 else()
     # GCC/Clang
     set(CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")

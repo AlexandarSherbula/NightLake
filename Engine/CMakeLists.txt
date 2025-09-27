@@ -31,9 +31,10 @@ elseif(UNIX)
 endif()
 
 target_compile_definitions(Engine PUBLIC
-    $<$<CONFIG:Debug>:NLK_DEBUG>
-    $<$<CONFIG:Release>:NLK_RELEASE>
-    $<$<CONFIG:Dist>:NLK_DIST>
+    $<$<CONFIG:Debug>:NLE_DEBUG>
+    $<$<CONFIG:Release>:NLE_RELEASE>
+    $<$<CONFIG:Dist>:NLE_DIST>
 )
 
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/Source)
+target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/spdlog/include)

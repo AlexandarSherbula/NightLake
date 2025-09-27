@@ -14,6 +14,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "Core/Log.hpp"
+
 #ifdef NLE_WINDOWS
 	#define WIN32_LEAN_AND_MEAN
 	#include <Windows.h>

@@ -7,8 +7,10 @@ namespace nle
 
 	Engine::Engine()
 	{
-		mRunning = true;
 		sInstance = this;
+
+		mRunning = true;
+		Log::Initialize();
 	}
 
 	Engine::~Engine()
@@ -18,7 +20,7 @@ namespace nle
 
 	void Engine::Run()
 	{
-		std::cout << "NightLake Engine begins\n";
+		NLE_LOG_INFO("NightLake Engine begins\n");
 		while (mRunning)
 		{
 
@@ -33,8 +35,8 @@ namespace nle
 
 	Engine& Engine::Get()
 	{
-		if (sInstance)
-			return *sInstance;
+		NLE_ASSERT(sInstance, "Instance hasn't been made");
+		return *sInstance;
 	}
 }
 
