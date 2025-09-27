@@ -10,22 +10,24 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 
 file(
     GLOB_RECURSE ENGINE_SRC
-    "src/*.cpp"
-    "src/*.hpp"
+    "Source/*.cpp"
+    "Source/*.hpp"
 )
-
-
 
 add_library(Engine STATIC ${ENGINE_SRC})
 target_compile_features(Engine PRIVATE cxx_std_20)
+
+target_precompile_headers(Engine PRIVATE
+    "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_SOURCE_DIR}/Engine/Source/nle_pch.hpp>"
+)
 
 #make folders visible in IDE
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${ENGINE_SRC})
 
 if(WIN32)
-    target_compile_definitions(Engine PUBLIC NLK_WINDOWS)
+    target_compile_definitions(Engine PUBLIC NLE_WINDOWS)
 elseif(UNIX)
-    target_compile_definitions(Engine PUBLIC NLK_LINUX)
+    target_compile_definitions(Engine PUBLIC NLE_LINUX)
 endif()
 
 target_compile_definitions(Engine PUBLIC
@@ -34,4 +36,4 @@ target_compile_definitions(Engine PUBLIC
     $<$<CONFIG:Dist>:NLK_DIST>
 )
 
-target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/src)
+target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/Source)

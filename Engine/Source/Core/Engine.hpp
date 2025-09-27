@@ -1,6 +1,6 @@
 #pragma once
 
-namespace nlk
+namespace nle
 {
 	class Engine
 	{
