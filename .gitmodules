@@ -7,3 +7,6 @@
 [submodule "Engine/vendor/SDL"]
 	path = Engine/vendor/SDL
 	url = https://github.com/libsdl-org/SDL
+[submodule "Engine/vendor/imgui"]
+	path = Engine/vendor/imgui
+	url = https://github.com/AlexandarSherbula/imgui

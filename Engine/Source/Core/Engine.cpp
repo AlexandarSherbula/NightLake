@@ -1,6 +1,9 @@
 #include "nle_pch.hpp"
 #include "Engine.hpp"
 
+#include <backends/imgui_impl_sdl3.h>
+#include <backends/imgui_impl_opengl3.h>
+
 namespace nle
 {
 	static Engine* sInstance = nullptr;
@@ -57,6 +60,24 @@ namespace nle
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGui::StyleColorsDark();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
+
+		ImGui_ImplSDL3_InitForOpenGL(window, glcontext);
+		ImGui_ImplOpenGL3_Init("#version 450 core");
+
 		SDL_Event event;
 
 		NLE_LOG_INFO("Starting Engine");
@@ -64,6 +85,7 @@ namespace nle
 		{
 			while (SDL_PollEvent(&event)) 
 			{
+				ImGui_ImplSDL3_ProcessEvent(&event);
 				if (event.type == SDL_EVENT_KEY_DOWN ||
 					event.type == SDL_EVENT_QUIT) {
 					Stop();
@@ -77,8 +99,38 @@ namespace nle
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 			glBindVertexArray(0);
 
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplSDL3_NewFrame();
+			ImGui::NewFrame();
+
+			static bool show = true;
+			ImGui::ShowDemoWindow(&show);
+
+			ImGuiIO& io = ImGui::GetIO();
+			io.DisplaySize = ImVec2(1280, 720);		
+
+			// Rendering
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+				SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+				SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+			}
+
+
+			
+
 			SDL_GL_SwapWindow(window);
 		}
+
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplSDL3_Shutdown();
+		ImGui::DestroyContext();
 
 		SDL_DestroyWindow(window);
 		SDL_Quit();

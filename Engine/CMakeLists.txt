@@ -56,6 +56,10 @@ add_library(glad STATIC ${GLAD_SRC})
 target_include_directories(glad PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/glad/include)
 target_link_libraries(Engine PRIVATE glad)
 
+# ImGui Setup
+add_subdirectory(vendor/imgui EXCLUDE_FROM_ALL)
+target_link_libraries(Engine PRIVATE imgui)
+
 # Put SDL submodules under Dependencies folder
 foreach(t SDL3-static SDL3_test SDL3_Headers SDL_uclibc)
     if (TARGET ${t})
@@ -64,3 +68,4 @@ foreach(t SDL3-static SDL3_test SDL3_Headers SDL_uclibc)
 endforeach()
 
 set_target_properties(glad PROPERTIES FOLDER "Dependencies")
+set_target_properties(imgui PROPERTIES FOLDER "Dependencies")
