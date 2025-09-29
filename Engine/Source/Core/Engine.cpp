@@ -10,12 +10,17 @@ namespace nle
 
 	Engine::Engine()
 	{
-		sInstance = this;
+		
+	}
 
-		NLE_ASSERT(SDL_Init(SDL_INIT_VIDEO), "Failed to initalize SDL");
+	Engine::Engine(AppSpecifications& appSpecs)
+	{
+		sInstance = this;
 
 		mRunning = true;
 		Log::Initialize();
+
+		mMainWindow = Window::Create(appSpecs.windowSpecs);
 	}
 
 	Engine::~Engine()
@@ -25,17 +30,7 @@ namespace nle
 
 	void Engine::Run()
 	{
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
-		SDL_Window* window = SDL_CreateWindow("NightLake Engine", 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		NLE_ASSERT(window, "Failed to create a window: {0}\n", SDL_GetError());
-
-		SDL_GLContext glcontext = SDL_GL_CreateContext(window);
-		NLE_ASSERT(glcontext, "Failed to create GL context");
-
-		SDL_GL_MakeCurrent(window, glcontext);
+		mMainWindow->Initialize();
 
 		NLE_ASSERT(gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress), "Failed to initialize glad.\n");
 
@@ -60,37 +55,30 @@ namespace nle
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGui::StyleColorsDark();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+		//IMGUI_CHECKVERSION();
+		//ImGui::CreateContext();
+		//ImGui::StyleColorsDark();
+		//ImGuiIO& io = ImGui::GetIO(); (void)io;
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+		//
+		//if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		//{
+		//	ImGuiStyle& style = ImGui::GetStyle();
+		//	style.WindowRounding = 0.0f;
+		//	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		//}
 
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			ImGuiStyle& style = ImGui::GetStyle();
-			style.WindowRounding = 0.0f;
-			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-		}
+		//ImGui_ImplSDL3_InitForOpenGL(window, glcontext);
+		//ImGui_ImplOpenGL3_Init("#version 450 core");
 
-		ImGui_ImplSDL3_InitForOpenGL(window, glcontext);
-		ImGui_ImplOpenGL3_Init("#version 450 core");
-
-		SDL_Event event;
+		
 
 		NLE_LOG_INFO("Starting Engine");
 		while (mRunning)
 		{
-			while (SDL_PollEvent(&event)) 
-			{
-				ImGui_ImplSDL3_ProcessEvent(&event);
-				if (event.type == SDL_EVENT_KEY_DOWN ||
-					event.type == SDL_EVENT_QUIT) {
-					Stop();
-				}
-			}
+			mMainWindow->PollEvents();
 
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
@@ -99,41 +87,36 @@ namespace nle
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 			glBindVertexArray(0);
 
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplSDL3_NewFrame();
-			ImGui::NewFrame();
+			//ImGui_ImplOpenGL3_NewFrame();
+			//ImGui_ImplSDL3_NewFrame();
+			//ImGui::NewFrame();
+			//
+			//static bool show = true;
+			//ImGui::ShowDemoWindow(&show);
+			//
+			//ImGuiIO& io = ImGui::GetIO();
+			//io.DisplaySize = ImVec2(1280, 720);
+			//
+			//ImGui::Render();
+			//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-			static bool show = true;
-			ImGui::ShowDemoWindow(&show);
+			//if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			//{
+			//	SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+			//	SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+			//	ImGui::UpdatePlatformWindows();
+			//	ImGui::RenderPlatformWindowsDefault();
+			//	SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+			//}
 
-			ImGuiIO& io = ImGui::GetIO();
-			io.DisplaySize = ImVec2(1280, 720);		
-
-			// Rendering
-			ImGui::Render();
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-			{
-				SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-				SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-				ImGui::UpdatePlatformWindows();
-				ImGui::RenderPlatformWindowsDefault();
-				SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-			}
-
-
-			
-
-			SDL_GL_SwapWindow(window);
+			SDL_GL_SwapWindow((SDL_Window*)mMainWindow->GetHandle());
 		}
 
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplSDL3_Shutdown();
-		ImGui::DestroyContext();
+		//ImGui_ImplOpenGL3_Shutdown();
+		//ImGui_ImplSDL3_Shutdown();
+		//ImGui::DestroyContext();
 
-		SDL_DestroyWindow(window);
-		SDL_Quit();
+		
 	}
 
 	void Engine::Stop()

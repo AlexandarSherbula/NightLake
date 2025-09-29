@@ -6,5 +6,6 @@ class Game : public nle::Engine
 {
 public:
 	Game();
+	Game(nle::AppSpecifications& appSpecs);
 	~Game();
 };

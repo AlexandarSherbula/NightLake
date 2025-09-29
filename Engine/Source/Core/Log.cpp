@@ -11,5 +11,8 @@ namespace nle
 		sLogger = spdlog::stdout_color_mt("NightLake");
 		sLogger->set_level(spdlog::level::trace);
 	}
+	
 }
+
+	
 

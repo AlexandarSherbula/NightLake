@@ -15,7 +15,7 @@
 #include <unordered_set>
 
 #include "Core/Log.hpp"
-
+#include "Core/Utilities.hpp"
 
 #include "glad/glad.h"
 #define SDL_MAIN_HANDLED 1

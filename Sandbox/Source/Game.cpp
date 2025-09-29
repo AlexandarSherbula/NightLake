@@ -4,6 +4,11 @@ Game::Game()
 {
 }
 
+Game::Game(nle::AppSpecifications& appSpecs)
+	: Engine (appSpecs)
+{
+}
+
 Game::~Game()
 {
 }
