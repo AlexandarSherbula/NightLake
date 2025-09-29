@@ -9,6 +9,7 @@ namespace nle
 		mSpecs.width = windowSpec.width;
 		mSpecs.height = windowSpec.height;
 		mSpecs.vSync = windowSpec.vSync;
+		mSpecs.eventCallback = windowSpec.eventCallback;
 	}
 
 	SDL3_Window::~SDL3_Window()
@@ -40,32 +41,77 @@ namespace nle
 
 	void SDL3_Window::PollEvents()
 	{
-		SDL_Event event;
-		while (SDL_PollEvent(&event))
+		SDL_Event sdl_event;
+		while (SDL_PollEvent(&sdl_event))
 		{
 			//ImGui_ImplSDL3_ProcessEvent(&event);
-			if (event.type == SDL_EVENT_KEY_DOWN ||
-				event.type == SDL_EVENT_QUIT)
-			{
-				if (event.key.key == SDLK_A)
-				{
-					std::cout << "A key pressed (layout-dependent)" << std::endl;
-				}
 
-				if (event.key.key == SDLK_ESCAPE)
-				{
-					SDL_DestroyWindow(mHandle);
-					SDL_Quit();
-					mHandle = nullptr;
-				}
-			}
+			ProcessEvents(sdl_event, this);
 		}
 	}
 
-	void SDL3_Window::EventCallbacks()
+	void ProcessEvents(SDL_Event& sdl_event, SDL3_Window* handle)
 	{
+		switch (sdl_event.type)
+		{
+		case SDL_EVENT_WINDOW_RESIZED:
+		{
+			int32_t width = sdl_event.window.data1;
+			int32_t height = sdl_event.window.data2;
+			WindowResizeEvent event(width, height);
+			handle->GetSpecs().eventCallback(event);
+			break;
+		}
+		case SDL_EVENT_KEY_DOWN:
+		{
+			KeyPressedEvent event(sdl_event.key.key, true);
+			handle->GetSpecs().eventCallback(event);
+			break;
+		}
+		case SDL_EVENT_KEY_UP:
+		{
+			KeyReleasedEvent event(sdl_event.key.key);
+			handle->GetSpecs().eventCallback(event);
+			break;
+		}
+		case SDL_EVENT_TEXT_INPUT:
+		{
+			KeyTypedEvent event(sdl_event.key.key);
+			handle->GetSpecs().eventCallback(event);
+			break;
+		}
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+		{
+			MouseButtonPressedEvent event(sdl_event.button.button);
+			handle->GetSpecs().eventCallback(event);
+			break;
+		}
+		case SDL_EVENT_MOUSE_BUTTON_UP:
+		{
+			MouseButtonReleasedEvent event(sdl_event.button.button);
+			handle->GetSpecs().eventCallback(event);
+			break;
+		}
+		case SDL_EVENT_MOUSE_MOTION:
+		{
+			MouseMovedEvent event(sdl_event.button.x, sdl_event.button.y);
+			handle->GetSpecs().eventCallback(event);
+			break;
+		}
+		case SDL_EVENT_MOUSE_WHEEL:
+		{
+			MouseScrolledEvent event(sdl_event.wheel.x, sdl_event.wheel.y);
+			handle->GetSpecs().eventCallback(event);
+			break;
+		}
+		case SDL_EVENT_QUIT:
+		{
+			WindowCloseEvent event;
+			handle->GetSpecs().eventCallback(event);
+			break;
+		}
+		}
 	}
-
 
 }
 

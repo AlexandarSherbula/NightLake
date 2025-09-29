@@ -20,7 +20,7 @@ namespace nle
 		mRunning = true;
 		Log::Initialize();
 
-		mMainWindow = Window::Create(appSpecs.windowSpecs);
+		mMainWindow = Window::Create({ appSpecs.title, appSpecs.width, appSpecs.height, appSpecs.vSync, NLE_BIND_EVENT_FN(Engine::OnEvent) });
 	}
 
 	Engine::~Engine()
@@ -129,6 +129,67 @@ namespace nle
 	{
 		NLE_ASSERT(sInstance, "Instance hasn't been made");
 		return *sInstance;
+	}
+
+	void Engine::OnEvent(Event& e)
+	{
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<WindowCloseEvent>(NLE_BIND_EVENT_FN(Engine::OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(NLE_BIND_EVENT_FN(Engine::OnWindowResize));
+		dispatcher.Dispatch<KeyPressedEvent>(NLE_BIND_EVENT_FN(Engine::OnKeyPressed));
+		dispatcher.Dispatch<KeyReleasedEvent>(NLE_BIND_EVENT_FN(Engine::OnKeyReleased));
+		dispatcher.Dispatch<KeyTypedEvent>(NLE_BIND_EVENT_FN(Engine::OnKeyTyped));
+		dispatcher.Dispatch<MouseButtonPressedEvent>(NLE_BIND_EVENT_FN(Engine::OnMouseButtonPressed));
+		dispatcher.Dispatch<MouseButtonReleasedEvent>(NLE_BIND_EVENT_FN(Engine::OnMouseButtonReleased));
+		dispatcher.Dispatch<MouseMovedEvent>(NLE_BIND_EVENT_FN(Engine::OnMouseMoved));
+		dispatcher.Dispatch<MouseScrolledEvent>(NLE_BIND_EVENT_FN(Engine::OnMouseScrolled));
+	}
+
+	bool Engine::OnWindowClose(WindowCloseEvent& e)
+	{
+		mRunning = false;
+		return true;
+	}
+
+	bool Engine::OnWindowResize(WindowResizeEvent& e)
+	{
+		glViewport(0, 0, e.GetWidth(), e.GetHeight());
+		return true;
+	}
+
+	bool Engine::OnKeyPressed(KeyPressedEvent& e)
+	{
+		return true;
+	}
+
+	bool Engine::OnKeyReleased(KeyReleasedEvent& e)
+	{
+		return true;
+	}
+
+	bool Engine::OnKeyTyped(KeyTypedEvent& e)
+	{
+		return true;
+	}
+
+	bool Engine::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+	{
+		return true;
+	}
+
+	bool Engine::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
+	{
+		return true;
+	}
+
+	bool Engine::OnMouseMoved(MouseMovedEvent& e)
+	{
+		return true;
+	}
+
+	bool Engine::OnMouseScrolled(MouseScrolledEvent& e)
+	{
+		return true;
 	}
 }
 

@@ -4,9 +4,9 @@
 int main()
 {
 	nle::AppSpecifications appSpecs;
-	appSpecs.windowSpecs.title = "NightLake Engine";
-	appSpecs.windowSpecs.width = 1280;
-	appSpecs.windowSpecs.height = 720;
+	appSpecs.title = "NightLake Engine";
+	appSpecs.width = 1280;
+	appSpecs.height = 720;
 
 	Game game(appSpecs);
 	game.Run();

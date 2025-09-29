@@ -1,13 +1,21 @@
 #pragma once
 
+#include <memory>
+
+#define BIT(x) (1 << x)
 
 #if defined NLE_WINDOWS
 	#define NLE_API_DX11
 #endif
 
+#if !defined(NLE_WINDOWS) && defined (NLE_API_DX11)
+#error  DirectX11 is only supported on Windows
+#endif
+
+// Supported on both Windows and Linux
 #define NLE_API_OPENGL
 
-#include <memory>
+#define NLE_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
 namespace nle
 {

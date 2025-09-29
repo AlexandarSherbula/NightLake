@@ -2,7 +2,7 @@
 
 #include "Window/Window.hpp"
 
-struct SDL_Window;
+#include "SDL3/SDL.h"
 
 #if defined(NLE_API_OPENGL)
 namespace nle
@@ -17,10 +17,10 @@ namespace nle
 
 		inline void* GetHandle() const override { return mHandle; }
 	private:
-		void EventCallbacks() override;
-	private:
 		SDL_Window* mHandle;
 		SDL_GLContext mGLContext;
 	};
+
+	void ProcessEvents(SDL_Event& sdl_event, SDL3_Window* handle);
 }
 #endif
