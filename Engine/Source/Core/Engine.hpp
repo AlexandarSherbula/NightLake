@@ -2,6 +2,7 @@
 
 #include "Window/Window.hpp"
 #include "Events/Events.hpp"
+#include "Input/Input.hpp"
 
 namespace nle
 {
@@ -29,13 +30,6 @@ namespace nle
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
-		bool OnKeyPressed(KeyPressedEvent& e);
-		bool OnKeyReleased(KeyReleasedEvent& e);
-		bool OnKeyTyped(KeyTypedEvent& e);
-		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
-		bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
-		bool OnMouseMoved(MouseMovedEvent& e);
-		bool OnMouseScrolled(MouseScrolledEvent& e);
 	public:
 		Scope<Window> mMainWindow;
 	private:

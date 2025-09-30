@@ -23,7 +23,7 @@ namespace nle
 
 		const char* GetName() const override { return "MouseMoved"; }
 
-		virtual int GetCategoryFlags() const override { return EventCategoryMouse | EventCategoryInput; }
+		virtual int32_t GetCategoryFlags() const override { return EventCategoryMouse | EventCategoryInput; }
 	private:
 		float mMouseX, mMouseY;
 	};
@@ -49,7 +49,7 @@ namespace nle
 
 		const char* GetName() const override { return "MouseScrolled"; }
 
-		int GetCategoryFlags() const override { return EventCategoryMouse | EventCategoryInput; }
+		int32_t GetCategoryFlags() const override { return EventCategoryMouse | EventCategoryInput; }
 	private:
 		float mXOffset, mYOffset;
 	};
@@ -57,21 +57,26 @@ namespace nle
 	class MouseButtonEvent : public Event
 	{
 	public:
-		inline int GetMouseButton() const { return mButton; }
+		inline int32_t GetMouseButton() const { return mButton; }
 
-		int GetCategoryFlags() const override { return EventCategoryMouse | EventCategoryInput; }
+		inline float GetX() const { return mMouseX; }
+		inline float GetY() const { return mMouseY; }
+
+		int32_t GetCategoryFlags() const override { return EventCategoryMouse | EventCategoryInput; }
 	protected:
-		MouseButtonEvent(int button)
-			: mButton(button) {}
+		MouseButtonEvent(int32_t button, float x, float y)
+			: mButton(button), mMouseX(x), mMouseY(y) {}
 
-		int mButton;
+		int32_t mButton;
+		float mMouseX;
+		float mMouseY;
 	};
 
 	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressedEvent(int button)
-			: MouseButtonEvent(button) {}
+		MouseButtonPressedEvent(int32_t button, float x, float y)
+			: MouseButtonEvent(button, x, y) {}
 
 		std::string ToString() const override
 		{
@@ -89,8 +94,8 @@ namespace nle
 	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleasedEvent(int button)
-			: MouseButtonEvent(button) {}
+		MouseButtonReleasedEvent(int32_t button, float x, float y)
+			: MouseButtonEvent(button, x, y) {}
 
 		std::string ToString() const override
 		{

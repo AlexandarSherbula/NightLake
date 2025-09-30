@@ -2,6 +2,7 @@
 
 #include "Core/Utilities.hpp"
 #include "Events/Events.hpp"
+#include "Input/Input.hpp"
 
 #include <string>
 #include <functional>

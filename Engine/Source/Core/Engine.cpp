@@ -21,6 +21,7 @@ namespace nle
 		Log::Initialize();
 
 		mMainWindow = Window::Create({ appSpecs.title, appSpecs.width, appSpecs.height, appSpecs.vSync, NLE_BIND_EVENT_FN(Engine::OnEvent) });
+		mMainWindow->Initialize();
 	}
 
 	Engine::~Engine()
@@ -30,7 +31,6 @@ namespace nle
 
 	void Engine::Run()
 	{
-		mMainWindow->Initialize();
 
 		NLE_ASSERT(gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress), "Failed to initialize glad.\n");
 
@@ -73,12 +73,13 @@ namespace nle
 		//ImGui_ImplSDL3_InitForOpenGL(window, glcontext);
 		//ImGui_ImplOpenGL3_Init("#version 450 core");
 
-		
+		Input::SetCodes();
 
-		NLE_LOG_INFO("Starting Engine");
+		NLE_LOG_INFO("Starting NightLake Engine");
 		while (mRunning)
 		{
 			mMainWindow->PollEvents();
+			Input::Scan();
 
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
@@ -86,6 +87,12 @@ namespace nle
 			glBindVertexArray(vao);
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 			glBindVertexArray(0);
+
+			if (Input::KeyHeld(Key::A))
+				NLE_LOG_INFO("A was Held");
+
+			if (Input::KeyReleased(Key::A))
+				NLE_LOG_INFO("A was released");
 
 			//ImGui_ImplOpenGL3_NewFrame();
 			//ImGui_ImplSDL3_NewFrame();
@@ -136,13 +143,6 @@ namespace nle
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(NLE_BIND_EVENT_FN(Engine::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(NLE_BIND_EVENT_FN(Engine::OnWindowResize));
-		dispatcher.Dispatch<KeyPressedEvent>(NLE_BIND_EVENT_FN(Engine::OnKeyPressed));
-		dispatcher.Dispatch<KeyReleasedEvent>(NLE_BIND_EVENT_FN(Engine::OnKeyReleased));
-		dispatcher.Dispatch<KeyTypedEvent>(NLE_BIND_EVENT_FN(Engine::OnKeyTyped));
-		dispatcher.Dispatch<MouseButtonPressedEvent>(NLE_BIND_EVENT_FN(Engine::OnMouseButtonPressed));
-		dispatcher.Dispatch<MouseButtonReleasedEvent>(NLE_BIND_EVENT_FN(Engine::OnMouseButtonReleased));
-		dispatcher.Dispatch<MouseMovedEvent>(NLE_BIND_EVENT_FN(Engine::OnMouseMoved));
-		dispatcher.Dispatch<MouseScrolledEvent>(NLE_BIND_EVENT_FN(Engine::OnMouseScrolled));
 	}
 
 	bool Engine::OnWindowClose(WindowCloseEvent& e)
@@ -154,41 +154,6 @@ namespace nle
 	bool Engine::OnWindowResize(WindowResizeEvent& e)
 	{
 		glViewport(0, 0, e.GetWidth(), e.GetHeight());
-		return true;
-	}
-
-	bool Engine::OnKeyPressed(KeyPressedEvent& e)
-	{
-		return true;
-	}
-
-	bool Engine::OnKeyReleased(KeyReleasedEvent& e)
-	{
-		return true;
-	}
-
-	bool Engine::OnKeyTyped(KeyTypedEvent& e)
-	{
-		return true;
-	}
-
-	bool Engine::OnMouseButtonPressed(MouseButtonPressedEvent& e)
-	{
-		return true;
-	}
-
-	bool Engine::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
-	{
-		return true;
-	}
-
-	bool Engine::OnMouseMoved(MouseMovedEvent& e)
-	{
-		return true;
-	}
-
-	bool Engine::OnMouseScrolled(MouseScrolledEvent& e)
-	{
 		return true;
 	}
 }
