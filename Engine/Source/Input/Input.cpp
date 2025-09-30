@@ -66,7 +66,7 @@ namespace nle
 		SetSDL_InputCodes(mapKeys);
 		SetWin32KeyCodes(mapKeys);
 #elif defined(NLE_API_OPENGL)
-		SetGLFWKeyCodes(mapKeys);
+		SetSDL_InputCodes(mapKeys);
 #elif defined(NLE_API_DX11)
 		SetWin32KeyCodes(mapKeys);
 #endif
