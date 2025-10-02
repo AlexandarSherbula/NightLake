@@ -23,6 +23,7 @@ namespace nle
 	{
 	private:
 		Vector2 mPosition;
+		Vector2 mMouseWheel;
 	public:
 		static std::unordered_map<size_t, int8_t> MapButtons;
 	public:
@@ -30,12 +31,17 @@ namespace nle
 		Mouse(int32_t numOfStates);
 
 		inline void SetPosition(const Vector2& pos) { mPosition = pos; }
-		inline Vector2& GetPosition() { return mPosition; }
+		inline Vector2 Position() { return mPosition; }
 
 		bool IsPressed(uint16_t code) override;
 		bool IsHeld(uint16_t code) override;
 		bool IsReleased(uint16_t code) override;
 
+		void NewMouseWheelState(const Vector2& mouseWheel);
+		Vector2 Wheel() { return mMouseWheel; }
+
 		static void SetCodes();
+
+		void Reset() override;
 	};
 }

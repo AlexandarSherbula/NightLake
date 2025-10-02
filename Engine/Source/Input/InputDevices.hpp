@@ -32,6 +32,7 @@ namespace nle
 	public:
 		void SetNewState(int32_t code, bool state);
 		void Scan();
+		virtual void Reset() {}
 
 		virtual bool IsPressed(uint16_t code) { return mScanStates[code].inputState.pressed; }
 		virtual bool IsHeld(uint16_t code) { return mScanStates[code].inputState.held; }

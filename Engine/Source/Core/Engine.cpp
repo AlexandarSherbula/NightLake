@@ -89,28 +89,18 @@ namespace nle
 			glBindVertexArray(0);
 
 			if (Input::GetKeyboard()->IsHeld(KeyCode::A))
-				NLE_LOG_INFO("A was Held");
+				NLE_LOG_TRACE("A was Held");
 			
 			if (Input::GetKeyboard()->IsReleased(KeyCode::A))
-				NLE_LOG_INFO("A was released");
+				NLE_LOG_TRACE("A was released");
 
-			if (Input::GetMouse()->IsHeld(L_BUTTON))
-				NLE_LOG_INFO("Left click was Held");
+			if (Input::GetMouse()->IsPressed(L_BUTTON))
+				NLE_LOG_TRACE("Left click was pressed.");
 
 			if (Input::GetMouse()->IsReleased(L_BUTTON))
-				NLE_LOG_INFO("Left click was Released");
+				NLE_LOG_TRACE("Left click was released.");
 
-			if (Input::GetMouse()->IsHeld(R_BUTTON))
-				NLE_LOG_INFO("Right click was Held");
-
-			if (Input::GetMouse()->IsReleased(R_BUTTON))
-				NLE_LOG_INFO("Right click was Released");
-
-			if (Input::GetMouse()->IsHeld(M_BUTTON))
-				NLE_LOG_INFO("Middle click was Held");
-
-			if (Input::GetMouse()->IsReleased(M_BUTTON))
-				NLE_LOG_INFO("Middle click was Released");
+			NLE_LOG_TRACE(Input::GetMouse()->Wheel().y);
 
 			//ImGui_ImplOpenGL3_NewFrame();
 			//ImGui_ImplSDL3_NewFrame();
@@ -135,6 +125,8 @@ namespace nle
 			//}
 
 			SDL_GL_SwapWindow((SDL_Window*)mMainWindow->GetHandle());
+
+			Input::Reset();
 		}
 
 		//ImGui_ImplOpenGL3_Shutdown();
@@ -162,6 +154,7 @@ namespace nle
 		dispatcher.Dispatch<WindowCloseEvent>(NLE_BIND_EVENT_FN(Engine::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(NLE_BIND_EVENT_FN(Engine::OnWindowResize));
 		dispatcher.Dispatch<MouseMovedEvent>(NLE_BIND_EVENT_FN(Engine::OnMouseMoved));
+		dispatcher.Dispatch<MouseScrolledEvent>(NLE_BIND_EVENT_FN(Engine::OnMouseScrolled));
 	}
 
 	bool Engine::OnWindowClose(WindowCloseEvent& e)
@@ -179,6 +172,12 @@ namespace nle
 	bool Engine::OnMouseMoved(MouseMovedEvent& e)
 	{		
 		Input::GetMouse()->SetPosition(Vector2(e.GetX(), e.GetY()));
+		return true;
+	}
+
+	bool Engine::OnMouseScrolled(MouseScrolledEvent& e)
+	{
+		Input::GetMouse()->NewMouseWheelState(Vector2(e.GetXOffset(), e.GetYOffset()));
 		return true;
 	}
 }

@@ -31,6 +31,11 @@ namespace nle
 		return mouse;
 	}
 
+	void Input::Reset()
+	{
+		mouse->Reset();
+	}
+
 	void Input::Close()
 	{
 	}

@@ -11,36 +11,30 @@ namespace nle
 
 	Mouse::Mouse(int32_t numOfStates) : InputDevice(numOfStates)
 	{
+		mMouseWheel = { 0, 0 };
 	}
 
 	bool Mouse::IsPressed(uint16_t code)
 	{
-		if (code > 4)
-		{
-			NLE_LOG_ERROR("SDL doesn't support more than two inputs");
-			return false;
-		}
+		NLE_ASSERT(code < 5, "SDL doesn't support more than two extra  buttons");
 		return mScanStates[code].inputState.pressed;
 	}
 
 	bool Mouse::IsHeld(uint16_t code)
 	{
-		if (code > 4)
-		{
-			NLE_LOG_ERROR("SDL doesn't support more than two inputs");
-			return false;
-		}
+		NLE_ASSERT(code < 5, "SDL doesn't support more than two extra buttons");
 		return mScanStates[code].inputState.held;
 	}
 
 	bool Mouse::IsReleased(uint16_t code)
 	{
-		if (code > 4)
-		{
-			NLE_LOG_ERROR("SDL doesn't support more than two inputs");
-			return false;
-		}
+		NLE_ASSERT(code < 5, "SDL doesn't support more than two extra  buttons");
 		return mScanStates[code].inputState.released;
+	}
+
+	void Mouse::NewMouseWheelState(const Vector2& mouseWheel)
+	{
+		mMouseWheel = mouseWheel;
 	}
 
 	void Mouse::SetCodes()
@@ -50,6 +44,11 @@ namespace nle
 		MapButtons[SDL_BUTTON_MIDDLE] = M_BUTTON;
 		MapButtons[SDL_BUTTON_X1]     = X_BUTTON1;
 		MapButtons[SDL_BUTTON_X2]     = X_BUTTON2;
+	}
+
+	void Mouse::Reset()
+	{
+		mMouseWheel = { 0, 0 };
 	}
 
 

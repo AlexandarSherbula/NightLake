@@ -32,6 +32,7 @@ namespace nle
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
 		bool OnMouseMoved(MouseMovedEvent& e);
+		bool OnMouseScrolled(MouseScrolledEvent& e);
 	public:
 		Scope<Window> mMainWindow;
 	private:

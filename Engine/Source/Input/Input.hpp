@@ -13,8 +13,9 @@ namespace nle
 		static Ref<Mouse> mouse;
 	public:
 		static void Initialize();
-		static void Close();
 		static void Scan();
+		static void Reset();
+		static void Close();
 
 		static Ref<Keyboard> GetKeyboard();
 		static Ref<Mouse> GetMouse();
