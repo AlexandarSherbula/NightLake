@@ -42,7 +42,7 @@ namespace nle
 	{
 		if (gamepads.size() != 0)
 		{
-			NLE_ASSERT(index < gamepads.size(), "Accessing index that has not been addded!")
+			NLE_ASSERT(index < gamepads.size(), "Accessing index that has not been addded!");
 			return gamepads[index];
 		}
 		else
