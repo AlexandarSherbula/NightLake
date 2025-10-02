@@ -73,7 +73,7 @@ namespace nle
 		//ImGui_ImplSDL3_InitForOpenGL(window, glcontext);
 		//ImGui_ImplOpenGL3_Init("#version 450 core");
 
-		Input::SetCodes();
+		Input::Initialize();
 
 		NLE_LOG_INFO("Starting NightLake Engine");
 		while (mRunning)
@@ -88,11 +88,29 @@ namespace nle
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 			glBindVertexArray(0);
 
-			if (Input::KeyHeld(Key::A))
+			if (Input::GetKeyboard()->IsHeld(KeyCode::A))
 				NLE_LOG_INFO("A was Held");
-
-			if (Input::KeyReleased(Key::A))
+			
+			if (Input::GetKeyboard()->IsReleased(KeyCode::A))
 				NLE_LOG_INFO("A was released");
+
+			if (Input::GetMouse()->IsHeld(L_BUTTON))
+				NLE_LOG_INFO("Left click was Held");
+
+			if (Input::GetMouse()->IsReleased(L_BUTTON))
+				NLE_LOG_INFO("Left click was Released");
+
+			if (Input::GetMouse()->IsHeld(R_BUTTON))
+				NLE_LOG_INFO("Right click was Held");
+
+			if (Input::GetMouse()->IsReleased(R_BUTTON))
+				NLE_LOG_INFO("Right click was Released");
+
+			if (Input::GetMouse()->IsHeld(M_BUTTON))
+				NLE_LOG_INFO("Middle click was Held");
+
+			if (Input::GetMouse()->IsReleased(M_BUTTON))
+				NLE_LOG_INFO("Middle click was Released");
 
 			//ImGui_ImplOpenGL3_NewFrame();
 			//ImGui_ImplSDL3_NewFrame();
@@ -143,6 +161,7 @@ namespace nle
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(NLE_BIND_EVENT_FN(Engine::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(NLE_BIND_EVENT_FN(Engine::OnWindowResize));
+		dispatcher.Dispatch<MouseMovedEvent>(NLE_BIND_EVENT_FN(Engine::OnMouseMoved));
 	}
 
 	bool Engine::OnWindowClose(WindowCloseEvent& e)
@@ -154,6 +173,12 @@ namespace nle
 	bool Engine::OnWindowResize(WindowResizeEvent& e)
 	{
 		glViewport(0, 0, e.GetWidth(), e.GetHeight());
+		return true;
+	}
+
+	bool Engine::OnMouseMoved(MouseMovedEvent& e)
+	{		
+		Input::GetMouse()->SetPosition(Vector2(e.GetX(), e.GetY()));
 		return true;
 	}
 }

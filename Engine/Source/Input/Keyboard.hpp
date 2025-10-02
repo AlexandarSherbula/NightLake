@@ -1,10 +1,11 @@
 #pragma once
+#include "InputDevices.hpp"
 
 #include <unordered_map>
 
 namespace nle
 {
-	enum Key
+	enum KeyCode
 	{
 		NONE,
 		A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
@@ -20,20 +21,16 @@ namespace nle
 		CAPS_LOCK, ENUM_END
 	};
 
-	enum MouseButton
-	{
-		L_BUTTON,
-		R_BUTTON,
-		M_BUTTON,
-		X_BUTTON1,
-		X_BUTTON2,
-		X_BUTTON3,
-		X_BUTTON4,
-		X_BUTTON5,
-	};
 
-	void SetSDL_InputCodes(std::unordered_map<size_t, int8_t>& mapKeys);
-#ifdef NLE_WINDOWS
-	void SetWin32KeyCodes(std::unordered_map<size_t, int8_t>& mapKeys);
-#endif // NLE_WINDOWS	
+	class Keyboard : public InputDevice
+	{
+	public:
+		static std::unordered_map<size_t, int8_t> MapKeys;
+	public:
+		Keyboard();
+		~Keyboard();
+		Keyboard(int32_t numOfStates);
+
+		static void SetCodes();
+	};
 }

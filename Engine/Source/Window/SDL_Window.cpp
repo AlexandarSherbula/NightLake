@@ -1,6 +1,7 @@
 #include "nle_pch.hpp"
 #include "SDL_Window.hpp"
 
+
 namespace nle
 {
 	SDL3_Window::SDL3_Window(const WindowSpecifications& windowSpec)
@@ -66,14 +67,14 @@ namespace nle
 		{
 			KeyPressedEvent event(sdl_event.key.key, true);
 			handle->GetSpecs().eventCallback(event);
-			Input::UpdateKeyState(Input::GetMapKey(sdl_event.key.scancode), true);
+			Input::GetKeyboard()->SetNewState(Keyboard::MapKeys[sdl_event.key.scancode], true);
 			break;
 		}
 		case SDL_EVENT_KEY_UP:
 		{
 			KeyReleasedEvent event(sdl_event.key.key);
 			handle->GetSpecs().eventCallback(event);
-			Input::UpdateKeyState(Input::GetMapKey(sdl_event.key.scancode), false);
+			Input::GetKeyboard()->SetNewState(Keyboard::MapKeys[sdl_event.key.scancode], false);
 			break;
 		}
 		case SDL_EVENT_TEXT_INPUT:
@@ -86,12 +87,15 @@ namespace nle
 		{
 			MouseButtonPressedEvent event(sdl_event.button.button, sdl_event.button.x, sdl_event.button.y);
 			handle->GetSpecs().eventCallback(event);
+			Input::GetMouse()->SetNewState(Mouse::MapButtons[sdl_event.button.button], true);
+			
 			break;
 		}
 		case SDL_EVENT_MOUSE_BUTTON_UP:
 		{
 			MouseButtonReleasedEvent event(sdl_event.button.button, sdl_event.button.x, sdl_event.button.y);
 			handle->GetSpecs().eventCallback(event);
+			Input::GetMouse()->SetNewState(Mouse::MapButtons[sdl_event.button.button], false);
 			break;
 		}
 		case SDL_EVENT_MOUSE_MOTION:

@@ -7,3 +7,5 @@
 #include "Events/Events.hpp"
 #include "Math/Math.hpp"
 #include "Window/Window.hpp"
+
+#include "Input/Input.hpp"

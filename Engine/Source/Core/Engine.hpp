@@ -2,6 +2,7 @@
 
 #include "Window/Window.hpp"
 #include "Events/Events.hpp"
+
 #include "Input/Input.hpp"
 
 namespace nle
@@ -30,6 +31,7 @@ namespace nle
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
+		bool OnMouseMoved(MouseMovedEvent& e);
 	public:
 		Scope<Window> mMainWindow;
 	private:
