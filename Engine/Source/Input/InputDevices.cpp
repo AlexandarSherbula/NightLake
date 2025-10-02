@@ -9,11 +9,6 @@ namespace nle
 
 	}
 
-	InputDevice::InputDevice(int32_t numOfStates)
-	{
-		mScanStates.resize(numOfStates);
-	}
-
 	void InputDevice::Scan()
 	{
 		for (ScanState& scanState : mScanStates)

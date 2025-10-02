@@ -7,16 +7,11 @@ namespace nle
 
 	Keyboard::Keyboard() : InputDevice()
 	{
+		mScanStates.resize(256);
 	}
 
 	Keyboard::~Keyboard()
 	{
-		NLE_LOG_INFO("Destroyed");
-	}
-
-	Keyboard::Keyboard(int32_t numOfStates) : InputDevice(numOfStates)
-	{
-		NLE_LOG_INFO("Constructed");
 	}
 
 	void Keyboard::SetCodes()

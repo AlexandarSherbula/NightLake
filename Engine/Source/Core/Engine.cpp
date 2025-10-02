@@ -93,14 +93,35 @@ namespace nle
 			
 			if (Input::GetKeyboard()->IsReleased(KeyCode::A))
 				NLE_LOG_TRACE("A was released");
-
+			
 			if (Input::GetMouse()->IsPressed(L_BUTTON))
 				NLE_LOG_TRACE("Left click was pressed.");
-
+			
 			if (Input::GetMouse()->IsReleased(L_BUTTON))
 				NLE_LOG_TRACE("Left click was released.");
+			
+			NLE_LOG_TRACE("LeftStick x: {0}, y: {1}", Input::GetGamepad().LeftThumbStick().x, Input::GetGamepad().LeftThumbStick().y);
+			NLE_LOG_TRACE("LeftTrigger: {0}, RightTrigger: {1}", Input::GetGamepad().LeftTrigger(), Input::GetGamepad().RightTrigger());
 
-			NLE_LOG_TRACE(Input::GetMouse()->Wheel().y);
+			if (Input::GetGamepad().IsHeld(L_STICK_UP))
+				NLE_LOG_TRACE("Stick is UP!!");
+			if (Input::GetGamepad().IsReleased(L_STICK_UP))
+				NLE_LOG_TRACE("Stick is Released!!");
+			if (Input::GetGamepad().IsHeld(L_STICK_DOWN))
+				NLE_LOG_TRACE("Stick is DOWN!!");
+			if (Input::GetGamepad().IsReleased(L_STICK_DOWN))
+				NLE_LOG_TRACE("Stick is Released!!");
+			
+			if (Input::GetGamepad().IsHeld(L_STICK_LEFT))
+				NLE_LOG_TRACE("Stick is LEFT!!");
+			if (Input::GetGamepad().IsReleased(L_STICK_LEFT))
+				NLE_LOG_TRACE("Stick is Released!!");
+			if (Input::GetGamepad().IsHeld(L_STICK_RIGHT))
+				NLE_LOG_TRACE("Stick is RIGHT!!");
+			if (Input::GetGamepad().IsReleased(L_STICK_RIGHT))
+				NLE_LOG_TRACE("Stick is Released!!");
+
+			//NLE_LOG_TRACE(Input::GetMouse()->Wheel().y);
 
 			//ImGui_ImplOpenGL3_NewFrame();
 			//ImGui_ImplSDL3_NewFrame();
@@ -128,6 +149,8 @@ namespace nle
 
 			Input::Reset();
 		}
+
+		Input::Close();
 
 		//ImGui_ImplOpenGL3_Shutdown();
 		//ImGui_ImplSDL3_Shutdown();

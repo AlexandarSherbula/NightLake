@@ -28,12 +28,12 @@ namespace nle
 		std::vector<ScanState> mScanStates;
 	public:
 		InputDevice();
-		InputDevice(int32_t numOfStates);
 	public:
 		void SetNewState(int32_t code, bool state);
 		void Scan();
 		virtual void Reset() {}
 
+		inline std::vector<ScanState>& GetScanStates() { return mScanStates; }
 		virtual bool IsPressed(uint16_t code) { return mScanStates[code].inputState.pressed; }
 		virtual bool IsHeld(uint16_t code) { return mScanStates[code].inputState.held; }
 		virtual bool IsReleased(uint16_t code) { return mScanStates[code].inputState.released; }

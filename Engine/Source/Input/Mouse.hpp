@@ -28,7 +28,7 @@ namespace nle
 		static std::unordered_map<size_t, int8_t> MapButtons;
 	public:
 		Mouse();
-		Mouse(int32_t numOfStates);
+		~Mouse();
 
 		inline void SetPosition(const Vector2& pos) { mPosition = pos; }
 		inline Vector2 Position() { return mPosition; }

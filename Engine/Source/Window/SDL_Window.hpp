@@ -20,7 +20,5 @@ namespace nle
 		SDL_Window* mHandle;
 		SDL_GLContext mGLContext;
 	};
-
-	void ProcessEvents(SDL_Event& sdl_event, SDL3_Window* handle);
 }
 #endif

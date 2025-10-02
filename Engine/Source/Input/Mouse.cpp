@@ -7,11 +7,12 @@ namespace nle
 
 	Mouse::Mouse()
 	{
+		mScanStates.resize(8);
+		mMouseWheel = { 0, 0 };
 	}
 
-	Mouse::Mouse(int32_t numOfStates) : InputDevice(numOfStates)
+	Mouse::~Mouse()
 	{
-		mMouseWheel = { 0, 0 };
 	}
 
 	bool Mouse::IsPressed(uint16_t code)

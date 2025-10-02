@@ -1,9 +1,10 @@
 #include "nle_pch.hpp"
 #include "SDL_Window.hpp"
 
-
 namespace nle
 {
+	static void ProcessEvents(SDL_Event& sdl_event, SDL3_Window* handle);
+
 	SDL3_Window::SDL3_Window(const WindowSpecifications& windowSpec)
 	{
 		mSpecs.title = windowSpec.title;
@@ -116,6 +117,9 @@ namespace nle
 			handle->GetSpecs().eventCallback(event);
 			break;
 		}
+		default:
+			Input::ProcessGamePadEvents(sdl_event);
+			break;
 		}
 	}
 

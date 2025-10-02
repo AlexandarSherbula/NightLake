@@ -29,7 +29,6 @@ namespace nle
 	public:
 		Keyboard();
 		~Keyboard();
-		Keyboard(int32_t numOfStates);
 
 		static void SetCodes();
 	};
