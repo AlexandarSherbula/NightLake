@@ -67,13 +67,19 @@ namespace nle
 		inline SDL_Gamepad* GetHandle() { return mHandle; }
 		inline SDL_JoystickID ID() { return SDL_GetGamepadID(mHandle); }
 
-		inline float DeadZone() { return mDeadZone; }
-		inline Vector2& LeftThumbStick() { return mLeftThumbStick; }
-		inline Vector2& RightThumbStick() { return mRightThumbStick; }
-
-		inline float& LeftTrigger() { return mLeftTrigger; }
-		inline float& RightTrigger() { return mRightTrigger; }
-
+		inline float DeadZone() { return (mHandle == nullptr) ?  0.0f : mDeadZone; }
 		void SetDeadZone(float deadZone);
+
+		inline Vector2 LeftThumbStick() { return (mHandle == nullptr) ? Vector2(0.0f, 0.0f) : mLeftThumbStick; }
+		inline Vector2 RightThumbStick() { return (mHandle == nullptr) ? Vector2(0.0f, 0.0f) : mRightThumbStick; }
+
+		inline float LeftTrigger() { return (mHandle == nullptr) ? 0.0f : mLeftTrigger; }
+		inline float RightTrigger() { return (mHandle == nullptr) ? 0.0f : mRightTrigger; }
+
+		bool IsPressed(uint16_t code)  override { return (mHandle == nullptr) ? false : mScanStates[code].inputState.pressed; }
+		bool IsHeld(uint16_t code)     override { return (mHandle == nullptr) ? false : mScanStates[code].inputState.held; }
+		bool IsReleased(uint16_t code) override { return (mHandle == nullptr) ? false : mScanStates[code].inputState.released; }		
+
+		friend class Input;
 	};
 }

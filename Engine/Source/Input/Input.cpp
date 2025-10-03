@@ -40,17 +40,22 @@ namespace nle
 
 	Gamepad& Input::GetGamepad(int32_t index)
 	{
-		if (gamepads.size() != 0)
-		{
-			NLE_ASSERT(index < gamepads.size(), "Accessing index that has not been addded!");
+		if (IsGamePadConnected(index))
 			return gamepads[index];
-		}
-		else
+
+		NLE_LOG_WARN("There is no controller at index {0} connected", index);
+		Gamepad dud;
+		return dud;
+	}
+
+	bool Input::IsGamePadConnected(int32_t index)
+	{
+		for (int32_t i = 0; i < gamepads.size(); i++)
 		{
-			NLE_LOG_WARN("There are no controllers plugged in");
-			Gamepad dud;
-			return dud;
+			if (i == index)
+				return true;
 		}
+		return false;
 	}
 
 	void Input::AddGamepad(SDL_JoystickID id)
@@ -142,16 +147,16 @@ namespace nle
 						{
 							if (sdl_event.gbutton.which == gp.ID())
 							{
-								gp.LeftThumbStick().x = Normalize(sdl_event.gaxis.value);
+								gp.mLeftThumbStick.x = Normalize(sdl_event.gaxis.value);
 
-								if (gp.LeftThumbStick().x < -gp.DeadZone())
+								if (gp.mLeftThumbStick.x < -gp.mDeadZone)
 									gp.SetNewState(L_STICK_LEFT, true);
-								else if (gp.LeftThumbStick().x >= -gp.DeadZone() && gp.LeftThumbStick().x <= 0.0f && gp.GetScanStates()[L_STICK_LEFT].isOld)
+								else if (gp.mLeftThumbStick.x >= -gp.mDeadZone && gp.mLeftThumbStick.x <= 0.0f && gp.mScanStates[L_STICK_LEFT].isOld)
 									gp.SetNewState(L_STICK_LEFT, false);
 
-								if (gp.LeftThumbStick().x > gp.DeadZone())
+								if (gp.mLeftThumbStick.x > gp.mDeadZone)
 									gp.SetNewState(L_STICK_RIGHT, true);
-								else if (gp.LeftThumbStick().x >= 0.0f && gp.LeftThumbStick().x <= gp.DeadZone() && gp.GetScanStates()[L_STICK_RIGHT].isOld)
+								else if (gp.mLeftThumbStick.x >= 0.0f && gp.mLeftThumbStick.x <= gp.mDeadZone && gp.mScanStates[L_STICK_RIGHT].isOld)
 									gp.SetNewState(L_STICK_RIGHT, false);
 							}
 						}
@@ -163,16 +168,16 @@ namespace nle
 						{
 							if (sdl_event.gbutton.which == gp.ID())
 							{
-								gp.LeftThumbStick().y = Normalize(sdl_event.gaxis.value);
+								gp.mLeftThumbStick.y = Normalize(sdl_event.gaxis.value);
 								
-								if (gp.LeftThumbStick().y < -gp.DeadZone())
+								if (gp.mLeftThumbStick.y < -gp.mDeadZone)
 									gp.SetNewState(L_STICK_UP, true);
-								else if (gp.LeftThumbStick().y >= -gp.DeadZone() && gp.LeftThumbStick().y <= 0.0f && gp.GetScanStates()[L_STICK_UP].isOld)
+								else if (gp.mLeftThumbStick.y >= -gp.mDeadZone && gp.mLeftThumbStick.y <= 0.0f && gp.mScanStates[L_STICK_UP].isOld)
 									gp.SetNewState(L_STICK_UP, false);
 								
-								if (gp.LeftThumbStick().y > gp.DeadZone())
+								if (gp.mLeftThumbStick.y > gp.mDeadZone)
 									gp.SetNewState(L_STICK_DOWN, true);
-								else if (gp.LeftThumbStick().y >= 0.0f && gp.LeftThumbStick().y <= gp.DeadZone() && gp.GetScanStates()[L_STICK_DOWN].isOld)
+								else if (gp.mLeftThumbStick.y >= 0.0f && gp.mLeftThumbStick.y <= gp.mDeadZone && gp.mScanStates[L_STICK_DOWN].isOld)
 									gp.SetNewState(L_STICK_DOWN, false);
 							}
 						}
@@ -184,16 +189,16 @@ namespace nle
 						{
 							if (sdl_event.gbutton.which == gp.ID())
 							{
-								gp.RightThumbStick().x = Normalize(sdl_event.gaxis.value);
+								gp.mRightThumbStick.x = Normalize(sdl_event.gaxis.value);
 
-								if (gp.RightThumbStick().x < -gp.DeadZone())
+								if (gp.mRightThumbStick.x < -gp.mDeadZone)
 									gp.SetNewState(R_STICK_LEFT, true);
-								else if (gp.RightThumbStick().x >= -gp.DeadZone() && gp.RightThumbStick().x <= 0.0f && gp.GetScanStates()[R_STICK_LEFT].isOld)
+								else if (gp.mRightThumbStick.x >= -gp.mDeadZone && gp.mRightThumbStick.x <= 0.0f && gp.mScanStates[R_STICK_LEFT].isOld)
 									gp.SetNewState(R_STICK_LEFT, false);
 
-								if (gp.RightThumbStick().x > gp.DeadZone())
+								if (gp.mRightThumbStick.x > gp.mDeadZone)
 									gp.SetNewState(R_STICK_RIGHT, true);
-								else if (gp.RightThumbStick().x >= 0.0f && gp.RightThumbStick().x <= gp.DeadZone() && gp.GetScanStates()[R_STICK_RIGHT].isOld)
+								else if (gp.mRightThumbStick.x >= 0.0f && gp.mRightThumbStick.x <= gp.mDeadZone && gp.mScanStates[R_STICK_RIGHT].isOld)
 									gp.SetNewState(R_STICK_RIGHT, false);
 							}
 						}
@@ -205,16 +210,16 @@ namespace nle
 						{
 							if (sdl_event.gbutton.which == gp.ID())
 							{
-								gp.RightThumbStick().y = Normalize(sdl_event.gaxis.value);
+								gp.mRightThumbStick.y = Normalize(sdl_event.gaxis.value);
 								
-								if (gp.RightThumbStick().y < -gp.DeadZone())
+								if (gp.mRightThumbStick.y < -gp.mDeadZone)
 									gp.SetNewState(R_STICK_UP, true);
-								else if (gp.RightThumbStick().y >= -gp.DeadZone() && gp.RightThumbStick().y <= 0.0f && gp.GetScanStates()[R_STICK_UP].isOld)
+								else if (gp.mRightThumbStick.y >= -gp.mDeadZone && gp.mRightThumbStick.y <= 0.0f && gp.mScanStates[R_STICK_UP].isOld)
 									gp.SetNewState(R_STICK_UP, false);
 								
-								if (gp.RightThumbStick().y > gp.DeadZone())
+								if (gp.mRightThumbStick.y > gp.mDeadZone)
 									gp.SetNewState(R_STICK_DOWN, true);
-								else if (gp.RightThumbStick().y >= 0.0f && gp.RightThumbStick().y <= gp.DeadZone() && gp.GetScanStates()[R_STICK_DOWN].isOld)
+								else if (gp.mRightThumbStick.y >= 0.0f && gp.mRightThumbStick.y <= gp.mDeadZone && gp.mScanStates[R_STICK_DOWN].isOld)
 									gp.SetNewState(R_STICK_DOWN, false);
 							}
 						}
@@ -226,7 +231,7 @@ namespace nle
 						{
 							if (sdl_event.gbutton.which == gp.ID())
 							{
-								gp.LeftTrigger() = Normalize(sdl_event.gaxis.value);
+								gp.mLeftTrigger = Normalize(sdl_event.gaxis.value);
 							}
 						}
 						break;
@@ -237,7 +242,7 @@ namespace nle
 						{
 							if (sdl_event.gbutton.which == gp.ID())
 							{
-								gp.RightTrigger() = Normalize(sdl_event.gaxis.value);
+								gp.mRightTrigger = Normalize(sdl_event.gaxis.value);
 							}
 						}
 						break;

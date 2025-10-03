@@ -22,6 +22,7 @@ namespace nle
 		static Ref<Keyboard> GetKeyboard();
 		static Ref<Mouse> GetMouse();
 		static Gamepad& GetGamepad(int32_t index = 0);
+		static bool IsGamePadConnected(int32_t index = 0);
 
 		static void AddGamepad(SDL_JoystickID id);
 		static void RemoveGamepad(SDL_JoystickID id);

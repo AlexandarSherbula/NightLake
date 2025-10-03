@@ -7,6 +7,7 @@ namespace nle
 {
 	Gamepad::Gamepad() : InputDevice()
 	{
+		mHandle = nullptr;
 		mScanStates.resize(29);
 		mDeadZone = 0.3f;
 
@@ -44,6 +45,9 @@ namespace nle
 
 	void Gamepad::SetDeadZone(float deadZone)
 	{
+		if (mHandle == nullptr)
+			return;
+
 		if (deadZone > 0.0f && deadZone < 1.0f)
 			mDeadZone = deadZone;
 		else if (deadZone < 0.0f)
