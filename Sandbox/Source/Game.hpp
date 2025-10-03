@@ -2,7 +2,7 @@
 
 #include "NightLake.hpp"
 
-class Game : public nle::Engine
+class Game : public nle::Application
 {
 public:
 	Game();

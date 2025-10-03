@@ -15,17 +15,17 @@ namespace nle
 		bool vSync = true;
 	};
 
-	class Engine
+	class Application
 	{
 	public:
-		Engine();
-		Engine(AppSpecifications& appSpecs);
-		~Engine();
+		Application();
+		Application(AppSpecifications& appSpecs);
+		~Application();
 
 		void Run();
 		void Stop();
 
-		static Engine& Get();
+		static Application& Get();
 
 		void OnEvent(Event& e);
 	private:
