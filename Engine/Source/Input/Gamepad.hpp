@@ -61,8 +61,15 @@ namespace nle
 		Gamepad();
 		Gamepad(SDL_Gamepad* handle, SDL_JoystickID id);
 
+		// disable copy
+		Gamepad(const Gamepad&) = delete;
+		Gamepad& operator=(const Gamepad&) = delete;
+
+		// enable move
+		Gamepad(Gamepad&& other) noexcept;
+		Gamepad& operator=(Gamepad&& other) noexcept;
+
 		~Gamepad();
-		void Close();
 
 		inline SDL_Gamepad* GetHandle() { return mHandle; }
 		inline SDL_JoystickID ID() { return SDL_GetGamepadID(mHandle); }

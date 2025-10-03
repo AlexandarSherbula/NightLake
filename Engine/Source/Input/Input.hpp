@@ -12,7 +12,8 @@ namespace nle
 	private:
 		static Ref<Keyboard> keyboard;
 		static Ref<Mouse> mouse;
-		static std::vector<Gamepad> gamepads;
+		static std::vector<std::unique_ptr<Gamepad>> gamepads;
+		static inline Gamepad dummy;
 	public:
 		static void Initialize();
 		static void Scan();
@@ -21,7 +22,7 @@ namespace nle
 
 		static Ref<Keyboard> GetKeyboard();
 		static Ref<Mouse> GetMouse();
-		static Gamepad& GetGamepad(int32_t index = 0);
+		static Gamepad* GetGamepad(int32_t index = 0);
 		static bool IsGamePadConnected(int32_t index = 0);
 
 		static void AddGamepad(SDL_JoystickID id);

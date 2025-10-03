@@ -35,12 +35,11 @@ namespace nle
 
 	Gamepad::~Gamepad()
 	{
-	}
-
-	void Gamepad::Close()
-	{
-		SDL_CloseGamepad(mHandle);
-		mHandle = nullptr;
+		if (mHandle != nullptr)
+		{
+			SDL_CloseGamepad(mHandle);
+			mHandle = nullptr;
+		}
 	}
 
 	void Gamepad::SetDeadZone(float deadZone)

@@ -5,12 +5,14 @@ namespace nle
 {
 	Ref<Keyboard> Input::keyboard;
 	Ref<Mouse> Input::mouse;
-	std::vector<Gamepad> Input::gamepads;
+	std::vector<std::unique_ptr<Gamepad>> Input::gamepads;
 
 	void Input::Initialize()
 	{
 		keyboard = CreateRef<Keyboard>();
 		mouse = CreateRef<Mouse>();
+
+		gamepads.reserve(4);
 
 		Keyboard::SetCodes();
 		Mouse::SetCodes();
@@ -25,7 +27,7 @@ namespace nle
 
 		if (gamepads.size() != 0)
 			for (auto& gp : gamepads)
-				gp.Scan();
+				gp->Scan();
 	}
 
 	Ref<Keyboard> Input::GetKeyboard()
@@ -38,14 +40,13 @@ namespace nle
 		return mouse;
 	}
 
-	Gamepad& Input::GetGamepad(int32_t index)
+	Gamepad* Input::GetGamepad(int32_t index)
 	{
 		if (IsGamePadConnected(index))
-			return gamepads[index];
+			return gamepads[index].get();
 
 		NLE_LOG_WARN("There is no controller at index {0} connected", index);
-		Gamepad dud;
-		return dud;
+		return &dummy;
 	}
 
 	bool Input::IsGamePadConnected(int32_t index)
@@ -63,7 +64,7 @@ namespace nle
 		SDL_Gamepad* handle = SDL_OpenGamepad(id);
 		if (handle)
 		{
-			gamepads.push_back({ handle, id });
+			gamepads.emplace_back(std::make_unique<Gamepad>(handle, id));
 			NLE_LOG_INFO("Gamepad connected: " + std::string(SDL_GetGamepadName(handle)));
 		}
 		else
@@ -77,15 +78,17 @@ namespace nle
 		gamepads.erase
 		(
 			std::remove_if(gamepads.begin(), gamepads.end(),
-				[id](Gamepad& g) {
-					if (SDL_GetGamepadID(g.GetHandle()) == id) {
-						NLE_LOG_WARN("Gamepad removed: " + std::string(SDL_GetGamepadName(g.GetHandle())));
-						g.Close();
+				[id](const std::unique_ptr<Gamepad>& g)
+				{
+					
+					if (SDL_GetGamepadID(g->mHandle) == id) 
+					{
+						NLE_LOG_WARN("Gamepad removed: " + std::string(SDL_GetGamepadName(g->GetHandle())));
 						return true;
 					}
 					return false;
 				}),
-
+		
 			gamepads.end()
 		);
 	}
@@ -109,9 +112,9 @@ namespace nle
 			{
 				for (auto& gp : gamepads)
 				{
-					if (sdl_event.gbutton.which == gp.ID())
+					if (sdl_event.gbutton.which == SDL_GetGamepadID(gp->mHandle))
 					{
-						gp.SetNewState(sdl_event.gbutton.button, true);
+						gp->SetNewState(sdl_event.gbutton.button, true);
 					}
 				}
 				break;
@@ -120,8 +123,8 @@ namespace nle
 			{
 				for (auto& gp : gamepads)
 				{
-					if (sdl_event.gbutton.which == gp.ID())
-						gp.SetNewState(sdl_event.gbutton.button, false);
+					if (sdl_event.gbutton.which == SDL_GetGamepadID(gp->mHandle))
+						gp->SetNewState(sdl_event.gbutton.button, false);
 				}
 				break;
 			}
@@ -145,19 +148,19 @@ namespace nle
 					{
 						for (auto& gp : gamepads)
 						{
-							if (sdl_event.gbutton.which == gp.ID())
+							if (sdl_event.gbutton.which == SDL_GetGamepadID(gp->mHandle))
 							{
-								gp.mLeftThumbStick.x = Normalize(sdl_event.gaxis.value);
+								gp->mLeftThumbStick.x = Normalize(sdl_event.gaxis.value);
 
-								if (gp.mLeftThumbStick.x < -gp.mDeadZone)
-									gp.SetNewState(L_STICK_LEFT, true);
-								else if (gp.mLeftThumbStick.x >= -gp.mDeadZone && gp.mLeftThumbStick.x <= 0.0f && gp.mScanStates[L_STICK_LEFT].isOld)
-									gp.SetNewState(L_STICK_LEFT, false);
+								if (gp->mLeftThumbStick.x < -gp->mDeadZone)
+									gp->SetNewState(L_STICK_LEFT, true);
+								else if (gp->mLeftThumbStick.x >= -gp->mDeadZone && gp->mLeftThumbStick.x <= 0.0f && gp->mScanStates[L_STICK_LEFT].isOld)
+									gp->SetNewState(L_STICK_LEFT, false);
 
-								if (gp.mLeftThumbStick.x > gp.mDeadZone)
-									gp.SetNewState(L_STICK_RIGHT, true);
-								else if (gp.mLeftThumbStick.x >= 0.0f && gp.mLeftThumbStick.x <= gp.mDeadZone && gp.mScanStates[L_STICK_RIGHT].isOld)
-									gp.SetNewState(L_STICK_RIGHT, false);
+								if (gp->mLeftThumbStick.x > gp->mDeadZone)
+									gp->SetNewState(L_STICK_RIGHT, true);
+								else if (gp->mLeftThumbStick.x >= 0.0f && gp->mLeftThumbStick.x <= gp->mDeadZone && gp->mScanStates[L_STICK_RIGHT].isOld)
+									gp->SetNewState(L_STICK_RIGHT, false);
 							}
 						}
 						break;
@@ -166,19 +169,19 @@ namespace nle
 					{
 						for (auto& gp : gamepads)
 						{
-							if (sdl_event.gbutton.which == gp.ID())
+							if (sdl_event.gbutton.which == SDL_GetGamepadID(gp->mHandle))
 							{
-								gp.mLeftThumbStick.y = Normalize(sdl_event.gaxis.value);
+								gp->mLeftThumbStick.y = Normalize(sdl_event.gaxis.value);
 								
-								if (gp.mLeftThumbStick.y < -gp.mDeadZone)
-									gp.SetNewState(L_STICK_UP, true);
-								else if (gp.mLeftThumbStick.y >= -gp.mDeadZone && gp.mLeftThumbStick.y <= 0.0f && gp.mScanStates[L_STICK_UP].isOld)
-									gp.SetNewState(L_STICK_UP, false);
+								if (gp->mLeftThumbStick.y < -gp->mDeadZone)
+									gp->SetNewState(L_STICK_UP, true);
+								else if (gp->mLeftThumbStick.y >= -gp->mDeadZone && gp->mLeftThumbStick.y <= 0.0f && gp->mScanStates[L_STICK_UP].isOld)
+									gp->SetNewState(L_STICK_UP, false);
 								
-								if (gp.mLeftThumbStick.y > gp.mDeadZone)
-									gp.SetNewState(L_STICK_DOWN, true);
-								else if (gp.mLeftThumbStick.y >= 0.0f && gp.mLeftThumbStick.y <= gp.mDeadZone && gp.mScanStates[L_STICK_DOWN].isOld)
-									gp.SetNewState(L_STICK_DOWN, false);
+								if (gp->mLeftThumbStick.y > gp->mDeadZone)
+									gp->SetNewState(L_STICK_DOWN, true);
+								else if (gp->mLeftThumbStick.y >= 0.0f && gp->mLeftThumbStick.y <= gp->mDeadZone && gp->mScanStates[L_STICK_DOWN].isOld)
+									gp->SetNewState(L_STICK_DOWN, false);
 							}
 						}
 						break;
@@ -187,19 +190,19 @@ namespace nle
 					{
 						for (auto& gp : gamepads)
 						{
-							if (sdl_event.gbutton.which == gp.ID())
+							if (sdl_event.gbutton.which == SDL_GetGamepadID(gp->mHandle))
 							{
-								gp.mRightThumbStick.x = Normalize(sdl_event.gaxis.value);
+								gp->mRightThumbStick.x = Normalize(sdl_event.gaxis.value);
 
-								if (gp.mRightThumbStick.x < -gp.mDeadZone)
-									gp.SetNewState(R_STICK_LEFT, true);
-								else if (gp.mRightThumbStick.x >= -gp.mDeadZone && gp.mRightThumbStick.x <= 0.0f && gp.mScanStates[R_STICK_LEFT].isOld)
-									gp.SetNewState(R_STICK_LEFT, false);
+								if (gp->mRightThumbStick.x < -gp->mDeadZone)
+									gp->SetNewState(R_STICK_LEFT, true);
+								else if (gp->mRightThumbStick.x >= -gp->mDeadZone && gp->mRightThumbStick.x <= 0.0f && gp->mScanStates[R_STICK_LEFT].isOld)
+									gp->SetNewState(R_STICK_LEFT, false);
 
-								if (gp.mRightThumbStick.x > gp.mDeadZone)
-									gp.SetNewState(R_STICK_RIGHT, true);
-								else if (gp.mRightThumbStick.x >= 0.0f && gp.mRightThumbStick.x <= gp.mDeadZone && gp.mScanStates[R_STICK_RIGHT].isOld)
-									gp.SetNewState(R_STICK_RIGHT, false);
+								if (gp->mRightThumbStick.x > gp->mDeadZone)
+									gp->SetNewState(R_STICK_RIGHT, true);
+								else if (gp->mRightThumbStick.x >= 0.0f && gp->mRightThumbStick.x <= gp->mDeadZone && gp->mScanStates[R_STICK_RIGHT].isOld)
+									gp->SetNewState(R_STICK_RIGHT, false);
 							}
 						}
 						break;
@@ -208,19 +211,19 @@ namespace nle
 					{
 						for (auto& gp : gamepads)
 						{
-							if (sdl_event.gbutton.which == gp.ID())
+							if (sdl_event.gbutton.which == SDL_GetGamepadID(gp->mHandle))
 							{
-								gp.mRightThumbStick.y = Normalize(sdl_event.gaxis.value);
+								gp->mRightThumbStick.y = Normalize(sdl_event.gaxis.value);
 								
-								if (gp.mRightThumbStick.y < -gp.mDeadZone)
-									gp.SetNewState(R_STICK_UP, true);
-								else if (gp.mRightThumbStick.y >= -gp.mDeadZone && gp.mRightThumbStick.y <= 0.0f && gp.mScanStates[R_STICK_UP].isOld)
-									gp.SetNewState(R_STICK_UP, false);
+								if (gp->mRightThumbStick.y < -gp->mDeadZone)
+									gp->SetNewState(R_STICK_UP, true);
+								else if (gp->mRightThumbStick.y >= -gp->mDeadZone && gp->mRightThumbStick.y <= 0.0f && gp->mScanStates[R_STICK_UP].isOld)
+									gp->SetNewState(R_STICK_UP, false);
 								
-								if (gp.mRightThumbStick.y > gp.mDeadZone)
-									gp.SetNewState(R_STICK_DOWN, true);
-								else if (gp.mRightThumbStick.y >= 0.0f && gp.mRightThumbStick.y <= gp.mDeadZone && gp.mScanStates[R_STICK_DOWN].isOld)
-									gp.SetNewState(R_STICK_DOWN, false);
+								if (gp->mRightThumbStick.y > gp->mDeadZone)
+									gp->SetNewState(R_STICK_DOWN, true);
+								else if (gp->mRightThumbStick.y >= 0.0f && gp->mRightThumbStick.y <= gp->mDeadZone && gp->mScanStates[R_STICK_DOWN].isOld)
+									gp->SetNewState(R_STICK_DOWN, false);
 							}
 						}
 						break;
@@ -229,9 +232,9 @@ namespace nle
 					{
 						for (auto& gp : gamepads)
 						{
-							if (sdl_event.gbutton.which == gp.ID())
+							if (sdl_event.gbutton.which == SDL_GetGamepadID(gp->mHandle))
 							{
-								gp.mLeftTrigger = Normalize(sdl_event.gaxis.value);
+								gp->mLeftTrigger = Normalize(sdl_event.gaxis.value);
 							}
 						}
 						break;
@@ -240,9 +243,9 @@ namespace nle
 					{
 						for (auto& gp : gamepads)
 						{
-							if (sdl_event.gbutton.which == gp.ID())
+							if (sdl_event.gbutton.which == SDL_GetGamepadID(gp->mHandle))
 							{
-								gp.mRightTrigger = Normalize(sdl_event.gaxis.value);
+								gp->mRightTrigger = Normalize(sdl_event.gaxis.value);
 							}
 						}
 						break;
@@ -260,10 +263,6 @@ namespace nle
 
 	void Input::Close()
 	{
-		for (auto& gp : gamepads) 
-		{
-			gp.Close();
-		}
 		gamepads.clear();
 		SDL_QuitSubSystem(SDL_INIT_GAMEPAD);
 	}
