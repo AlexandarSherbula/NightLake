@@ -1,4 +1,4 @@
-#include "Game.hpp"
+#include "Sandbox.hpp"
 
 int main()
 {
@@ -7,7 +7,7 @@ int main()
 	appSpecs.width = 1280;
 	appSpecs.height = 720;
 
-	Game game(appSpecs);
-	game.Run();
+	Sandbox sandbox(appSpecs);
+	sandbox.Run();
 	return 0;
 }

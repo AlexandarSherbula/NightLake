@@ -31,6 +31,23 @@ namespace nle
 
 	void Application::Run()
 	{
+		//IMGUI_CHECKVERSION();
+		//ImGui::CreateContext();
+		//ImGui::StyleColorsDark();
+		//ImGuiIO& io = ImGui::GetIO(); (void)io;
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+		//
+		//if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		//{
+		//	ImGuiStyle& style = ImGui::GetStyle();
+		//	style.WindowRounding = 0.0f;
+		//	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		//}
+
+		//ImGui_ImplSDL3_InitForOpenGL(window, glcontext);
+		//ImGui_ImplOpenGL3_Init("#version 450 core");
 
 		NLE_ASSERT(gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress), "Failed to initialize glad.\n");
 
@@ -55,31 +72,15 @@ namespace nle
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
-		//IMGUI_CHECKVERSION();
-		//ImGui::CreateContext();
-		//ImGui::StyleColorsDark();
-		//ImGuiIO& io = ImGui::GetIO(); (void)io;
-		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-		//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-		//
-		//if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		//{
-		//	ImGuiStyle& style = ImGui::GetStyle();
-		//	style.WindowRounding = 0.0f;
-		//	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-		//}
-
-		//ImGui_ImplSDL3_InitForOpenGL(window, glcontext);
-		//ImGui_ImplOpenGL3_Init("#version 450 core");
-
 		Input::Initialize();
-
-		NLE_LOG_INFO("Starting NightLake Application");
+		
 		while (mRunning)
 		{
 			mMainWindow->PollEvents();
 			Input::Scan();
+
+			for (Layer* layer : mLayerStack)
+				layer->OnUpdate();
 
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
@@ -88,57 +89,57 @@ namespace nle
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 			glBindVertexArray(0);
 
-			if (Input::GetKeyboard()->IsHeld(KeyCode::A))
-				NLE_LOG_TRACE("A was Held");
-			
-			if (Input::GetKeyboard()->IsReleased(KeyCode::A))
-				NLE_LOG_TRACE("A was released");
-			
-			if (Input::GetMouse()->IsPressed(L_BUTTON))
-				NLE_LOG_TRACE("Left click was pressed.");
-			
-			if (Input::GetMouse()->IsReleased(L_BUTTON))
-				NLE_LOG_TRACE("Left click was released.");
-
-			//NLE_LOG_TRACE("LeftStick x: {0}, y: {1}", Input::GetGamepad().LeftThumbStick().x, Input::GetGamepad().LeftThumbStick().y);
-			NLE_LOG_TRACE("LeftTrigger: {0}, RightTrigger: {1}", Input::GetGamepad().LeftTrigger(), Input::GetGamepad().RightTrigger());
-
-			if (Input::GetGamepad().IsHeld(L_STICK_UP))
-				NLE_LOG_TRACE("Stick is UP!!");
-			if (Input::GetGamepad().IsReleased(L_STICK_UP))
-				NLE_LOG_TRACE("Stick is Released!!");
-			if (Input::GetGamepad().IsHeld(L_STICK_DOWN))
-				NLE_LOG_TRACE("Stick is DOWN!!");
-			if (Input::GetGamepad().IsReleased(L_STICK_DOWN))
-				NLE_LOG_TRACE("Stick is Released!!");
-			
-			if (Input::GetGamepad().IsHeld(L_STICK_LEFT))
-				NLE_LOG_TRACE("Stick is LEFT!!");
-			if (Input::GetGamepad().IsReleased(L_STICK_LEFT))
-				NLE_LOG_TRACE("Stick is Released!!");
-			if (Input::GetGamepad().IsHeld(L_STICK_RIGHT))
-				NLE_LOG_TRACE("Stick is RIGHT!!");
-			if (Input::GetGamepad().IsReleased(L_STICK_RIGHT))
-				NLE_LOG_TRACE("Stick is Released!!");
-
-			if (Input::GetGamepad().IsHeld(L_STICK_UP))
-				NLE_LOG_TRACE("Stick is UP!!");
-			if (Input::GetGamepad().IsReleased(L_STICK_UP))
-				NLE_LOG_TRACE("Stick is Released!!");
-			if (Input::GetGamepad().IsHeld(L_STICK_DOWN))
-				NLE_LOG_TRACE("Stick is DOWN!!");
-			if (Input::GetGamepad().IsReleased(L_STICK_DOWN))
-				NLE_LOG_TRACE("Stick is Released!!");
-
-
-			if (Input::GetGamepad(1).IsHeld(L_STICK_LEFT))
-				NLE_LOG_TRACE("Controller two Stick is LEFT!!");
-			if (Input::GetGamepad(1).IsReleased(L_STICK_LEFT))
-				NLE_LOG_TRACE("Controller two Stick is Released!!");
-			if (Input::GetGamepad(1).IsHeld(L_STICK_RIGHT))
-				NLE_LOG_TRACE("Controller two Stick is RIGHT!!");
-			if (Input::GetGamepad(1).IsReleased(L_STICK_RIGHT))
-				NLE_LOG_TRACE("Controller two Stick is Released!!");
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
+			//
 
 			//NLE_LOG_TRACE(Input::GetMouse()->Wheel().y);
 
@@ -190,6 +191,18 @@ namespace nle
 		return *sInstance;
 	}
 
+	void Application::PushLayer(Layer* layer)
+	{
+		mLayerStack.PushLayer(layer);
+		layer->OnAttach();
+	}
+
+	void Application::PushOverlay(Layer* layer)
+	{
+		mLayerStack.PushOverlay(layer);
+		layer->OnAttach();
+	}
+
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
@@ -197,6 +210,13 @@ namespace nle
 		dispatcher.Dispatch<WindowResizeEvent>(NLE_BIND_EVENT_FN(Application::OnWindowResize));
 		dispatcher.Dispatch<MouseMovedEvent>(NLE_BIND_EVENT_FN(Application::OnMouseMoved));
 		dispatcher.Dispatch<MouseScrolledEvent>(NLE_BIND_EVENT_FN(Application::OnMouseScrolled));
+
+		for (auto it = mLayerStack.rbegin(); it != mLayerStack.rend(); ++it)
+		{
+			(*it)->OnEvent(e);
+			if (e.Handled)
+				break;
+		}
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& e)

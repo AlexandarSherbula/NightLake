@@ -1,5 +1,8 @@
 #pragma once
 
+
+#include "Layers/Layer.hpp"
+
 #include "Window/Window.hpp"
 #include "Events/Events.hpp"
 
@@ -28,6 +31,8 @@ namespace nle
 		static Application& Get();
 
 		void OnEvent(Event& e);
+		void PushLayer(Layer* layer);
+		void PushOverlay(Layer* layer);
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
@@ -37,5 +42,6 @@ namespace nle
 		Scope<Window> mMainWindow;
 	private:
 		bool mRunning;
+		LayerStack mLayerStack;
 	};
 }

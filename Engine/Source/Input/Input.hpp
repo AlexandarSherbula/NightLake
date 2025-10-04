@@ -12,7 +12,7 @@ namespace nle
 	private:
 		static Ref<Keyboard> keyboard;
 		static Ref<Mouse> mouse;
-		static std::vector<std::unique_ptr<Gamepad>> gamepads;
+		static std::vector<Scope<Gamepad>> gamepads;
 		static inline Gamepad dummy;
 	public:
 		static void Initialize();

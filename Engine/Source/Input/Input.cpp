@@ -5,7 +5,7 @@ namespace nle
 {
 	Ref<Keyboard> Input::keyboard;
 	Ref<Mouse> Input::mouse;
-	std::vector<std::unique_ptr<Gamepad>> Input::gamepads;
+	std::vector<Scope<Gamepad>> Input::gamepads;
 
 	void Input::Initialize()
 	{
@@ -64,7 +64,7 @@ namespace nle
 		SDL_Gamepad* handle = SDL_OpenGamepad(id);
 		if (handle)
 		{
-			gamepads.emplace_back(std::make_unique<Gamepad>(handle, id));
+			gamepads.emplace_back(CreateScope<Gamepad>(handle, id));
 			NLE_LOG_INFO("Gamepad connected: " + std::string(SDL_GetGamepadName(handle)));
 		}
 		else
@@ -78,9 +78,8 @@ namespace nle
 		gamepads.erase
 		(
 			std::remove_if(gamepads.begin(), gamepads.end(),
-				[id](const std::unique_ptr<Gamepad>& g)
+				[id](const Scope<Gamepad>& g)
 				{
-					
 					if (SDL_GetGamepadID(g->mHandle) == id) 
 					{
 						NLE_LOG_WARN("Gamepad removed: " + std::string(SDL_GetGamepadName(g->GetHandle())));
