@@ -89,60 +89,6 @@ namespace nle
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 			glBindVertexArray(0);
 
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-			//
-
-			//NLE_LOG_TRACE(Input::GetMouse()->Wheel().y);
-
 			//ImGui_ImplOpenGL3_NewFrame();
 			//ImGui_ImplSDL3_NewFrame();
 			//ImGui::NewFrame();
