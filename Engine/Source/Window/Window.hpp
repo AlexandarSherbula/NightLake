@@ -30,6 +30,7 @@ namespace nle
 		virtual void PollEvents() = 0;
 
 		virtual void* GetHandle() const = 0;
+		virtual void* GetContext() const = 0;
 
 		WindowSpecifications& GetSpecs() { return mSpecs; }
 

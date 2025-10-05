@@ -1,0 +1,89 @@
+#include "nle_pch.hpp"
+
+#include "ImGuiLayer.hpp"
+#include <backends/imgui_impl_sdl3.h>
+#include <backends/imgui_impl_opengl3.h>
+
+#include "Core/Application.hpp"
+#include "Window/SDL_Window.hpp"
+
+#include <imgui.h>
+
+namespace nle
+{
+	ImGuiLayer::ImGuiLayer()
+		: Layer("ImGui")
+	{
+	}
+
+	void ImGuiLayer::OnAttach()
+	{
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGui::StyleColorsDark();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+		
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
+
+		Application& app = Application::Get();
+		SDL_Window* handle = static_cast<SDL_Window*>(app.GetWindow()->GetHandle());
+		SDL_GLContext* context = static_cast<SDL_GLContext*>(app.GetWindow()->GetContext());
+
+		ImGui_ImplSDL3_InitForOpenGL(handle, context);
+		ImGui_ImplOpenGL3_Init("#version 450 core");
+	}
+
+	void ImGuiLayer::Begin()
+	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplSDL3_NewFrame();
+		ImGui::NewFrame();
+	}
+
+	void ImGuiLayer::OnDetach()
+	{
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplSDL3_Shutdown();
+		ImGui::DestroyContext();
+	}
+
+	void ImGuiLayer::OnImGuiRender()
+	{
+		static bool show = true;
+		ImGui::ShowDemoWindow(&show);
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.DisplaySize = ImVec2(1280, 720);
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+			SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+		}
+	}
+
+	void ImGuiLayer::OnEvent(Event& e)
+	{
+		if (mBlockEvents)
+		{
+			ImGuiIO& io = ImGui::GetIO();
+
+			e.Handled |= e.IsInCategory(EventCategoryMouse) && io.WantCaptureMouse;
+			e.Handled |= e.IsInCategory(EventCategoryKeyboard) && io.WantCaptureKeyboard;
+		}
+	}
+}

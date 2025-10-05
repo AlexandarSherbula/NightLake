@@ -22,6 +22,9 @@ namespace nle
 
 		mMainWindow = Window::Create({ appSpecs.title, appSpecs.width, appSpecs.height, appSpecs.vSync, NLE_BIND_EVENT_FN(Application::OnEvent) });
 		mMainWindow->Initialize();
+
+		imguiLayer = new ImGuiLayer();
+		PushOverlay(imguiLayer);
 	}
 
 	Application::~Application()
@@ -31,24 +34,6 @@ namespace nle
 
 	void Application::Run()
 	{
-		//IMGUI_CHECKVERSION();
-		//ImGui::CreateContext();
-		//ImGui::StyleColorsDark();
-		//ImGuiIO& io = ImGui::GetIO(); (void)io;
-		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
-		//io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
-		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-		//
-		//if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		//{
-		//	ImGuiStyle& style = ImGui::GetStyle();
-		//	style.WindowRounding = 0.0f;
-		//	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-		//}
-
-		//ImGui_ImplSDL3_InitForOpenGL(window, glcontext);
-		//ImGui_ImplOpenGL3_Init("#version 450 core");
-
 		NLE_ASSERT(gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress), "Failed to initialize glad.\n");
 
 		float positions[6] = {
@@ -79,37 +64,20 @@ namespace nle
 			mMainWindow->PollEvents();
 			Input::Scan();
 
-			for (Layer* layer : mLayerStack)
-				layer->OnUpdate();
+			imguiLayer->Begin();
 
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			for (Layer* layer : mLayerStack)
+				layer->OnUpdate();
 
 			glBindVertexArray(vao);
 			glDrawArrays(GL_TRIANGLES, 0, 3);
 			glBindVertexArray(0);
 
-			//ImGui_ImplOpenGL3_NewFrame();
-			//ImGui_ImplSDL3_NewFrame();
-			//ImGui::NewFrame();
-			//
-			//static bool show = true;
-			//ImGui::ShowDemoWindow(&show);
-			//
-			//ImGuiIO& io = ImGui::GetIO();
-			//io.DisplaySize = ImVec2(1280, 720);
-			//
-			//ImGui::Render();
-			//ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-			//if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-			//{
-			//	SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
-			//	SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-			//	ImGui::UpdatePlatformWindows();
-			//	ImGui::RenderPlatformWindowsDefault();
-			//	SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
-			//}
+			for (Layer* layer : mLayerStack)
+				layer->OnImGuiRender();
 
 			SDL_GL_SwapWindow((SDL_Window*)mMainWindow->GetHandle());
 
@@ -117,12 +85,6 @@ namespace nle
 		}
 
 		Input::Close();
-
-		//ImGui_ImplOpenGL3_Shutdown();
-		//ImGui_ImplSDL3_Shutdown();
-		//ImGui::DestroyContext();
-
-		
 	}
 
 	void Application::Stop()

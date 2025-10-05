@@ -1,6 +1,8 @@
 #include "nle_pch.hpp"
 #include "SDL_Window.hpp"
 
+#include <backends/imgui_impl_sdl3.h>
+
 namespace nle
 {
 	static void ProcessEvents(SDL_Event& sdl_event, SDL3_Window* handle);
@@ -46,48 +48,50 @@ namespace nle
 		SDL_Event sdl_event;
 		while (SDL_PollEvent(&sdl_event))
 		{
-			//ImGui_ImplSDL3_ProcessEvent(&event);
+			ImGui_ImplSDL3_ProcessEvent(&sdl_event);
 
-			ProcessEvents(sdl_event, this);
+			// Only process events for this window
+			if (sdl_event.window.windowID == SDL_GetWindowID(mHandle))
+				ProcessEvents(sdl_event, this);
 		}
 	}
 
-	void ProcessEvents(SDL_Event& sdl_event, SDL3_Window* handle)
+	void ProcessEvents(SDL_Event& sdl_event, SDL3_Window* window)
 	{
 		switch (sdl_event.type)
 		{
 		case SDL_EVENT_WINDOW_RESIZED:
-		{
+		{			
 			int32_t width = sdl_event.window.data1;
 			int32_t height = sdl_event.window.data2;
 			WindowResizeEvent event(width, height);
-			handle->GetSpecs().eventCallback(event);
+			window->GetSpecs().eventCallback(event);
 			break;
 		}
 		case SDL_EVENT_KEY_DOWN:
 		{
 			KeyPressedEvent event(sdl_event.key.key, true);
-			handle->GetSpecs().eventCallback(event);
+			window->GetSpecs().eventCallback(event);
 			Input::GetKeyboard()->SetNewState(Keyboard::MapKeys[sdl_event.key.scancode], true);
 			break;
 		}
 		case SDL_EVENT_KEY_UP:
 		{
 			KeyReleasedEvent event(sdl_event.key.key);
-			handle->GetSpecs().eventCallback(event);
+			window->GetSpecs().eventCallback(event);
 			Input::GetKeyboard()->SetNewState(Keyboard::MapKeys[sdl_event.key.scancode], false);
 			break;
 		}
 		case SDL_EVENT_TEXT_INPUT:
 		{
 			KeyTypedEvent event(sdl_event.key.key);
-			handle->GetSpecs().eventCallback(event);
+			window->GetSpecs().eventCallback(event);
 			break;
 		}
 		case SDL_EVENT_MOUSE_BUTTON_DOWN:
 		{
 			MouseButtonPressedEvent event(sdl_event.button.button, sdl_event.button.x, sdl_event.button.y);
-			handle->GetSpecs().eventCallback(event);
+			window->GetSpecs().eventCallback(event);
 			Input::GetMouse()->SetNewState(Mouse::MapButtons[sdl_event.button.button], true);
 			
 			break;
@@ -95,26 +99,26 @@ namespace nle
 		case SDL_EVENT_MOUSE_BUTTON_UP:
 		{
 			MouseButtonReleasedEvent event(sdl_event.button.button, sdl_event.button.x, sdl_event.button.y);
-			handle->GetSpecs().eventCallback(event);
+			window->GetSpecs().eventCallback(event);
 			Input::GetMouse()->SetNewState(Mouse::MapButtons[sdl_event.button.button], false);
 			break;
 		}
 		case SDL_EVENT_MOUSE_MOTION:
 		{
 			MouseMovedEvent event(sdl_event.button.x, sdl_event.button.y);
-			handle->GetSpecs().eventCallback(event);
+			window->GetSpecs().eventCallback(event);
 			break;
 		}
 		case SDL_EVENT_MOUSE_WHEEL:
 		{
 			MouseScrolledEvent event(sdl_event.wheel.x, sdl_event.wheel.y);
-			handle->GetSpecs().eventCallback(event);
+			window->GetSpecs().eventCallback(event);
 			break;
 		}
-		case SDL_EVENT_QUIT:
+		case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 		{
 			WindowCloseEvent event;
-			handle->GetSpecs().eventCallback(event);
+			window->GetSpecs().eventCallback(event);
 			break;
 		}
 		default:

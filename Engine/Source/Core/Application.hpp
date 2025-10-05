@@ -1,7 +1,7 @@
 #pragma once
 
-
 #include "Layers/Layer.hpp"
+#include "Layers/ImGuiLayer.hpp"
 
 #include "Window/Window.hpp"
 #include "Events/Events.hpp"
@@ -33,6 +33,8 @@ namespace nle
 		void OnEvent(Event& e);
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
+
+		inline Window* GetWindow() { return mMainWindow.get(); }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
@@ -43,5 +45,6 @@ namespace nle
 	private:
 		bool mRunning;
 		LayerStack mLayerStack;
+		ImGuiLayer* imguiLayer;
 	};
 }

@@ -16,6 +16,7 @@ namespace nle
 		void PollEvents() override;
 
 		inline void* GetHandle() const override { return mHandle; }
+		inline void* GetContext() const override { return mGLContext; }
 	private:
 		SDL_Window* mHandle;
 		SDL_GLContext mGLContext;
