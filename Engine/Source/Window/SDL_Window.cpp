@@ -50,9 +50,7 @@ namespace nle
 		{
 			ImGui_ImplSDL3_ProcessEvent(&sdl_event);
 
-			// Only process events for this window
-			if (sdl_event.window.windowID == SDL_GetWindowID(mHandle))
-				ProcessEvents(sdl_event, this);
+			ProcessEvents(sdl_event, this);
 		}
 	}
 
@@ -61,11 +59,22 @@ namespace nle
 		switch (sdl_event.type)
 		{
 		case SDL_EVENT_WINDOW_RESIZED:
-		{			
-			int32_t width = sdl_event.window.data1;
-			int32_t height = sdl_event.window.data2;
-			WindowResizeEvent event(width, height);
-			window->GetSpecs().eventCallback(event);
+		case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+		{
+			if (sdl_event.window.windowID != SDL_GetWindowID(static_cast<SDL_Window*>(window->GetHandle())))
+				break;
+
+			if (sdl_event.type == SDL_EVENT_WINDOW_RESIZED)
+			{
+				WindowResizeEvent event(sdl_event.window.data1, sdl_event.window.data2);
+				window->GetSpecs().eventCallback(event);
+			}
+
+			if (sdl_event.window.windowID == SDL_GetWindowID(static_cast<SDL_Window*>(window->GetHandle())))
+			{
+				WindowCloseEvent event;
+				window->GetSpecs().eventCallback(event);
+			}
 			break;
 		}
 		case SDL_EVENT_KEY_DOWN:
@@ -112,12 +121,6 @@ namespace nle
 		case SDL_EVENT_MOUSE_WHEEL:
 		{
 			MouseScrolledEvent event(sdl_event.wheel.x, sdl_event.wheel.y);
-			window->GetSpecs().eventCallback(event);
-			break;
-		}
-		case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
-		{
-			WindowCloseEvent event;
 			window->GetSpecs().eventCallback(event);
 			break;
 		}

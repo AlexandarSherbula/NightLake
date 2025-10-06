@@ -79,7 +79,7 @@ namespace nle
 			for (Layer* layer : mLayerStack)
 				layer->OnImGuiRender();
 
-			SDL_GL_SwapWindow((SDL_Window*)mMainWindow->GetHandle());
+			SDL_GL_SwapWindow(static_cast<SDL_Window*>(mMainWindow->GetHandle()));
 
 			Input::Reset();
 		}

@@ -13,6 +13,8 @@ namespace nle
 		void OnImGuiRender() override;
 		void OnEvent(Event& e) override;
 
+		void SetDarkThemeColors();
+
 		void Begin();
 		void End();
 	private:
