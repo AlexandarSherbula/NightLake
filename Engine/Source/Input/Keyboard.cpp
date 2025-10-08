@@ -3,8 +3,6 @@
 
 #include "Core/Application.hpp"
 
-#include <Windows.h>
-
 namespace nle
 {
 	std::unordered_map<size_t, int8_t> Keyboard::MapKeys;
