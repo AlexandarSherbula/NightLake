@@ -1,9 +1,9 @@
-#include "nle_pch.hpp"
+#include "aio_pch.hpp"
 #include "SDL_Window.hpp"
 
 #include <backends/imgui_impl_sdl3.h>
 
-namespace nle
+namespace aio
 {
 	static void ProcessEvents(SDL_Event& sdl_event, SDL_Window* window);
 	static unsigned int vao;
@@ -16,20 +16,20 @@ namespace nle
 		mSpecs.vSync = windowSpec.vSync;
 		mSpecs.eventCallback = windowSpec.eventCallback;
 
-		NLE_ASSERT(SDL_Init(SDL_INIT_VIDEO), "Failed to initalize SDL");
+		AIO_ASSERT(SDL_Init(SDL_INIT_VIDEO), "Failed to initalize SDL");
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 		mHandle = SDL_CreateWindow("NightLake Engine", 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-		NLE_ASSERT(mHandle, "Failed to create a window: {0}\n", SDL_GetError());
+		AIO_ASSERT(mHandle, "Failed to create a window: {0}\n", SDL_GetError());
 
 		mGLContext = SDL_GL_CreateContext(mHandle);
-		NLE_ASSERT(mGLContext, "Failed to create GL context");
+		AIO_ASSERT(mGLContext, "Failed to create GL context");
 
 		SDL_GL_MakeCurrent(mHandle, mGLContext);
 
-		NLE_ASSERT(gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress), "Failed to Init glad.\n");
+		AIO_ASSERT(gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress), "Failed to Init glad.\n");
 
 		float positions[6] = {
 		-0.5f, -0.5f,

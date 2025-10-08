@@ -4,7 +4,7 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/fmt/ostr.h"
 
-namespace nle
+namespace aio
 {
     class Log
     {
@@ -14,20 +14,21 @@ namespace nle
     };
 }
 
-#if defined (NLE_DEBUG)  || defined(NLE_RELEASE)
-#define NLE_LOG_TRACE(...)       nle::Log::sLogger->trace(__VA_ARGS__)
-#define NLE_LOG_INFO(...)        nle::Log::sLogger->info(__VA_ARGS__)
-#define NLE_LOG_WARN(...)        nle::Log::sLogger->warn(__VA_ARGS__)
-#define NLE_LOG_ERROR(...)       nle::Log::sLogger->error(__VA_ARGS__)
-#define NLE_LOG_CRITICAL(...)    nle::Log::sLogger->critical(__VA_ARGS__)
+#if defined (AIO_DEBUG) || defined(AIO_RELEASE)
 
-#define NLE_ASSERT(x, ...)  if(!(x)) { nle::Log::sLogger->error("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } 
+#define AIO_LOG_TRACE(...)       aio::Log::sLogger->trace(__VA_ARGS__)
+#define AIO_LOG_INFO(...)        aio::Log::sLogger->info(__VA_ARGS__)
+#define AIO_LOG_WARN(...)        aio::Log::sLogger->warn(__VA_ARGS__)
+#define AIO_LOG_ERROR(...)       aio::Log::sLogger->error(__VA_ARGS__)
+#define AIO_LOG_CRITICAL(...)    aio::Log::sLogger->critical(__VA_ARGS__)
+
+#define AIO_ASSERT(x, ...)  if(!(x)) { aio::Log::sLogger->error("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } 
 #else
-#define NLE_LOG_TRACE(...)
-#define NLE_LOG_INFO(...)
-#define NLE_LOG_WARN(...)
-#define NLE_LOG_ERROR(...)
-#define NLE_LOG_CRITICAL(...)
+#define AIO_LOG_TRACE(...)
+#define AIO_LOG_INFO(...)
+#define AIO_LOG_WARN(...)
+#define AIO_LOG_ERROR(...)
+#define AIO_LOG_CRITICAL(...)
 
-#define NLE_ASSERT(x, ...) x
+#define AIO_ASSERT(x, ...) x
 #endif

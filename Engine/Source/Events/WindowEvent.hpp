@@ -1,6 +1,6 @@
 #pragma once
 
-namespace nle
+namespace aio
 {
 	class WindowResizeEvent : public Event
 	{

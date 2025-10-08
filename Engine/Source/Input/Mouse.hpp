@@ -5,7 +5,7 @@
 
 #include "Math/Math.hpp"
 
-namespace nle
+namespace aio
 {
 	enum MouseButton
 	{

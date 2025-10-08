@@ -1,7 +1,7 @@
-#include "nle_pch.hpp"
+#include "aio_pch.hpp"
 #include "Input.hpp"
 
-namespace nle
+namespace aio
 {
 	Ref<Keyboard> Input::keyboard;
 	Ref<Mouse> Input::mouse;
@@ -17,7 +17,7 @@ namespace nle
 		Keyboard::SetCodes();
 		Mouse::SetCodes();
 
-		NLE_ASSERT(SDL_Init(SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC), "Failed to initalize SDL");
+		AIO_ASSERT(SDL_Init(SDL_INIT_GAMEPAD | SDL_INIT_HAPTIC), "Failed to initalize SDL");
 	}
 
 	void Input::Scan()
@@ -45,7 +45,7 @@ namespace nle
 		if (IsGamePadConnected(index))
 			return gamepads[index].get();
 
-		NLE_LOG_WARN("There is no controller at index {0} connected", index);
+		AIO_LOG_WARN("There is no controller at index {0} connected", index);
 		return &dummy;
 	}
 
@@ -65,11 +65,11 @@ namespace nle
 		if (handle)
 		{
 			gamepads.emplace_back(CreateScope<Gamepad>(handle, id));
-			NLE_LOG_INFO("Gamepad connected: " + std::string(SDL_GetGamepadName(handle)));
+			AIO_LOG_INFO("Gamepad connected: " + std::string(SDL_GetGamepadName(handle)));
 		}
 		else
 		{
-			NLE_LOG_ERROR("Failed to open gamepad: " + std::string(SDL_GetError()));
+			AIO_LOG_ERROR("Failed to open gamepad: " + std::string(SDL_GetError()));
 		}
 	}
 
@@ -82,7 +82,7 @@ namespace nle
 				{
 					if (SDL_GetGamepadID(g->mHandle) == id) 
 					{
-						NLE_LOG_WARN("Gamepad removed: " + std::string(SDL_GetGamepadName(g->GetHandle())));
+						AIO_LOG_WARN("Gamepad removed: " + std::string(SDL_GetGamepadName(g->GetHandle())));
 						return true;
 					}
 					return false;

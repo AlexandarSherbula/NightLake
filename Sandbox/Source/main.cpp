@@ -2,7 +2,7 @@
 
 int main()
 {
-	nle::AppSpecifications appSpecs;
+	aio::AppSpecifications appSpecs;
 	appSpecs.title = "NightLake Engine";
 	appSpecs.width = 1280;
 	appSpecs.height = 720;

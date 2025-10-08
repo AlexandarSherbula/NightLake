@@ -5,7 +5,7 @@
 
 #define BIT(x) (1 << x)
 
-#if defined(NLE_WINDOWS)
+#if defined(AIO_WINDOWS)
 
 #define CHECK_API(x, y)                                           \
         do {                                                      \
@@ -18,7 +18,7 @@
 #define CHECK_API(x, y) do { x; } while(0)
 #endif
 
-#define NLE_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
+#define AIO_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
 enum RenderAPI_Flag
 {
@@ -38,7 +38,7 @@ inline std::string WideToString(const std::wstring& wstr)
 	return str;
 }
 
-namespace nle
+namespace aio
 {
 	template<typename T>
 	using Scope = std::unique_ptr<T>;

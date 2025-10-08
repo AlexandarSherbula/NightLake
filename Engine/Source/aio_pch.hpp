@@ -21,11 +21,11 @@
 #define SDL_MAIN_HANDLED 1
 #include "SDL3/SDL.h"
 
-#ifdef NLE_WINDOWS
+#ifdef AIO_WINDOWS
 	#define WIN32_LEAN_AND_MEAN
 	#include <Windows.h>
 	#include <comdef.h>
 	#include <d3d11.h>
 	#include <d3dcompiler.h>
 	#include <wrl/client.h>
-#endif // NLE_WINDOWS
+#endif // AIO_WINDOWS

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace nle
+namespace aio
 {
 	class InputDevice
 	{

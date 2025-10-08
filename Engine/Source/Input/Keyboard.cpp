@@ -1,9 +1,9 @@
-#include "nle_pch.hpp"
+#include "aio_pch.hpp"
 #include "Keyboard.hpp"
 
 #include "Core/Application.hpp"
 
-namespace nle
+namespace aio
 {
 	std::unordered_map<size_t, int8_t> Keyboard::MapKeys;
 
@@ -71,7 +71,7 @@ namespace nle
 
 	void Keyboard::SetWin32Codes()
 	{
-#if defined (NLE_WINDOWS)
+#if defined (AIO_WINDOWS)
 		MapKeys[0x00] = KeyCode::NONE;
 
 		MapKeys[0x41] = KeyCode::A; MapKeys[0x42] = KeyCode::B; MapKeys[0x43] = KeyCode::C; MapKeys[0x44] = KeyCode::D; MapKeys[0x45] = KeyCode::E;

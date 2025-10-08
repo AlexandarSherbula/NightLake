@@ -6,7 +6,7 @@
 
 typedef SDL_Window SDL_WindowHandle;
 
-namespace nle
+namespace aio
 {
 	class SDL_Window : public Window
 	{

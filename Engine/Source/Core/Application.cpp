@@ -1,10 +1,10 @@
-#include "nle_pch.hpp"
+#include "aio_pch.hpp"
 #include "Application.hpp"
 
 #include <backends/imgui_impl_sdl3.h>
 #include <backends/imgui_impl_opengl3.h>
 
-namespace nle
+namespace aio
 {
 	static Application* sInstance = nullptr;
 
@@ -32,7 +32,7 @@ namespace nle
 	{
 		Log::Init();
 
-		mMainWindow = Window::Create({ mAppSpecs.title, mAppSpecs.width, mAppSpecs.height, mAppSpecs.vSync, NLE_BIND_EVENT_FN(Application::OnEvent) });
+		mMainWindow = Window::Create({ mAppSpecs.title, mAppSpecs.width, mAppSpecs.height, mAppSpecs.vSync, AIO_BIND_EVENT_FN(Application::OnEvent) });
 		Input::Init();
 
 		imguiLayer = new ImGuiLayer();
@@ -72,7 +72,7 @@ namespace nle
 
 	Application& Application::Get()
 	{
-		NLE_ASSERT(sInstance, "Instance hasn't been made");
+		AIO_ASSERT(sInstance, "Instance hasn't been made");
 		return *sInstance;
 	}
 
@@ -90,7 +90,7 @@ namespace nle
 
 	void Application::SetRenderingApi(RenderAPI_Flag flag)
 	{
-#if defined (NLE_WINDOWS)
+#if defined (AIO_WINDOWS)
 		mRenderingFlag = flag;
 #else
 		mRenderingFlag = OpenGL;
@@ -100,10 +100,10 @@ namespace nle
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>(NLE_BIND_EVENT_FN(Application::OnWindowClose));
-		dispatcher.Dispatch<WindowResizeEvent>(NLE_BIND_EVENT_FN(Application::OnWindowResize));
-		dispatcher.Dispatch<MouseMovedEvent>(NLE_BIND_EVENT_FN(Application::OnMouseMoved));
-		dispatcher.Dispatch<MouseScrolledEvent>(NLE_BIND_EVENT_FN(Application::OnMouseScrolled));
+		dispatcher.Dispatch<WindowCloseEvent>(AIO_BIND_EVENT_FN(Application::OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(AIO_BIND_EVENT_FN(Application::OnWindowResize));
+		dispatcher.Dispatch<MouseMovedEvent>(AIO_BIND_EVENT_FN(Application::OnMouseMoved));
+		dispatcher.Dispatch<MouseScrolledEvent>(AIO_BIND_EVENT_FN(Application::OnMouseScrolled));
 
 		for (auto it = mLayerStack.rbegin(); it != mLayerStack.rend(); ++it)
 		{

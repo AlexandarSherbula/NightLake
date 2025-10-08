@@ -1,7 +1,7 @@
-#include "nle_pch.hpp"
+#include "aio_pch.hpp"
 #include "Log.hpp"
 
-namespace nle
+namespace aio
 {
 	std::shared_ptr<spdlog::logger> Log::sLogger;
 

@@ -7,7 +7,7 @@
 #include <string>
 #include <functional>
 
-namespace nle
+namespace aio
 {
 	using EventCallbackFn = std::function<void(Event&)>;
 

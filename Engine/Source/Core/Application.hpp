@@ -8,7 +8,7 @@
 
 #include "Input/Input.hpp"
 
-namespace nle
+namespace aio
 {
 	struct AppSpecifications
 	{

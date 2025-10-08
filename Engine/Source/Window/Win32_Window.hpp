@@ -2,10 +2,10 @@
 
 #include "Window/Window.hpp"
 
-#if defined (NLE_WINDOWS)
+#if defined (AIO_WINDOWS)
 #include <Windows.h>
 
-namespace nle
+namespace aio
 {
 	class Win32_Window : public Window
 	{
@@ -30,7 +30,7 @@ namespace nle
 	std::string ResultInfo(HRESULT hr);
 }
 #else
-namespace nle
+namespace aio
 {
 	class Win32_Window : public Window
 	{

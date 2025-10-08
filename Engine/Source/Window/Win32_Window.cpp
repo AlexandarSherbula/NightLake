@@ -1,14 +1,14 @@
-#include "nle_pch.hpp"
+#include "aio_pch.hpp"
 #include "Win32_Window.hpp"
 
 #include "Input/Input.hpp"
 
 #include <imgui.h>
 
-#if defined (NLE_WINDOWS)
+#if defined (AIO_WINDOWS)
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-namespace nle
+namespace aio
 {
 	Win32_Window::Win32_Window(const WindowSpecifications& windowSpec)
 	{
@@ -35,7 +35,7 @@ namespace nle
 		wc.lpszClassName = mWindowClass;
 		wc.cbSize = sizeof(WNDCLASSEX);
 
-		NLE_ASSERT(RegisterClassEx(&wc), "Failed to register window class.");
+		AIO_ASSERT(RegisterClassEx(&wc), "Failed to register window class.");
 
 		RECT windowRect;
 
@@ -43,13 +43,13 @@ namespace nle
 		windowRect.top = 50;
 		windowRect.right = windowRect.left + mSpecs.width;
 		windowRect.bottom = windowRect.top + mSpecs.height;
-		NLE_ASSERT(AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE), "Failed to adjust window");
+		AIO_ASSERT(AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE), "Failed to adjust window");
 
 		mHandle = CreateWindowEx(0, mWindowClass, StringToWide(mSpecs.title).c_str(), WS_OVERLAPPEDWINDOW,
 			windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
 			NULL, NULL, m_hInstance, &mSpecs);
 
-		NLE_ASSERT(mHandle, "Failed to create a Window: {0}", ResultInfo(GetLastError()));
+		AIO_ASSERT(mHandle, "Failed to create a Window: {0}", ResultInfo(GetLastError()));
 
 		ShowWindow(mHandle, SW_SHOW);
 		SetForegroundWindow(mHandle);

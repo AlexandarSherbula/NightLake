@@ -4,7 +4,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-namespace nle
+namespace aio
 {
 	using Vector2 = glm::vec2;
 	using Vector3 = glm::vec3;

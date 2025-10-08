@@ -1,7 +1,7 @@
-#include "nle_pch.hpp"
+#include "aio_pch.hpp"
 #include "Mouse.hpp"
 
-namespace nle
+namespace aio
 {
 	std::unordered_map<size_t, int8_t> Mouse::MapButtons;
 
@@ -17,19 +17,19 @@ namespace nle
 
 	bool Mouse::IsPressed(uint16_t code)
 	{
-		NLE_ASSERT(code < 5, "SDL doesn't support more than two extra  buttons");
+		AIO_ASSERT(code < 5, "SDL doesn't support more than two extra  buttons");
 		return mScanStates[code].inputState.pressed;
 	}
 
 	bool Mouse::IsHeld(uint16_t code)
 	{
-		NLE_ASSERT(code < 5, "SDL doesn't support more than two extra buttons");
+		AIO_ASSERT(code < 5, "SDL doesn't support more than two extra buttons");
 		return mScanStates[code].inputState.held;
 	}
 
 	bool Mouse::IsReleased(uint16_t code)
 	{
-		NLE_ASSERT(code < 5, "SDL doesn't support more than two extra  buttons");
+		AIO_ASSERT(code < 5, "SDL doesn't support more than two extra  buttons");
 		return mScanStates[code].inputState.released;
 	}
 

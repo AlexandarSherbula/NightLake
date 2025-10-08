@@ -19,22 +19,22 @@ target_compile_features(Engine PRIVATE cxx_std_20)
 target_compile_definitions(Engine PRIVATE UNICODE _UNICODE)
 
 target_precompile_headers(Engine PRIVATE
-    "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_SOURCE_DIR}/Engine/Source/nle_pch.hpp>"
+    "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_SOURCE_DIR}/Engine/Source/aio_pch.hpp>"
 )
 
 #make folders visible in IDE
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${ENGINE_SRC})
 
 if(WIN32)
-    target_compile_definitions(Engine PUBLIC NLE_WINDOWS)
+    target_compile_definitions(Engine PUBLIC AIO_WINDOWS)
 elseif(UNIX)
-    target_compile_definitions(Engine PUBLIC NLE_LINUX)
+    target_compile_definitions(Engine PUBLIC AIO_LINUX)
 endif()
 
 target_compile_definitions(Engine PUBLIC
-    $<$<CONFIG:Debug>:NLE_DEBUG>
-    $<$<CONFIG:Release>:NLE_RELEASE>
-    $<$<CONFIG:Dist>:NLE_DIST>
+    $<$<CONFIG:Debug>:AIO_DEBUG>
+    $<$<CONFIG:Release>:AIO_RELEASE>
+    $<$<CONFIG:Dist>:AIO_DIST>
 )
 
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/Source)

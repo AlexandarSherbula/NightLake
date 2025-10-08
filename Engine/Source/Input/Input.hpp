@@ -5,7 +5,7 @@
 #include "Mouse.hpp"
 #include "Gamepad.hpp"
 
-namespace nle
+namespace aio
 {
 	class Input
 	{

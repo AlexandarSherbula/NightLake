@@ -2,15 +2,15 @@
 
 #include "NightLake.hpp"
 
-class Sandbox : public nle::Application
+class Sandbox : public aio::Application
 {
 public:
 	Sandbox();
-	Sandbox(nle::AppSpecifications& appSpecs);
+	Sandbox(aio::AppSpecifications& appSpecs);
 	~Sandbox();
 };
 
-class MainLayer : public nle::Layer
+class MainLayer : public aio::Layer
 {
 public:
 	MainLayer();
@@ -18,5 +18,5 @@ public:
 	void OnAttach() override;
 	void OnUpdate() override;
 	void OnImGuiRender() override;
-	void OnEvent(nle::Event& event) override;
+	void OnEvent(aio::Event& event) override;
 };

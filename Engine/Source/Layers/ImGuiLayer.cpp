@@ -1,4 +1,4 @@
-#include "nle_pch.hpp"
+#include "aio_pch.hpp"
 
 #include "ImGuiLayer.hpp"
 
@@ -10,13 +10,13 @@
 #include <backends/imgui_impl_sdl3.h>
 #include <backends/imgui_impl_opengl3.h>
 
-#if defined (NLE_WINDOWS)
+#if defined (AIO_WINDOWS)
 #include <backends/imgui_impl_win32.h>
 #include <backends/imgui_impl_dx11.h>
 #endif // AIO_PLATFORM_WINDOWS
 
 
-namespace nle
+namespace aio
 {
 	ImGuiLayer::ImGuiLayer()
 		: Layer("ImGui")

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15...4.0)
-project(NightLake-Engine)
+project(Alexio-Engine)
 
 # Set configurations
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;Dist" CACHE STRING "" FORCE)

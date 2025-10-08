@@ -1,11 +1,11 @@
-#include "nle_pch.hpp"
+#include "aio_pch.hpp"
 
 #include "SDL_Window.hpp"
 #include "Win32_Window.hpp"
 
 #include "Core/Application.hpp"
 
-namespace nle
+namespace aio
 {
     Window::~Window()
     {
@@ -17,7 +17,7 @@ namespace nle
             return CreateScope<SDL_Window>(windowSpec),
             return CreateScope<Win32_Window>(windowSpec)
         );
-        NLE_ASSERT(false, "API has not been selected.\n");
+        AIO_ASSERT(false, "API has not been selected.\n");
         return nullptr;
     }
 }

@@ -42,7 +42,7 @@ enum GamepadButtonCode
 	R_STICK_RIGHT,
 };
 
-namespace nle
+namespace aio
 {
 	class Gamepad : public InputDevice
 	{

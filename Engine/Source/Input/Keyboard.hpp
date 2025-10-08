@@ -3,7 +3,7 @@
 
 #include <unordered_map>
 
-namespace nle
+namespace aio
 {
 	enum KeyCode
 	{

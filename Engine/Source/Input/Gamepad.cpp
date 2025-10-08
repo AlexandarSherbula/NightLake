@@ -1,9 +1,9 @@
-#include "nle_pch.hpp"
+#include "aio_pch.hpp"
 #include "Gamepad.hpp"
 
 #include "Input.hpp"
 
-namespace nle
+namespace aio
 {
 	Gamepad::Gamepad() : InputDevice()
 	{
