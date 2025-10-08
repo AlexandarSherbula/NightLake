@@ -41,7 +41,8 @@ namespace nle
 		bool IsReleased(uint16_t code) override;
 
 		void NewMouseWheelState(const Vector2& mouseWheel);
-		Vector2 Wheel() { return mMouseWheel; }
+		float WheelX() { return mMouseWheel.x; }
+		float WheelY() { return mMouseWheel.y; }
 
 		static void SetCodes();
 

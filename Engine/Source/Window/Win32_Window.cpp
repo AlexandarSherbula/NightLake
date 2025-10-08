@@ -73,11 +73,11 @@ namespace nle
 			DispatchMessage(&msg);
 		}
 
-		//SDL_Event sdl_event;
-		//while (SDL_PollEvent(&sdl_event))
-		//{
-		//	Input::ProcessGamePadEvents(sdl_event);
-		//}
+		SDL_Event sdl_event;
+		while (SDL_PollEvent(&sdl_event))
+		{
+			Input::ProcessGamePadEvents(sdl_event);
+		}
 	}
 
 	void Win32_Window::SwapChain()
