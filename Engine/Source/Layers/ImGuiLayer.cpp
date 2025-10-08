@@ -6,8 +6,14 @@
 #include "Window/SDL_Window.hpp"
 
 #include <imgui.h>
+
 #include <backends/imgui_impl_sdl3.h>
 #include <backends/imgui_impl_opengl3.h>
+
+#if defined (NLE_WINDOWS)
+#include <backends/imgui_impl_win32.h>
+#include <backends/imgui_impl_dx11.h>
+#endif // AIO_PLATFORM_WINDOWS
 
 
 namespace nle
@@ -40,44 +46,56 @@ namespace nle
 		SDL_WindowHandle* handle = static_cast<SDL_WindowHandle*>(app.GetWindow()->GetHandle());
 		SDL_GLContext* context = static_cast<SDL_GLContext*>(app.GetWindow()->GetContext());
 
-		ImGui_ImplSDL3_InitForOpenGL(handle, context);
-		ImGui_ImplOpenGL3_Init("#version 450 core");
+		if (Application::Get().GetRenderingAPI_Flag() != DX11)
+		{
+			ImGui_ImplSDL3_InitForOpenGL(handle, context);
+			ImGui_ImplOpenGL3_Init("#version 450 core");
 
-		ImGui_ImplSDL3_SetGamepadMode(ImGui_ImplSDL3_GamepadMode_Manual);
+			ImGui_ImplSDL3_SetGamepadMode(ImGui_ImplSDL3_GamepadMode_Manual);
+		}
 	}
 
 	void ImGuiLayer::Begin()
 	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplSDL3_NewFrame();
-		ImGui::NewFrame();
+		if (Application::Get().GetRenderingAPI_Flag() != DX11)
+		{
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplSDL3_NewFrame();
+			ImGui::NewFrame();
+		}
 	}
 
 	void ImGuiLayer::OnDetach()
 	{
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplSDL3_Shutdown();
-		ImGui::DestroyContext();
+		if (Application::Get().GetRenderingAPI_Flag() != DX11)
+		{
+			ImGui_ImplOpenGL3_Shutdown();
+			ImGui_ImplSDL3_Shutdown();
+			ImGui::DestroyContext();
+		}
 	}
 
 	void ImGuiLayer::OnImGuiRender()
 	{
-		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
-
-		ImGuiIO& io = ImGui::GetIO();
-		io.DisplaySize = ImVec2(1280, 720);
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		if (Application::Get().GetRenderingAPI_Flag() != DX11)
 		{
-			SDL_WindowHandle* backup_current_window = SDL_GL_GetCurrentWindow();
-			SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-			SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+			static bool show = true;
+			ImGui::ShowDemoWindow(&show);
+
+			ImGuiIO& io = ImGui::GetIO();
+			io.DisplaySize = ImVec2(1280, 720);
+
+			ImGui::Render();
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				SDL_WindowHandle* backup_current_window = SDL_GL_GetCurrentWindow();
+				SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+				SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
+			}
 		}
 	}
 

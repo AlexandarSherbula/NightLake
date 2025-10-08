@@ -74,7 +74,7 @@ namespace nle
 		SDL_Event sdl_event;
 		while (SDL_PollEvent(&sdl_event))
 		{
-			//ImGui_ImplSDL3_ProcessEvent(&sdl_event);
+			ImGui_ImplSDL3_ProcessEvent(&sdl_event);
 
 			ProcessEvents(sdl_event, this);
 		}

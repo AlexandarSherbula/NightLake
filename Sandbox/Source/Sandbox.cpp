@@ -8,7 +8,7 @@ Sandbox::Sandbox()
 Sandbox::Sandbox(nle::AppSpecifications& appSpecs)
 	: Application (appSpecs)
 {
-	SetRenderingApi(DX11);
+	SetRenderingApi(OpenGL);
 	PushLayer(new MainLayer());
 }
 
@@ -47,23 +47,23 @@ void MainLayer::OnUpdate()
 	//NLE_LOG_TRACE("LeftStick x: {0}, y: {1}", Input::GetGamepad()->LeftThumbStick().x, Input::GetGamepad()->LeftThumbStick().y);
 	//NLE_LOG_TRACE("LeftTrigger: {0}, RightTrigger: {1}", Input::GetGamepad()->LeftTrigger(), Input::GetGamepad()->RightTrigger());
 	
-	if (Input::GetGamepad()->IsHeld(L_STICK_UP))
-		NLE_LOG_TRACE("Stick is UP!!");
-	if (Input::GetGamepad()->IsReleased(L_STICK_UP))
-		NLE_LOG_TRACE("Stick is Released!!");
-	if (Input::GetGamepad()->IsHeld(L_STICK_DOWN))
-		NLE_LOG_TRACE("Stick is DOWN!!");
-	if (Input::GetGamepad()->IsReleased(L_STICK_DOWN))
-		NLE_LOG_TRACE("Stick is Released!!");
-	
-	if (Input::GetGamepad()->IsHeld(L_STICK_LEFT))
-		NLE_LOG_TRACE("Stick is LEFT!!");
-	if (Input::GetGamepad()->IsReleased(L_STICK_LEFT))
-		NLE_LOG_TRACE("Stick is Released!!");
-	if (Input::GetGamepad()->IsHeld(L_STICK_RIGHT))
-		NLE_LOG_TRACE("Stick is RIGHT!!");
-	if (Input::GetGamepad()->IsReleased(L_STICK_RIGHT))
-		NLE_LOG_TRACE("Stick is Released!!");
+	//if (Input::GetGamepad()->IsHeld(L_STICK_UP))
+	//	NLE_LOG_TRACE("Stick is UP!!");
+	//if (Input::GetGamepad()->IsReleased(L_STICK_UP))
+	//	NLE_LOG_TRACE("Stick is Released!!");
+	//if (Input::GetGamepad()->IsHeld(L_STICK_DOWN))
+	//	NLE_LOG_TRACE("Stick is DOWN!!");
+	//if (Input::GetGamepad()->IsReleased(L_STICK_DOWN))
+	//	NLE_LOG_TRACE("Stick is Released!!");
+
+	//if (Input::GetGamepad()->IsHeld(L_STICK_LEFT))
+	//	NLE_LOG_TRACE("Stick is LEFT!!");
+	//if (Input::GetGamepad()->IsReleased(L_STICK_LEFT))
+	//	NLE_LOG_TRACE("Stick is Released!!");
+	//if (Input::GetGamepad()->IsHeld(L_STICK_RIGHT))
+	//	NLE_LOG_TRACE("Stick is RIGHT!!");
+	//if (Input::GetGamepad()->IsReleased(L_STICK_RIGHT))
+	//	NLE_LOG_TRACE("Stick is Released!!");
 
 	//if (Input::GetGamepad()->IsHeld(L_STICK_UP))
 	//	NLE_LOG_TRACE("Stick is UP!!");

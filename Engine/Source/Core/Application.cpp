@@ -35,15 +35,15 @@ namespace nle
 		mMainWindow = Window::Create({ mAppSpecs.title, mAppSpecs.width, mAppSpecs.height, mAppSpecs.vSync, NLE_BIND_EVENT_FN(Application::OnEvent) });
 		Input::Init();
 
-		//imguiLayer = new ImGuiLayer();
-		//PushOverlay(imguiLayer);
+		imguiLayer = new ImGuiLayer();
+		PushOverlay(imguiLayer);
 		
 		while (mRunning)
 		{
 			mMainWindow->PollEvents();
 			Input::Scan();
 
-			//imguiLayer->Begin();
+			imguiLayer->Begin();
 
 			for (Layer* layer : mLayerStack)
 				layer->OnUpdate();
@@ -57,6 +57,9 @@ namespace nle
 
 			Input::Reset();
 		}
+
+		//Temporal untill there is ImGui support for both DX11 and OpenGL
+		mLayerStack.EndAndClear();
 
 		Input::Close();
 	}
