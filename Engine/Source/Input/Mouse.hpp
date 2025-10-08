@@ -31,7 +31,10 @@ namespace nle
 		~Mouse();
 
 		inline void SetPosition(const Vector2& pos) { mPosition = pos; }
-		inline Vector2 Position() { return mPosition; }
+
+		inline Vector2 GetPosition() { return mPosition; }
+		inline float X() const { return mPosition.x; }
+		inline float Y() const { return mPosition.y; }
 
 		bool IsPressed(uint16_t code) override;
 		bool IsHeld(uint16_t code) override;

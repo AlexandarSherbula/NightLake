@@ -59,24 +59,19 @@ namespace nle
 	public:
 		inline int32_t GetMouseButton() const { return mButton; }
 
-		inline float GetX() const { return mMouseX; }
-		inline float GetY() const { return mMouseY; }
-
 		int32_t GetCategoryFlags() const override { return EventCategoryMouse | EventCategoryInput; }
 	protected:
-		MouseButtonEvent(int32_t button, float x, float y)
-			: mButton(button), mMouseX(x), mMouseY(y) {}
+		MouseButtonEvent(int32_t button)
+			: mButton(button) {}
 
 		int32_t mButton;
-		float mMouseX;
-		float mMouseY;
 	};
 
 	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressedEvent(int32_t button, float x, float y)
-			: MouseButtonEvent(button, x, y) {}
+		MouseButtonPressedEvent(int32_t button)
+			: MouseButtonEvent(button) {}
 
 		std::string ToString() const override
 		{
@@ -94,8 +89,8 @@ namespace nle
 	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleasedEvent(int32_t button, float x, float y)
-			: MouseButtonEvent(button, x, y) {}
+		MouseButtonReleasedEvent(int32_t button)
+			: MouseButtonEvent(button) {}
 
 		std::string ToString() const override
 		{

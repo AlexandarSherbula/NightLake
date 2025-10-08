@@ -1,21 +1,42 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #define BIT(x) (1 << x)
 
-#if defined NLE_WINDOWS
-	#define NLE_API_DX11
-#endif
+#if defined(NLE_WINDOWS)
 
-#if !defined(NLE_WINDOWS) && defined (NLE_API_DX11)
-#error  DirectX11 is only supported on Windows
+#define CHECK_API(x, y)                                           \
+        do {                                                      \
+            switch (Application::Get().GetRenderingAPI_Flag()) {  \
+                case OpenGL: { x; break; }                        \
+                case DX11:   { y; break; }                        \
+            }                                                     \
+        } while(0)
+#else
+#define CHECK_API(x, y) do { x; } while(0)
 #endif
-
-// Supported on both Windows and Linux
-#define NLE_API_OPENGL
 
 #define NLE_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
+
+enum RenderAPI_Flag
+{
+	OpenGL,
+	DX11
+};
+
+inline std::wstring StringToWide(const std::string& str)
+{
+	std::wstring wide_string(str.begin(), str.end());
+	return wide_string;
+}
+
+inline std::string WideToString(const std::wstring& wstr)
+{
+	std::string str(wstr.begin(), wstr.end());
+	return str;
+}
 
 namespace nle
 {

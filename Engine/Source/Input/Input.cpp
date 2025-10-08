@@ -7,7 +7,7 @@ namespace nle
 	Ref<Mouse> Input::mouse;
 	std::vector<Scope<Gamepad>> Input::gamepads;
 
-	void Input::Initialize()
+	void Input::Init()
 	{
 		keyboard = CreateRef<Keyboard>();
 		mouse = CreateRef<Mouse>();

@@ -25,12 +25,15 @@ namespace nle
 	{
 	public:
 		virtual ~Window() = 0;
-		virtual void Initialize() = 0;
+		virtual void Init() = 0;
 
 		virtual void PollEvents() = 0;
+		virtual void Update() = 0;
 
 		virtual void* GetHandle() const = 0;
 		virtual void* GetContext() const = 0;
+
+		virtual void SwapChain() = 0;
 
 		WindowSpecifications& GetSpecs() { return mSpecs; }
 

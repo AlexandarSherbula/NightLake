@@ -5,7 +5,7 @@ namespace nle
 {
 	std::shared_ptr<spdlog::logger> Log::sLogger;
 
-	void Log::Initialize()
+	void Log::Init()
 	{
 		spdlog::set_pattern("%^[%T] %l: %v%$");
 		sLogger = spdlog::stdout_color_mt("NightLake");

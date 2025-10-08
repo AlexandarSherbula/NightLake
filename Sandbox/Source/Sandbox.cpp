@@ -2,11 +2,13 @@
 
 Sandbox::Sandbox()
 {
+	
 }
 
 Sandbox::Sandbox(nle::AppSpecifications& appSpecs)
 	: Application (appSpecs)
 {
+	SetRenderingApi(DX11);
 	PushLayer(new MainLayer());
 }
 
@@ -21,61 +23,26 @@ MainLayer::MainLayer()
 
 void MainLayer::OnAttach()
 {
+	
 }
 
 void MainLayer::OnUpdate()
 {
 	using namespace nle;
-	if (Input::GetKeyboard()->IsHeld(KeyCode::A))
-		NLE_LOG_TRACE("A was Held");
+	if (Input::GetKeyboard()->IsHeld(KeyCode::F10))
+		NLE_LOG_TRACE("F10 was Held");
 	
-	if (Input::GetKeyboard()->IsReleased(KeyCode::A))
-		NLE_LOG_TRACE("A was released");
+	if (Input::GetKeyboard()->IsReleased(KeyCode::F10))
+		NLE_LOG_TRACE("F10 was released"); 
 	
-	if (Input::GetMouse()->IsPressed(L_BUTTON))
-		NLE_LOG_TRACE("Left click was pressed.");
+	if (Input::GetMouse()->IsHeld(L_BUTTON))
+		NLE_LOG_TRACE("Left click was pressed: x: {0}, y: {1}", Input::GetMouse()->X(), Input::GetMouse()->Y());
 	
-	if (Input::GetMouse()->IsReleased(L_BUTTON))
+	if (Input::GetMouse()->IsReleased(M_BUTTON))
 		NLE_LOG_TRACE("Left click was released.");
-	
-	//NLE_LOG_TRACE("LeftStick x: {0}, y: {1}", Input::GetGamepad()->LeftThumbStick().x, Input::GetGamepad()->LeftThumbStick().y);
-	//NLE_LOG_TRACE("LeftTrigger: {0}, RightTrigger: {1}", Input::GetGamepad()->LeftTrigger(), Input::GetGamepad()->RightTrigger());
-	
-	if (Input::GetGamepad()->IsHeld(L_STICK_UP))
-		NLE_LOG_TRACE("Stick is UP!!");
-	if (Input::GetGamepad()->IsReleased(L_STICK_UP))
-		NLE_LOG_TRACE("Stick is Released!!");
-	if (Input::GetGamepad()->IsHeld(L_STICK_DOWN))
-		NLE_LOG_TRACE("Stick is DOWN!!");
-	if (Input::GetGamepad()->IsReleased(L_STICK_DOWN))
-		NLE_LOG_TRACE("Stick is Released!!");
-	
-	if (Input::GetGamepad()->IsHeld(L_STICK_LEFT))
-		NLE_LOG_TRACE("Stick is LEFT!!");
-	if (Input::GetGamepad()->IsReleased(L_STICK_LEFT))
-		NLE_LOG_TRACE("Stick is Released!!");
-	if (Input::GetGamepad()->IsHeld(L_STICK_RIGHT))
-		NLE_LOG_TRACE("Stick is RIGHT!!");
-	if (Input::GetGamepad()->IsReleased(L_STICK_RIGHT))
-		NLE_LOG_TRACE("Stick is Released!!");
-	
-	if (Input::GetGamepad()->IsHeld(L_STICK_UP))
-		NLE_LOG_TRACE("Stick is UP!!");
-	if (Input::GetGamepad()->IsReleased(L_STICK_UP))
-		NLE_LOG_TRACE("Stick is Released!!");
-	if (Input::GetGamepad()->IsHeld(L_STICK_DOWN))
-		NLE_LOG_TRACE("Stick is DOWN!!");
-	if (Input::GetGamepad()->IsReleased(L_STICK_DOWN))
-		NLE_LOG_TRACE("Stick is Released!!");
-	
-	//if (Input::GetGamepad(1)->IsHeld(L_STICK_LEFT))
-	//	NLE_LOG_TRACE("Controller two Stick is LEFT!!");
-	//if (Input::GetGamepad(1)->IsReleased(L_STICK_LEFT))
-	//	NLE_LOG_TRACE("Controller two Stick is Released!!");
-	//if (Input::GetGamepad(1)->IsHeld(L_STICK_RIGHT))
-	//	NLE_LOG_TRACE("Controller two Stick is RIGHT!!");
-	//if (Input::GetGamepad(1)->IsReleased(L_STICK_RIGHT))
-	//	NLE_LOG_TRACE("Controller two Stick is Released!!");
+
+	if (Input::GetMouse()->Wheel().y != 0.0f)
+		NLE_LOG_TRACE("Wheel: {0}", Input::GetMouse()->Wheel().y);
 }
 
 void MainLayer::OnImGuiRender()

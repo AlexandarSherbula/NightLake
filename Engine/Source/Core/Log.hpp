@@ -9,7 +9,7 @@ namespace nle
     class Log
     {
     public:
-        static void Initialize();
+        static void Init();
         static std::shared_ptr<spdlog::logger> sLogger;
     };
 }

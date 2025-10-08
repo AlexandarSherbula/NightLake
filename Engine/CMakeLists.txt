@@ -16,6 +16,7 @@ file(
 
 add_library(Engine STATIC ${ENGINE_SRC})
 target_compile_features(Engine PRIVATE cxx_std_20)
+target_compile_definitions(Engine PRIVATE UNICODE _UNICODE)
 
 target_precompile_headers(Engine PRIVATE
     "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_SOURCE_DIR}/Engine/Source/nle_pch.hpp>"

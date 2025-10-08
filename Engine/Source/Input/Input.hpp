@@ -15,7 +15,7 @@ namespace nle
 		static std::vector<Scope<Gamepad>> gamepads;
 		static inline Gamepad dummy;
 	public:
-		static void Initialize();
+		static void Init();
 		static void Scan();
 		static void Reset();
 		static void Close();

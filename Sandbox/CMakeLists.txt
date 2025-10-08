@@ -16,6 +16,7 @@ file(
 
 add_executable(Sandbox ${SANDBOX_SRC})
 target_compile_features(Sandbox PRIVATE cxx_std_20)
+target_compile_definitions(Sandbox PRIVATE UNICODE _UNICODE)
 
 #make folders visible in IDE
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SANDBOX_SRC})

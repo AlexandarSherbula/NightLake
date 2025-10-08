@@ -4,22 +4,25 @@
 
 #include "SDL3/SDL.h"
 
-#if defined(NLE_API_OPENGL)
+typedef SDL_Window SDL_WindowHandle;
+
 namespace nle
 {
-	class SDL3_Window : public Window
+	class SDL_Window : public Window
 	{
 	public:
-		SDL3_Window(const WindowSpecifications& windowSpec);
-		~SDL3_Window();
-		void Initialize() override;
+		SDL_Window(const WindowSpecifications& windowSpec);
+		~SDL_Window();
+		void Init() override;
 		void PollEvents() override;
+		void Update() override;
 
 		inline void* GetHandle() const override { return mHandle; }
 		inline void* GetContext() const override { return mGLContext; }
+
+		void SwapChain() override;
 	private:
-		SDL_Window* mHandle;
+		SDL_WindowHandle* mHandle;
 		SDL_GLContext mGLContext;
 	};
 }
-#endif

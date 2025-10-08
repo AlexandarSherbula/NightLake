@@ -31,5 +31,10 @@ namespace nle
 		~Keyboard();
 
 		static void SetCodes();
+	private:
+		static void SetSDLCodes();
+		static void SetWin32Codes();
 	};
+
+	
 }

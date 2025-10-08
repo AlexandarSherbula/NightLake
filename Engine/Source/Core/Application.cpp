@@ -10,21 +10,17 @@ namespace nle
 
 	Application::Application()
 	{
-		
 	}
 
 	Application::Application(AppSpecifications& appSpecs)
 	{
+		mRenderingFlag = OpenGL;
+
 		sInstance = this;
 
 		mRunning = true;
-		Log::Initialize();
 
-		mMainWindow = Window::Create({ appSpecs.title, appSpecs.width, appSpecs.height, appSpecs.vSync, NLE_BIND_EVENT_FN(Application::OnEvent) });
-		mMainWindow->Initialize();
-
-		imguiLayer = new ImGuiLayer();
-		PushOverlay(imguiLayer);
+		mAppSpecs = appSpecs;
 	}
 
 	Application::~Application()
@@ -34,52 +30,30 @@ namespace nle
 
 	void Application::Run()
 	{
-		NLE_ASSERT(gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress), "Failed to initialize glad.\n");
+		Log::Init();
 
-		float positions[6] = {
-		-0.5f, -0.5f,
-		0.5f, -0.5f,
-		0.0f, 0.5f
-		};
+		mMainWindow = Window::Create({ mAppSpecs.title, mAppSpecs.width, mAppSpecs.height, mAppSpecs.vSync, NLE_BIND_EVENT_FN(Application::OnEvent) });
+		Input::Init();
 
-		unsigned int vao;
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
-
-		unsigned int vbo;
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, positions, GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-
-		Input::Initialize();
+		//imguiLayer = new ImGuiLayer();
+		//PushOverlay(imguiLayer);
 		
 		while (mRunning)
 		{
 			mMainWindow->PollEvents();
 			Input::Scan();
 
-			imguiLayer->Begin();
-
-			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
+			//imguiLayer->Begin();
 
 			for (Layer* layer : mLayerStack)
 				layer->OnUpdate();
 
-			glBindVertexArray(vao);
-			glDrawArrays(GL_TRIANGLES, 0, 3);
-			glBindVertexArray(0);
+			mMainWindow->Update();
 
 			for (Layer* layer : mLayerStack)
 				layer->OnImGuiRender();
 
-			SDL_GL_SwapWindow(static_cast<SDL_Window*>(mMainWindow->GetHandle()));
+			mMainWindow->SwapChain();
 
 			Input::Reset();
 		}
@@ -111,6 +85,15 @@ namespace nle
 		layer->OnAttach();
 	}
 
+	void Application::SetRenderingApi(RenderAPI_Flag flag)
+	{
+#if defined (NLE_WINDOWS)
+		mRenderingFlag = flag;
+#else
+		mRenderingFlag = OpenGL;
+#endif
+	}
+
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
@@ -135,7 +118,7 @@ namespace nle
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
-		glViewport(0, 0, e.GetWidth(), e.GetHeight());
+		//glViewport(0, 0, e.GetWidth(), e.GetHeight());
 		return true;
 	}
 

@@ -1,13 +1,14 @@
 #include "nle_pch.hpp"
 
 #include "ImGuiLayer.hpp"
-#include <backends/imgui_impl_sdl3.h>
-#include <backends/imgui_impl_opengl3.h>
 
 #include "Core/Application.hpp"
 #include "Window/SDL_Window.hpp"
 
 #include <imgui.h>
+#include <backends/imgui_impl_sdl3.h>
+#include <backends/imgui_impl_opengl3.h>
+
 
 namespace nle
 {
@@ -36,7 +37,7 @@ namespace nle
 		SetDarkThemeColors();
 
 		Application& app = Application::Get();
-		SDL_Window* handle = static_cast<SDL_Window*>(app.GetWindow()->GetHandle());
+		SDL_WindowHandle* handle = static_cast<SDL_WindowHandle*>(app.GetWindow()->GetHandle());
 		SDL_GLContext* context = static_cast<SDL_GLContext*>(app.GetWindow()->GetContext());
 
 		ImGui_ImplSDL3_InitForOpenGL(handle, context);
@@ -72,7 +73,7 @@ namespace nle
 
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
-			SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+			SDL_WindowHandle* backup_current_window = SDL_GL_GetCurrentWindow();
 			SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();

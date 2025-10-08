@@ -34,6 +34,9 @@ namespace nle
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 
+		void SetRenderingApi(RenderAPI_Flag flag);
+		inline RenderAPI_Flag GetRenderingAPI_Flag() const { return mRenderingFlag; }
+
 		inline Window* GetWindow() { return mMainWindow.get(); }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
@@ -46,5 +49,7 @@ namespace nle
 		bool mRunning;
 		LayerStack mLayerStack;
 		ImGuiLayer* imguiLayer;
+		RenderAPI_Flag mRenderingFlag;
+		AppSpecifications mAppSpecs;
 	};
 }
