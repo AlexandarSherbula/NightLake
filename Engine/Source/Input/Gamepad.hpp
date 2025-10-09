@@ -1,7 +1,7 @@
 #pragma once
 
 #include "InputDevices.hpp"
-#include "Math/Math.hpp"
+#include "Utils/Math.hpp"
 
 #include "SDL3/SDL.h"
 

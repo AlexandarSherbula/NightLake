@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/Utilities.hpp"
+#include "Utils/Utilities.hpp"
 #include "Events/Events.hpp"
 #include "Input/Input.hpp"
 

@@ -14,8 +14,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Core/Log.hpp"
-#include "Core/Utilities.hpp"
+#include "Utils/Log.hpp"
+#include "Utils/Utilities.hpp"
 
 #include "glad/glad.h"
 #define SDL_MAIN_HANDLED 1

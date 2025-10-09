@@ -1,11 +1,9 @@
 #pragma once
 
-#include "Layers/Layer.hpp"
-#include "Layers/ImGuiLayer.hpp"
-
+#include "Layer.hpp"
+#include "ImGui/ImGuiLayer.hpp"
 #include "Window/Window.hpp"
 #include "Events/Events.hpp"
-
 #include "Input/Input.hpp"
 
 namespace aio

@@ -3,6 +3,8 @@
 
 #include "Core/Application.hpp"
 
+#include "Utils/Utilities.hpp"
+
 namespace aio
 {
 	std::unordered_map<size_t, int8_t> Keyboard::MapKeys;

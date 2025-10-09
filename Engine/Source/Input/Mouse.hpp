@@ -3,7 +3,7 @@
 
 #include "InputDevices.hpp"
 
-#include "Math/Math.hpp"
+#include "Utils/Math.hpp"
 
 namespace aio
 {
