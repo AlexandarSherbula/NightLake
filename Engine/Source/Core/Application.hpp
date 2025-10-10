@@ -2,6 +2,7 @@
 
 #include "Layer.hpp"
 #include "ImGui/ImGuiLayer.hpp"
+
 #include "Window/Window.hpp"
 #include "Events/Events.hpp"
 #include "Input/Input.hpp"
@@ -41,9 +42,8 @@ namespace aio
 		bool OnWindowResize(WindowResizeEvent& e);
 		bool OnMouseMoved(MouseMovedEvent& e);
 		bool OnMouseScrolled(MouseScrolledEvent& e);
-	public:
-		Scope<Window> mMainWindow;
 	private:
+		Scope<Window> mMainWindow;
 		bool mRunning;
 		LayerStack mLayerStack;
 		ImGuiLayer* imguiLayer;

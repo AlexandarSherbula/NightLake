@@ -4,6 +4,8 @@
 #include <backends/imgui_impl_sdl3.h>
 #include <backends/imgui_impl_opengl3.h>
 
+#include "Utils/Timer.hpp"
+
 namespace aio
 {
 	static Application* sInstance = nullptr;
@@ -40,6 +42,7 @@ namespace aio
 		
 		while (mRunning)
 		{
+			Timer timer;
 			mMainWindow->PollEvents();
 			Input::Scan();
 
