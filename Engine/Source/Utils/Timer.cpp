@@ -3,17 +3,32 @@
 
 namespace aio
 {
-	float Timer::sAppTime = 0.0f;
-	std::chrono::duration<float> Timer::sDeltaTime;
-	std::chrono::time_point<std::chrono::high_resolution_clock> Timer::sCurrentTime;
-	std::chrono::time_point<std::chrono::high_resolution_clock> Timer::sLastFrame;
+	float AppTimer::sAppTime = 0.0f;
+	std::chrono::duration<float> AppTimer::sDeltaTime;
+	std::chrono::time_point<std::chrono::high_resolution_clock> AppTimer::sCurrentTime;
+	std::chrono::time_point<std::chrono::high_resolution_clock> AppTimer::sLastFrame;
 
-	Timer::Timer()
+	void AppTimer::Start()
+	{
+		sCurrentTime = std::chrono::high_resolution_clock::now();
+		sLastFrame = std::chrono::high_resolution_clock::now();
+	}
+
+	void AppTimer::Update()
+	{
+		sCurrentTime = std::chrono::high_resolution_clock::now();
+		sDeltaTime = sCurrentTime - sLastFrame;
+		sLastFrame = sCurrentTime;
+		sAppTime += sDeltaTime.count();
+	}
+
+
+	ProfileTimer::ProfileTimer()
 	{
 		mStartPoint = std::chrono::high_resolution_clock::now();
 	}
 
-	Timer::~Timer()
+	ProfileTimer::~ProfileTimer()
 	{
 		mEndPoint = std::chrono::high_resolution_clock::now();
 
@@ -22,21 +37,7 @@ namespace aio
 
 		auto duration = end - start;
 		double ms = duration * 0.001;
-		AIO_LOG_TRACE("{0}us ({1}ms)", duration, ms);
-	}
-
-	void Timer::StartApp()
-	{
-		sCurrentTime = std::chrono::high_resolution_clock::now();
-		sLastFrame = std::chrono::high_resolution_clock::now();
-	}
-
-	void Timer::Update()
-	{
-		sCurrentTime = std::chrono::high_resolution_clock::now();
-		sDeltaTime = sCurrentTime - sLastFrame;
-		sLastFrame = sCurrentTime;
-		sAppTime += sDeltaTime.count();
+		AIO_LOG_TRACE("{0}ms", ms);
 	}
 }
 

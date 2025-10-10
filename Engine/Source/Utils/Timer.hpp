@@ -4,22 +4,26 @@
 
 namespace aio
 {
-	class Timer
+	class AppTimer
 	{
 	public:
-		Timer();
-		~Timer();
-
-		static void StartApp();
+		static void Start();
 		static void Update();
 
-		static float Get() { return sAppTime; }
+		static float GetElapsedTime() { return sAppTime; }
 		inline static float DeltaTime() { return sDeltaTime.count(); }
 	private:
 		static float sAppTime;
 		static std::chrono::duration<float> sDeltaTime;
 		static std::chrono::time_point<std::chrono::high_resolution_clock> sCurrentTime, sLastFrame;
+	};
 
+	class ProfileTimer
+	{
+	public:
+		ProfileTimer();
+		~ProfileTimer();
+	private:
 		std::chrono::time_point<std::chrono::high_resolution_clock> mStartPoint, mEndPoint;
 	};
 }

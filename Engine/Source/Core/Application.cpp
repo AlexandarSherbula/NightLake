@@ -40,9 +40,11 @@ namespace aio
 		imguiLayer = new ImGuiLayer();
 		PushOverlay(imguiLayer);
 		
+		AppTimer::Start();
 		while (mRunning)
 		{
-			Timer timer;
+			AppTimer::Update();
+
 			mMainWindow->PollEvents();
 			Input::Scan();
 

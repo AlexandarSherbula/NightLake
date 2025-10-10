@@ -14,7 +14,7 @@ namespace aio
     };
 }
 
-#if defined (AIO_DEBUG) || defined(AIO_RELEASE)
+#if !defined (AIO_DIST)
 
 #define AIO_LOG_TRACE(...)       aio::Log::sLogger->trace(__VA_ARGS__)
 #define AIO_LOG_INFO(...)        aio::Log::sLogger->info(__VA_ARGS__)
@@ -23,7 +23,9 @@ namespace aio
 #define AIO_LOG_CRITICAL(...)    aio::Log::sLogger->critical(__VA_ARGS__)
 
 #define AIO_ASSERT(x, ...)  if(!(x)) { aio::Log::sLogger->error("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } 
+
 #else
+
 #define AIO_LOG_TRACE(...)
 #define AIO_LOG_INFO(...)
 #define AIO_LOG_WARN(...)
@@ -31,4 +33,5 @@ namespace aio
 #define AIO_LOG_CRITICAL(...)
 
 #define AIO_ASSERT(x, ...) x
+
 #endif
