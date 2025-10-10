@@ -16,6 +16,8 @@ namespace aio
 
 	Application::Application(AppSpecifications& appSpecs)
 	{
+		Log::Init();
+		AIO_ASSERT(sInstance, "Testing Assertion");
 		mRenderingFlag = OpenGL;
 
 		sInstance = this;
@@ -32,7 +34,6 @@ namespace aio
 
 	void Application::Run()
 	{
-		Log::Init();
 
 		mMainWindow = Window::Create({ mAppSpecs.title, mAppSpecs.width, mAppSpecs.height, mAppSpecs.vSync, AIO_BIND_EVENT_FN(Application::OnEvent) });
 		Input::Init();
