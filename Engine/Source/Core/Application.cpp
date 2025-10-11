@@ -1,5 +1,6 @@
 #include "aio_pch.hpp"
 #include "Application.hpp"
+#include "Renderer/Renderer.hpp"
 
 #include <backends/imgui_impl_sdl3.h>
 #include <backends/imgui_impl_opengl3.h>
@@ -17,8 +18,6 @@ namespace aio
 	Application::Application(AppSpecifications& appSpecs)
 	{
 		Log::Init();
-		AIO_ASSERT(sInstance, "Testing Assertion");
-		mRenderingFlag = OpenGL;
 
 		sInstance = this;
 
@@ -34,9 +33,10 @@ namespace aio
 
 	void Application::Run()
 	{
-
 		mMainWindow = Window::Create({ mAppSpecs.title, mAppSpecs.width, mAppSpecs.height, mAppSpecs.vSync, AIO_BIND_EVENT_FN(Application::OnEvent) });
 		Input::Init();
+
+		Renderer::Init();
 
 		imguiLayer = new ImGuiLayer();
 		PushOverlay(imguiLayer);
@@ -54,7 +54,7 @@ namespace aio
 			for (Layer* layer : mLayerStack)
 				layer->OnUpdate();
 
-			mMainWindow->Update();
+			Renderer::Draw();
 
 			for (Layer* layer : mLayerStack)
 				layer->OnImGuiRender();
@@ -64,7 +64,7 @@ namespace aio
 			Input::Reset();
 		}
 
-		//Temporal untill there is ImGui support for both DX11 and OpenGL
+		//Temporal until there is ImGui support for both DX11 and OpenGL
 		mLayerStack.EndAndClear();
 
 		Input::Close();
@@ -92,15 +92,6 @@ namespace aio
 	{
 		mLayerStack.PushOverlay(layer);
 		layer->OnAttach();
-	}
-
-	void Application::SetRenderingApi(RenderAPI_Flag flag)
-	{
-#if defined (AIO_WINDOWS)
-		mRenderingFlag = flag;
-#else
-		mRenderingFlag = OpenGL;
-#endif
 	}
 
 	void Application::OnEvent(Event& e)

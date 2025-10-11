@@ -3,7 +3,7 @@
 #include "SDL_Window.hpp"
 #include "Win32_Window.hpp"
 
-#include "Core/Application.hpp"
+#include "Renderer/Renderer.hpp"
 
 namespace aio
 {
@@ -14,7 +14,7 @@ namespace aio
     Scope<Window> Window::Create(const WindowSpecifications& windowSpec)
     {
         CHECK_API(
-            return CreateScope<SDL_Window>(windowSpec),
+            return CreateScope<SDLWindow>(windowSpec),
             return CreateScope<Win32_Window>(windowSpec)
         );
         AIO_ASSERT(false, "API has not been selected.\n");

@@ -17,7 +17,6 @@ namespace aio
 		void Update() override {}
 
 		inline void* GetHandle() const override { return mHandle; }
-		inline void* GetContext() const override { return nullptr; }
 
 		void SwapChain() override;
 	private:
@@ -42,7 +41,6 @@ namespace aio
 		void Update() override {}
 
 		inline void* GetHandle() const override { return nullptr; }
-		inline void* GetContext() const override { return nullptr; }
 
 		void SwapChain() override {};
 	};

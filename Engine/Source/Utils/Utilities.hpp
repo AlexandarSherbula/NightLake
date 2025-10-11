@@ -7,12 +7,13 @@
 
 #if defined(AIO_WINDOWS)
 
-#define CHECK_API(x, y)                                           \
-        do {                                                      \
-            switch (Application::Get().GetRenderingAPI_Flag()) {  \
-                case OpenGL: { x; break; }                        \
-                case DX11:   { y; break; }                        \
-            }                                                     \
+#define CHECK_API(x, y)                      \
+        do {                                 \
+            switch (aio::Renderer::GetAPI()) \
+            {                                \
+                case OpenGL: { x; break; }   \
+                case DX11:   { y; break; }   \
+            }                                \
         } while(0)
 #else
 #define CHECK_API(x, y) do { x; } while(0)
@@ -20,11 +21,14 @@
 
 #define AIO_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
-enum RenderAPI_Flag
-{
-	OpenGL,
-	DX11
-};
+#if defined(AIO_WINDOWS)
+    #define AIO_DEBUG_BREAK() __debugbreak()
+#elif defined(AIO_LINUX)
+    #include <signal.h>
+    #define AIO_DEBUG_BREAK() raise(SIGTRAP)
+#else
+    #define AIO_DEBUG_BREAK()
+#endif
 
 inline std::wstring StringToWide(const std::string& str)
 {

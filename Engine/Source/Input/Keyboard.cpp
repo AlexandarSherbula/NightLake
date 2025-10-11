@@ -2,6 +2,7 @@
 #include "Keyboard.hpp"
 
 #include "Core/Application.hpp"
+#include "Renderer/Renderer.hpp"
 
 #include "Utils/Utilities.hpp"
 

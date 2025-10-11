@@ -1,14 +1,16 @@
 #include "aio_pch.hpp"
 #include "SDL_Window.hpp"
 
+#include "Renderer/OpenGL/OpenGL_Context.hpp"
+
 #include <backends/imgui_impl_sdl3.h>
 
 namespace aio
 {
-	static void ProcessEvents(SDL_Event& sdl_event, SDL_Window* window);
+	static void ProcessEvents(SDL_Event& sdl_event, SDLWindow* window);
 	static unsigned int vao;
 
-	SDL_Window::SDL_Window(const WindowSpecifications& windowSpec)
+	SDLWindow::SDLWindow(const WindowSpecifications& windowSpec)
 	{
 		mSpecs.title = windowSpec.title;
 		mSpecs.width = windowSpec.width;
@@ -17,43 +19,15 @@ namespace aio
 		mSpecs.eventCallback = windowSpec.eventCallback;
 
 		AIO_ASSERT(SDL_Init(SDL_INIT_VIDEO), "Failed to initalize SDL");
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-		mHandle = SDL_CreateWindow("NightLake Engine", 1280, 720, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		mHandle = SDL_CreateWindow(mSpecs.title, mSpecs.width, mSpecs.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		AIO_ASSERT(mHandle, "Failed to create a window: {0}\n", SDL_GetError());
 
-		mGLContext = SDL_GL_CreateContext(mHandle);
-		AIO_ASSERT(mGLContext, "Failed to create GL context");
-
-		SDL_GL_MakeCurrent(mHandle, mGLContext);
-
-		AIO_ASSERT(gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress), "Failed to Init glad.\n");
-
-		float positions[6] = {
-		-0.5f, -0.5f,
-		0.5f, -0.5f,
-		0.0f, 0.5f
-		};
-
-		
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
-
-		unsigned int vbo;
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, positions, GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+		mGraphicsContext = CreateScope<OpenGL_Context>(mHandle);
+		mGraphicsContext->SetVSync(mSpecs.vSync);
 	}
 
-	SDL_Window::~SDL_Window()
+	SDLWindow::~SDLWindow()
 	{
 		if (mHandle != nullptr)
 		{
@@ -61,15 +35,13 @@ namespace aio
 			SDL_Quit();
 			mHandle = nullptr;
 		}
-		
 	}
 
-	void SDL_Window::Init()
+	void SDLWindow::Init()
 	{
-		
 	}
 
-	void SDL_Window::PollEvents()
+	void SDLWindow::PollEvents()
 	{
 		SDL_Event sdl_event;
 		while (SDL_PollEvent(&sdl_event))
@@ -80,29 +52,23 @@ namespace aio
 		}
 	}
 
-	void SDL_Window::Update()
+	void SDLWindow::Update()
 	{
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		glBindVertexArray(0);
+	}
+	
+	void SDLWindow::SwapChain()
+	{
+		mGraphicsContext->SwapBuffers();
 	}
 
-	void SDL_Window::SwapChain()
-	{
-		SDL_GL_SwapWindow(mHandle);
-	}
-
-	void ProcessEvents(SDL_Event& sdl_event, SDL_Window* window)
+	void ProcessEvents(SDL_Event& sdl_event, SDLWindow* window)
 	{
 		switch (sdl_event.type)
 		{
 		case SDL_EVENT_WINDOW_RESIZED:
 		case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 		{
-			if (sdl_event.window.windowID != SDL_GetWindowID(static_cast<SDL_WindowHandle*>(window->GetHandle())))
+			if (sdl_event.window.windowID != SDL_GetWindowID(static_cast<SDL_Window*>(window->GetHandle())))
 				break;
 
 			if (sdl_event.type == SDL_EVENT_WINDOW_RESIZED)
@@ -111,7 +77,7 @@ namespace aio
 				window->GetSpecs().eventCallback(event);
 			}
 
-			if (sdl_event.window.windowID == SDL_GetWindowID(static_cast<SDL_WindowHandle*>(window->GetHandle())))
+			if (sdl_event.window.windowID == SDL_GetWindowID(static_cast<SDL_Window*>(window->GetHandle())))
 			{
 				WindowCloseEvent event;
 				window->GetSpecs().eventCallback(event);

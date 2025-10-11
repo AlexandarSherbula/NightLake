@@ -6,6 +6,7 @@
 #include "Events/Events.hpp"
 #include "Input/Input.hpp"
 #include "Window/Window.hpp"
+#include "Renderer/Renderer.hpp"
 
 #include "Utils/Log.hpp"
 #include "Utils/Utilities.hpp"

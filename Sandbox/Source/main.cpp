@@ -3,7 +3,7 @@
 int main()
 {
 	aio::AppSpecifications appSpecs;
-	appSpecs.title = "NightLake Engine";
+	appSpecs.title = "Alexio Engine";
 	appSpecs.width = 1280;
 	appSpecs.height = 720;
 

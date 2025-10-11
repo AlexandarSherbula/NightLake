@@ -45,7 +45,7 @@ namespace aio
 		windowRect.bottom = windowRect.top + mSpecs.height;
 		AIO_ASSERT(AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE), "Failed to adjust window");
 
-		mHandle = CreateWindowEx(0, mWindowClass, StringToWide(mSpecs.title).c_str(), WS_OVERLAPPEDWINDOW,
+		mHandle = CreateWindowEx(0, mWindowClass, (const wchar_t*)mSpecs.title, WS_OVERLAPPEDWINDOW,
 			windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
 			NULL, NULL, m_hInstance, &mSpecs);
 

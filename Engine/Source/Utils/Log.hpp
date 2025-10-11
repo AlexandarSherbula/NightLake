@@ -16,22 +16,13 @@ namespace aio
 
 #if !defined (AIO_DIST)
 
-#if defined(_MSC_VER)
-    #define DEBUG_BREAK() __debugbreak()
-#elif defined(__GNUC__) || defined(__clang__)
-    #include <signal.h>
-    #define DEBUG_BREAK() raise(SIGTRAP)
-#else
-    #define DEBUG_BREAK() 
-#endif
-
 #define AIO_LOG_TRACE(...)       aio::Log::sLogger->trace(__VA_ARGS__)
 #define AIO_LOG_INFO(...)        aio::Log::sLogger->info(__VA_ARGS__)
 #define AIO_LOG_WARN(...)        aio::Log::sLogger->warn(__VA_ARGS__)
 #define AIO_LOG_ERROR(...)       aio::Log::sLogger->error(__VA_ARGS__)
 #define AIO_LOG_CRITICAL(...)    aio::Log::sLogger->critical(__VA_ARGS__)
 
-#define AIO_ASSERT(x, ...)  if(!(x)) { aio::Log::sLogger->error("Assertion Failed: {0}", __VA_ARGS__); DEBUG_BREAK(); } 
+#define AIO_ASSERT(x, ...)  if(!(x)) { aio::Log::sLogger->error("Assertion Failed: {0}", __VA_ARGS__); AIO_DEBUG_BREAK(); } 
 
 #else
 

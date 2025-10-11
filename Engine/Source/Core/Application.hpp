@@ -11,7 +11,7 @@ namespace aio
 {
 	struct AppSpecifications
 	{
-		std::string title;
+		const char* title;
 		uint32_t width;
 		uint32_t height;
 		bool vSync = true;
@@ -33,9 +33,6 @@ namespace aio
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 
-		void SetRenderingApi(RenderAPI_Flag flag);
-		inline RenderAPI_Flag GetRenderingAPI_Flag() const { return mRenderingFlag; }
-
 		inline Window* GetWindow() { return mMainWindow.get(); }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
@@ -43,11 +40,10 @@ namespace aio
 		bool OnMouseMoved(MouseMovedEvent& e);
 		bool OnMouseScrolled(MouseScrolledEvent& e);
 	private:
-		Scope<Window> mMainWindow;
+		Ref<Window> mMainWindow;
 		bool mRunning;
 		LayerStack mLayerStack;
 		ImGuiLayer* imguiLayer;
-		RenderAPI_Flag mRenderingFlag;
 		AppSpecifications mAppSpecs;
 	};
 }
