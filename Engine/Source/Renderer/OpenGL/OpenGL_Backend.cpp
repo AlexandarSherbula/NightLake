@@ -47,7 +47,10 @@ namespace aio
 
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
 #endif
-		AIO_LOG_INFO("OpenGL ({0}) Initialized", (const char*)glGetString(GL_VERSION));
+		AIO_LOG_INFO("OpenGL Info:");
+		AIO_LOG_INFO(" Vendor: {0}",   (const char*)glGetString(GL_VENDOR));
+		AIO_LOG_INFO(" Renderer: {0}", (const char*)glGetString(GL_RENDERER));
+		AIO_LOG_INFO(" Version: {0}",  (const char*)glGetString(GL_VERSION));
 
 		float positions[6] = {
 		-0.5f, -0.5f,

@@ -75,14 +75,15 @@ namespace aio
 			{
 				WindowResizeEvent event(sdl_event.window.data1, sdl_event.window.data2);
 				window->GetSpecs().eventCallback(event);
+				break;
 			}
 
 			if (sdl_event.window.windowID == SDL_GetWindowID(static_cast<SDL_Window*>(window->GetHandle())))
 			{
 				WindowCloseEvent event;
 				window->GetSpecs().eventCallback(event);
+				break;
 			}
-			break;
 		}
 		case SDL_EVENT_KEY_DOWN:
 		{

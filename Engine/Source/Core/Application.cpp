@@ -118,7 +118,7 @@ namespace aio
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
-		//glViewport(0, 0, e.GetWidth(), e.GetHeight());
+		Renderer::Backend()->SetViewport(Vector2(0.0f, 0.0f), Vector2(e.GetWidth(), e.GetHeight()));
 		return true;
 	}
 
