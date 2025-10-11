@@ -16,7 +16,6 @@ file(
 
 add_library(Engine STATIC ${ENGINE_SRC})
 target_compile_features(Engine PRIVATE cxx_std_20)
-target_compile_definitions(Engine PRIVATE UNICODE _UNICODE)
 
 target_precompile_headers(Engine PRIVATE
     "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_SOURCE_DIR}/Engine/Source/aio_pch.hpp>"
@@ -57,6 +56,11 @@ set(GLAD_SRC
 add_library(glad STATIC ${GLAD_SRC})
 target_include_directories(glad PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/glad/include)
 target_link_libraries(Engine PRIVATE glad)
+
+if (WIN32)
+    target_link_libraries(Engine PRIVATE DXGI D3D11)
+	target_link_libraries(Engine PRIVATE dwmapi)
+endif()
 
 # ImGui Setup
 add_subdirectory(vendor/imgui EXCLUDE_FROM_ALL)

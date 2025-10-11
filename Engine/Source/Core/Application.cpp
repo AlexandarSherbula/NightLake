@@ -64,9 +64,6 @@ namespace aio
 			Input::Reset();
 		}
 
-		//Temporal until there is ImGui support for both DX11 and OpenGL
-		mLayerStack.EndAndClear();
-
 		Input::Close();
 	}
 
@@ -118,7 +115,11 @@ namespace aio
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
-		Renderer::Backend()->SetViewport(Vector2(0.0f, 0.0f), Vector2(e.GetWidth(), e.GetHeight()));
+		RendererBackend* backend = Renderer::Backend().get();
+		if (backend != nullptr)
+		{
+			Renderer::Backend()->SetViewport(Vector2(0.0f, 0.0f), Vector2(e.GetWidth(), e.GetHeight()));
+		}
 		return true;
 	}
 

@@ -22,7 +22,6 @@ namespace aio
 		sAppTime += sDeltaTime.count();
 	}
 
-
 	ProfileTimer::ProfileTimer()
 	{
 		mStartPoint = std::chrono::high_resolution_clock::now();

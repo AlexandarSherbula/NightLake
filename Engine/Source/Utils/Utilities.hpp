@@ -5,20 +5,6 @@
 
 #define BIT(x) (1 << x)
 
-#if defined(AIO_WINDOWS)
-
-#define CHECK_API(x, y)                      \
-        do {                                 \
-            switch (aio::Renderer::GetAPI()) \
-            {                                \
-                case OpenGL: { x; break; }   \
-                case DX11:   { y; break; }   \
-            }                                \
-        } while(0)
-#else
-#define CHECK_API(x, y) do { x; } while(0)
-#endif
-
 #define AIO_BIND_EVENT_FN(fn) [this](auto&&... args) -> decltype(auto) { return this->fn(std::forward<decltype(args)>(args)...); }
 
 #if defined(AIO_WINDOWS)

@@ -8,6 +8,8 @@
 #if defined (AIO_WINDOWS)
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
+#include "Renderer/DX11/DX11_Context.hpp"
+
 namespace aio
 {
 	Win32_Window::Win32_Window(const WindowSpecifications& windowSpec)
@@ -18,7 +20,7 @@ namespace aio
 		mSpecs.vSync = windowSpec.vSync;
 		mSpecs.eventCallback = windowSpec.eventCallback;
 		
-		mWindowClass = L"Win32 Class";
+		mWindowClass = "Win32 Class";
 		m_hInstance = GetModuleHandle(nullptr);
 
 		WNDCLASSEX wc = {};
@@ -45,15 +47,26 @@ namespace aio
 		windowRect.bottom = windowRect.top + mSpecs.height;
 		AIO_ASSERT(AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE), "Failed to adjust window");
 
-		mHandle = CreateWindowEx(0, mWindowClass, (const wchar_t*)mSpecs.title, WS_OVERLAPPEDWINDOW,
+		mHandle = CreateWindowEx(WS_EX_APPWINDOW, mWindowClass, mSpecs.title, WS_OVERLAPPEDWINDOW,
 			windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
 			NULL, NULL, m_hInstance, &mSpecs);
 
 		AIO_ASSERT(mHandle, "Failed to create a Window: {0}", ResultInfo(GetLastError()));
 
+		BOOL dark = TRUE;
+		DwmSetWindowAttribute(mHandle, DWMWA_USE_IMMERSIVE_DARK_MODE, &dark, sizeof(dark));
+
+		MARGINS margins = { 0 };
+		DwmExtendFrameIntoClientArea(mHandle, &margins);
+
 		ShowWindow(mHandle, SW_SHOW);
 		SetForegroundWindow(mHandle);
 		UpdateWindow(mHandle);
+
+
+
+		mGraphicsContext = CreateRef<DX11_Context>(mHandle, mSpecs.width, mSpecs.height);
+		mGraphicsContext->SetVSync(mSpecs.vSync);
 	}
 
 	Win32_Window::~Win32_Window()
@@ -82,6 +95,7 @@ namespace aio
 
 	void Win32_Window::SwapChain()
 	{
+		mGraphicsContext->SwapBuffers();
 	}
 
 	LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -352,7 +366,7 @@ namespace aio
 	std::string ResultInfo(HRESULT hr)
 	{
 		_com_error error(hr);
-		return WideToString(error.ErrorMessage());
+		return error.ErrorMessage();
 	}
 }
 #endif

@@ -10,7 +10,11 @@ namespace aio
 
 	LayerStack::~LayerStack()
 	{
-		
+		for (Layer* layer : mLayers)
+		{
+			layer->OnDetach();
+			delete layer;
+		}
 	}
 
 	void LayerStack::PushLayer(Layer* layer)
@@ -42,15 +46,6 @@ namespace aio
 		{
 			overlay->OnDetach();
 			mLayers.erase(it);
-		}
-	}
-
-	void LayerStack::EndAndClear()
-	{
-		for (Layer* layer : mLayers)
-		{
-			layer->OnDetach();
-			delete layer;
 		}
 	}
 }

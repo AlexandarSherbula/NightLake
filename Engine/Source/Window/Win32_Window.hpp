@@ -22,7 +22,7 @@ namespace aio
 	private:
 		HWND mHandle;
 		HINSTANCE m_hInstance;
-		const WCHAR* mWindowClass;
+		const CHAR* mWindowClass;
 	};
 
 	LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

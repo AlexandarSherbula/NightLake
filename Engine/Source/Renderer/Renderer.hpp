@@ -11,6 +11,21 @@ enum GraphicsAPI
 	DX11
 };
 
+#if defined(AIO_WINDOWS)
+
+#define CHECK_API(x, y)                      \
+        do {                                 \
+            switch (aio::Renderer::GetAPI()) \
+            {                                \
+                case OpenGL: { x; break; }   \
+                case DX11:   { y; break; }   \
+            }                                \
+        } while(0)
+#else
+#define CHECK_API(x, y) do { x; } while(0)
+#endif
+
+
 namespace aio
 {
 	class Renderer

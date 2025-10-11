@@ -23,7 +23,7 @@ namespace aio
 		mHandle = SDL_CreateWindow(mSpecs.title, mSpecs.width, mSpecs.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 		AIO_ASSERT(mHandle, "Failed to create a window: {0}\n", SDL_GetError());
 
-		mGraphicsContext = CreateScope<OpenGL_Context>(mHandle);
+		mGraphicsContext = CreateRef<OpenGL_Context>(mHandle);
 		mGraphicsContext->SetVSync(mSpecs.vSync);
 	}
 
@@ -68,7 +68,7 @@ namespace aio
 		case SDL_EVENT_WINDOW_RESIZED:
 		case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
 		{
-			if (sdl_event.window.windowID != SDL_GetWindowID(static_cast<SDL_Window*>(window->GetHandle())))
+			if (sdl_event.window.windowID != SDL_GetWindowID(static_cast<SDLwindowHandler*>(window->GetHandle())))
 				break;
 
 			if (sdl_event.type == SDL_EVENT_WINDOW_RESIZED)
@@ -78,7 +78,7 @@ namespace aio
 				break;
 			}
 
-			if (sdl_event.window.windowID == SDL_GetWindowID(static_cast<SDL_Window*>(window->GetHandle())))
+			if (sdl_event.window.windowID == SDL_GetWindowID(static_cast<SDLwindowHandler*>(window->GetHandle())))
 			{
 				WindowCloseEvent event;
 				window->GetSpecs().eventCallback(event);

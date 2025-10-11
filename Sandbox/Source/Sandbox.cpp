@@ -8,7 +8,7 @@ Sandbox::Sandbox()
 Sandbox::Sandbox(aio::AppSpecifications& appSpecs)
 	: Application (appSpecs)
 {
-	aio::Renderer::SetAPI(OpenGL);
+	aio::Renderer::SetAPI(DX11);
 	PushLayer(new MainLayer());
 }
 

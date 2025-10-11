@@ -6,7 +6,7 @@
 
 namespace aio
 {
-	OpenGL_Context::OpenGL_Context(SDL_Window* windowHandle)
+	OpenGL_Context::OpenGL_Context(SDLwindowHandler* windowHandle)
 	{
 		mWindowHandle = windowHandle;
 
@@ -46,7 +46,7 @@ namespace aio
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
-			SDL_Window* backup_current_window = SDL_GL_GetCurrentWindow();
+			SDLwindowHandler* backup_current_window = SDL_GL_GetCurrentWindow();
 			SDL_GLContext backup_current_context = SDL_GL_GetCurrentContext();
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
@@ -61,5 +61,3 @@ namespace aio
 		ImGui::DestroyContext();
 	}
 }
-
-

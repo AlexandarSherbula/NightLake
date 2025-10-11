@@ -41,6 +41,6 @@ namespace aio
 		static Scope<Window> Create(const WindowSpecifications& windowSpec);
 	protected:
 		WindowSpecifications mSpecs;
-		Scope<GraphicsContext> mGraphicsContext;
+		Ref<GraphicsContext> mGraphicsContext;
 	};
 }

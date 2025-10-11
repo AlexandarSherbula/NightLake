@@ -4,6 +4,8 @@
 
 #include "SDL3/SDL.h"
 
+typedef SDL_Window SDLwindowHandler;
+
 namespace aio
 {
 	class SDLWindow : public Window
@@ -19,7 +21,7 @@ namespace aio
 
 		void SwapChain() override;
 	private:
-		SDL_Window* mHandle;
+		SDLwindowHandler* mHandle;
 		
 	};
 }

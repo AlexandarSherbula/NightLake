@@ -7,11 +7,6 @@
 
 #include <imgui.h>
 
-#if defined (AIO_WINDOWS)
-#include <backends/imgui_impl_win32.h>
-#include <backends/imgui_impl_dx11.h>
-#endif // AIO_PLATFORM_WINDOWS
-
 
 namespace aio
 {

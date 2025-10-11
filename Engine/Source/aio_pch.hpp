@@ -27,5 +27,7 @@
 	#include <comdef.h>
 	#include <d3d11.h>
 	#include <d3dcompiler.h>
+	#include <dxgi.h>
 	#include <wrl/client.h>
+	#include <dwmapi.h>
 #endif // AIO_WINDOWS
