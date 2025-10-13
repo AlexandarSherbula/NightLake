@@ -63,8 +63,6 @@ namespace aio
 		SetForegroundWindow(mHandle);
 		UpdateWindow(mHandle);
 
-
-
 		mGraphicsContext = CreateRef<DX11_Context>(mHandle, mSpecs.width, mSpecs.height);
 		mGraphicsContext->SetVSync(mSpecs.vSync);
 	}
@@ -93,9 +91,9 @@ namespace aio
 		}
 	}
 
-	void Win32_Window::SwapChain()
+	void Win32_Window::SwapBuffers()
 	{
-		mGraphicsContext->SwapBuffers();
+		mGraphicsContext->SwapChain();
 	}
 
 	LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

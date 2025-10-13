@@ -34,7 +34,6 @@ namespace aio
 		scd.Windowed = TRUE;
 		scd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 
-		D3D_FEATURE_LEVEL featureLevel;
 		const D3D_FEATURE_LEVEL featureLevelArray[4] = { D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0,
 		D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0 };
 
@@ -54,7 +53,7 @@ namespace aio
 			&scd,
 			mSwapChain.GetAddressOf(),
 			mDevice.GetAddressOf(),
-			&featureLevel,
+			&mFeatureLevel,
 			mDeviceContext.GetAddressOf());
 		AIO_ASSERT(SUCCEEDED(hr), "Failed to create device and swapChain: " + ResultInfo(hr) + "\n");
 
@@ -82,7 +81,7 @@ namespace aio
 		mDeviceContext->RSSetState(mRasterizerState.Get());
 	}
 
-	void DX11_Context::SwapBuffers()
+	void DX11_Context::SwapChain()
 	{
 		mSwapChain->Present((UINT)mVSync, 0);
 	}

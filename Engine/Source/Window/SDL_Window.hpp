@@ -19,7 +19,7 @@ namespace aio
 
 		inline void* GetHandle() const override { return mHandle; }
 
-		void SwapChain() override;
+		void SwapBuffers() override;
 	private:
 		SDLwindowHandler* mHandle;
 		

@@ -10,7 +10,8 @@ namespace aio
 {
 	Scope<RendererBackend> RendererBackend::Create()
 	{
-		CHECK_API(
+		CHECK_API
+		(
 			return CreateScope<OpenGL_Backend>(),
 			return CreateScope<DX11_Backend>()
 		);

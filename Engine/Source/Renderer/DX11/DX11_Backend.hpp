@@ -27,7 +27,10 @@ namespace aio
 	private:
 		static DX11_Backend* sInstance;
 	private:
-		DX11_Context* mContext;
+		Ref<DX11_Context> mContext;
+
+		Microsoft::WRL::ComPtr<ID3D11Device> mDevice;
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext> mDeviceContext;
 	};
 }
 #else

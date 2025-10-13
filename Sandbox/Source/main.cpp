@@ -3,8 +3,8 @@
 int main()
 {
 	aio::AppSpecifications appSpecs;
-	appSpecs.title = "Alexio Engine";
-	appSpecs.width = 1280;
+	appSpecs.title  = "Alexio Engine";
+	appSpecs.width  = 1280;
 	appSpecs.height = 720;
 
 	Sandbox sandbox(appSpecs);

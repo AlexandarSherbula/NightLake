@@ -59,7 +59,7 @@ namespace aio
 			for (Layer* layer : mLayerStack)
 				layer->OnImGuiRender();
 
-			mMainWindow->SwapChain();
+			mMainWindow->SwapBuffers();
 
 			Input::Reset();
 		}

@@ -17,7 +17,7 @@ namespace aio
 		AIO_ASSERT(gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress), "Failed to init glad.\n");
 	}
 
-	void OpenGL_Context::SwapBuffers()
+	void OpenGL_Context::SwapChain()
 	{
 		SDL_GL_SetSwapInterval((int32_t)mVSync);
 		SDL_GL_SwapWindow(mWindowHandle);

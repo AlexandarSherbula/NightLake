@@ -18,7 +18,7 @@ namespace aio
 
 		inline void* GetHandle() const override { return mHandle; }
 
-		void SwapChain() override;
+		void SwapBuffers() override;
 	private:
 		HWND mHandle;
 		HINSTANCE m_hInstance;

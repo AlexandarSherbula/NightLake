@@ -33,10 +33,10 @@ namespace aio
 
 		virtual void* GetHandle() const = 0;
 
-		virtual void SwapChain() = 0;
+		virtual void SwapBuffers() = 0;
 
 		WindowSpecifications& GetSpecs() { return mSpecs; }
-		GraphicsContext* GetContext() const{ return mGraphicsContext.get(); }
+		Ref<GraphicsContext> GetContext() const{ return mGraphicsContext; }
 
 		static Scope<Window> Create(const WindowSpecifications& windowSpec);
 	protected:

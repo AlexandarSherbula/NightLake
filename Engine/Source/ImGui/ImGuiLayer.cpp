@@ -10,7 +10,7 @@
 
 namespace aio
 {
-	static GraphicsContext* glContext = nullptr;
+	static Ref<GraphicsContext> glContext = nullptr;
 
 	ImGuiLayer::ImGuiLayer()
 		: Layer("ImGui")

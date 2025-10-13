@@ -56,9 +56,9 @@ namespace aio
 	{
 	}
 	
-	void SDLWindow::SwapChain()
+	void SDLWindow::SwapBuffers()
 	{
-		mGraphicsContext->SwapBuffers();
+		mGraphicsContext->SwapChain();
 	}
 
 	void ProcessEvents(SDL_Event& sdl_event, SDLWindow* window)

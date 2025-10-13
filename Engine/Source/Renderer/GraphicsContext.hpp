@@ -8,7 +8,7 @@ namespace aio
 	public:
 		virtual ~GraphicsContext() = default;
 
-		virtual void SwapBuffers() = 0;
+		virtual void SwapChain() = 0;
 
 		inline void SetVSync(bool vSync) { mVSync = vSync; }
 		inline bool IsVSync() const { return mVSync; }

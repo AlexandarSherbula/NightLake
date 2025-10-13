@@ -14,7 +14,7 @@ namespace aio
 		DX11_Context();
 		DX11_Context(HWND windowHandle, uint32_t width, uint32_t height);
 
-		void SwapBuffers() override;
+		void SwapChain() override;
 
 		void ImGuiBackendInit() override;
 		void ImGuiBackendBegin() override;
@@ -29,14 +29,16 @@ namespace aio
 		void ResizeBuffer(const Vector2& size);
 
 		// Getters
-		inline ID3D11Device* GetDevice() const { return mDevice.Get(); }
-		inline ID3D11DeviceContext* GetDeviceContext() const { return mDeviceContext.Get(); }
-		inline IDXGISwapChain* GetSwapChain() const { return mSwapChain.Get(); }
-		inline ID3D11RasterizerState* GetRasterizerState() { return mRasterizerState.Get(); }
+		inline Microsoft::WRL::ComPtr<ID3D11Device> GetDevice() const { return mDevice.Get(); }
+		inline Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetDeviceContext() const { return mDeviceContext.Get(); }
+
+		D3D_FEATURE_LEVEL GetFeatureLevel() const { return mFeatureLevel; }
 	private:
 		HWND mWindowHandle;
 		uint32_t mWindowWidth;
 		uint32_t mWindowHeight;
+
+		D3D_FEATURE_LEVEL mFeatureLevel;
 
 		Microsoft::WRL::ComPtr<ID3D11Device> mDevice;
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext> mDeviceContext;

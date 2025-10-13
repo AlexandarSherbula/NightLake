@@ -11,7 +11,7 @@ namespace aio
 	public:
 		OpenGL_Context(SDL_Window* windowHandle);
 
-		void SwapBuffers() override;
+		void SwapChain() override;
 
 		void ImGuiBackendInit() override;
 		void ImGuiBackendBegin() override;
