@@ -5,6 +5,7 @@
 #include "RendererBackend.hpp"
 #include "GraphicsContext.hpp"
 #include "Buffers.hpp"
+#include "Shader.hpp"
 
 enum GraphicsAPI
 {

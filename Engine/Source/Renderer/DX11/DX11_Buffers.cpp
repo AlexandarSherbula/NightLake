@@ -69,5 +69,29 @@ namespace aio
 	void DX11_ConstantBuffer::Bind(uint32_t binding)
 	{
 	}
+
+	DX11_VertexInput::DX11_VertexInput()
+	{
+	}
+
+	DX11_VertexInput::~DX11_VertexInput()
+	{
+	}
+
+	void DX11_VertexInput::Bind() const
+	{
+	}
+
+	void DX11_VertexInput::Unbind() const
+	{
+	}
+
+	void DX11_VertexInput::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
+	{
+	}
+
+	void DX11_VertexInput::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
+	{
+	}
 }
 #endif

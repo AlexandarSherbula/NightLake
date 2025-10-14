@@ -45,4 +45,19 @@ namespace aio
 	private:
 		uint32_t mID;
 	};
+
+	class VertexArray : public VertexInput
+	{
+	public:
+		VertexArray();
+		~VertexArray();
+
+		void Bind() const override;
+		void Unbind() const override;
+
+		void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override;
+		void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) override;
+	private:
+		uint32_t mID;
+	};
 }

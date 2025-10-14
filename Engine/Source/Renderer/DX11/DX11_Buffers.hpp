@@ -33,9 +33,6 @@ namespace aio
 
 		void Bind() override;
 		void Unbind() override;
-
-	private:
-		uint32_t mID;
 	};
 
 	class DX11_ConstantBuffer : public ConstantBuffer
@@ -46,8 +43,19 @@ namespace aio
 
 		void SetData(const void* data, uint32_t data_size) override;
 		void Bind(uint32_t binding) override;
-	private:
-		uint32_t mID;
+	};
+
+	class DX11_VertexInput : public VertexInput
+	{
+	public:
+		DX11_VertexInput();
+		~DX11_VertexInput();
+
+		void Bind() const override;
+		void Unbind() const override;
+
+		void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override;
+		void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) override;
 	};
 }
 #else
@@ -85,6 +93,19 @@ namespace aio
 
 		void SetData(const void* data, uint32_t data_size) override {}
 		void Bind(uint32_t binding) override {}
+	};
+
+	class DX11_VertexInput : public VertexInput
+	{
+	public:
+		DX11_VertexInput() {}
+		~DX11_VertexInput() {}
+
+		void Bind() const override {}
+		void Unbind() const override {}
+
+		void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override {}
+		void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) override {}
 	};
 }
 #endif

@@ -39,6 +39,23 @@ namespace aio
 
 		return nullptr;
 	}
+
+	Ref<ConstantBuffer> ConstantBuffer::Create(uint32_t block_size, uint32_t slot)
+	{
+		return Ref<ConstantBuffer>();
+	}
+
+	Ref<VertexInput> VertexInput::Create()
+	{
+		CHECK_API
+		(
+			return CreateRef<VertexArray>(),
+			return CreateRef<DX11_VertexInput>()
+		);
+
+		return nullptr;
+	}
+	
 }
 
 

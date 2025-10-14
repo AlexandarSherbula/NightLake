@@ -35,8 +35,6 @@ void MainLayer::OnUpdate()
 	
 	if (Input::GetKeyboard()->IsReleased(KeyCode::F10))
 		AIO_LOG_TRACE("F10 was released");
-
-	Renderer::Draw();
 }
 
 void MainLayer::OnImGuiRender()

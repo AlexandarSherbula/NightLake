@@ -12,6 +12,7 @@ namespace aio
 	static Application* sInstance = nullptr;
 	static Ref<VertexBuffer> vb;
 	static Ref<IndexBuffer> ib;
+	static Ref<VertexInput> vi;
 
 	Application::Application()
 	{
@@ -54,8 +55,19 @@ namespace aio
 			0, 1, 2
 		};
 
+		vi = aio::VertexInput::Create();
 		vb = aio::VertexBuffer::Create(positions, sizeof(float) * 6);
 		ib = aio::IndexBuffer::Create(indices, 3);
+
+		BufferLayout layout =
+		{
+			{ShaderDataType::Float2, "aPosition" }
+		};
+
+		vb->SetLayout(layout);
+
+		vi->AddVertexBuffer(vb);
+		vi->SetIndexBuffer(ib);
 		
 		AppTimer::Start();
 		while (mRunning)
@@ -70,11 +82,9 @@ namespace aio
 			for (Layer* layer : mLayerStack)
 				layer->OnUpdate();
 
-			vb->Bind();
-			ib->Bind();
+			vi->Bind();
 			Renderer::Draw();
-			ib->Unbind();
-			vb->Unbind();
+			vi->Unbind();
 
 			for (Layer* layer : mLayerStack)
 				layer->OnImGuiRender();
