@@ -20,4 +20,29 @@ namespace aio
 		uint32_t mVBO;
 		uint32_t mVAO;
 	};
+
+	class OpenGL_IndexBuffer : public IndexBuffer
+	{
+	public:
+		OpenGL_IndexBuffer(uint32_t* indices, uint32_t count);
+		~OpenGL_IndexBuffer();
+
+		void Bind() override;
+		void Unbind() override;
+
+	private:
+		uint32_t mID;
+	};
+
+	class UniformBuffer : public ConstantBuffer
+	{
+	public:
+		UniformBuffer(uint32_t block_size, uint32_t slot);
+		~UniformBuffer();
+
+		void SetData(const void* data, uint32_t data_size) override;
+		void Bind(uint32_t binding) override;
+	private:
+		uint32_t mID;
+	};
 }

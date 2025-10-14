@@ -11,6 +11,7 @@ namespace aio
 {
 	static Application* sInstance = nullptr;
 	static Ref<VertexBuffer> vb;
+	static Ref<IndexBuffer> ib;
 
 	Application::Application()
 	{
@@ -48,7 +49,13 @@ namespace aio
 		0.0f, 0.5f
 		};
 
+		uint32_t indices[3] =
+		{
+			0, 1, 2
+		};
+
 		vb = aio::VertexBuffer::Create(positions, sizeof(float) * 6);
+		ib = aio::IndexBuffer::Create(indices, 3);
 		
 		AppTimer::Start();
 		while (mRunning)
@@ -64,7 +71,9 @@ namespace aio
 				layer->OnUpdate();
 
 			vb->Bind();
+			ib->Bind();
 			Renderer::Draw();
+			ib->Unbind();
 			vb->Unbind();
 
 			for (Layer* layer : mLayerStack)

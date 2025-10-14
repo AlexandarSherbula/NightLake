@@ -15,7 +15,6 @@ namespace aio
 			return CreateRef<DX11_VertexBuffer>(size)
 		);
 
-		AIO_ASSERT(false, "API has not been selected.\n");
 		return nullptr;
 	}
 
@@ -27,7 +26,17 @@ namespace aio
 			return CreateRef<DX11_VertexBuffer>(data, size)
 		);
 
-		AIO_ASSERT(false, "API has not been selected.\n");
+		return nullptr;
+	}
+
+	Ref<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
+	{
+		CHECK_API
+		(
+			return CreateRef<OpenGL_IndexBuffer>(indices, count),
+			return CreateRef<DX11_IndexBuffer>(indices, count)
+		);
+
 		return nullptr;
 	}
 }

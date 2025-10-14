@@ -29,5 +29,45 @@ namespace aio
 	void DX11_VertexBuffer::SetData(const void* data, uint32_t size)
 	{
 	}
+
+	/////////////////////////////////////////////////////
+	///////////INDEX BUFFER//////////////////////////////
+	/////////////////////////////////////////////////////
+
+	DX11_IndexBuffer::DX11_IndexBuffer(uint32_t* indices, uint32_t count)
+	{
+	}
+
+	DX11_IndexBuffer::~DX11_IndexBuffer()
+	{
+	}
+
+	void DX11_IndexBuffer::Bind()
+	{
+	}
+
+	void DX11_IndexBuffer::Unbind()
+	{
+	}
+
+	/////////////////////////////////////////////////////
+	///////////CONSTANT BUFFER///////////////////////////
+	/////////////////////////////////////////////////////
+
+	DX11_ConstantBuffer::DX11_ConstantBuffer(uint32_t block_size, uint32_t slot)
+	{
+	}
+
+	DX11_ConstantBuffer::~DX11_ConstantBuffer()
+	{
+	}
+
+	void DX11_ConstantBuffer::SetData(const void* data, uint32_t data_size)
+	{
+	}
+
+	void DX11_ConstantBuffer::Bind(uint32_t binding)
+	{
+	}
 }
 #endif

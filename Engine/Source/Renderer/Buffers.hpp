@@ -125,4 +125,25 @@ namespace aio
 	protected:
 		BufferLayout mLayout;
 	};
+
+	class IndexBuffer
+	{
+	public:
+		virtual ~IndexBuffer() = default;
+
+		virtual void Bind() = 0;
+		virtual void Unbind() = 0;
+
+		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
+	};
+
+	class ConstantBuffer
+	{
+	public:
+		virtual ~ConstantBuffer() {}
+		static Ref<ConstantBuffer> Create(uint32_t block_size, uint32_t slot);
+	public:
+		virtual void SetData(const void* data, uint32_t data_size) = 0;
+		virtual void Bind(uint32_t binding) = 0;
+	};
 }

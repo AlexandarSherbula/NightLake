@@ -14,13 +14,14 @@ enum GraphicsAPI
 
 #if defined(AIO_WINDOWS)
 
-#define CHECK_API(x, y)                      \
-        do {                                 \
-            switch (aio::Renderer::GetAPI()) \
-            {                                \
-                case OpenGL: { x; break; }   \
-                case DX11:   { y; break; }   \
-            }                                \
+#define CHECK_API(x, y)                                                    \
+        do {                                                               \
+            switch (aio::Renderer::GetAPI())                               \
+            {                                                              \
+                case OpenGL: { x; break; }                                 \
+                case DX11:   { y; break; }                                 \
+                default:     { AIO_ASSERT(false, "Unknown API."); break; } \
+            }                                                              \
         } while(0)
 #else
 #define CHECK_API(x, y) do { x; } while(0)

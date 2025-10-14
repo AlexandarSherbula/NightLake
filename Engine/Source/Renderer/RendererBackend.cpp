@@ -15,7 +15,6 @@ namespace aio
 			return CreateScope<OpenGL_Backend>(),
 			return CreateScope<DX11_Backend>()
 		);
-		AIO_ASSERT(false, "Unknown API");
 		return nullptr;
 	}
 

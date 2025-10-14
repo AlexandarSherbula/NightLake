@@ -17,7 +17,6 @@ namespace aio
             return CreateScope<SDLWindow>(windowSpec),
             return CreateScope<Win32_Window>(windowSpec)
         );
-        AIO_ASSERT(false, "API has not been selected.\n");
         return nullptr;
     }
 }

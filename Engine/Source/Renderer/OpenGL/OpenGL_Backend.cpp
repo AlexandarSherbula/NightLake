@@ -63,6 +63,7 @@ namespace aio
 
 	void OpenGL_Backend::DrawIndexed(uint32_t indexCount)
 	{
+		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 	}
 
 	void OpenGL_Backend::Clear(const Vector4& color)

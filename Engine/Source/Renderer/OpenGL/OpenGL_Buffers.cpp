@@ -52,4 +52,50 @@ namespace aio
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}
 
+	/////////////////////////////////////////////////////
+	///////////INDEX BUFFER//////////////////////////////
+	/////////////////////////////////////////////////////
+
+	OpenGL_IndexBuffer::OpenGL_IndexBuffer(uint32_t* indices, uint32_t count)
+	{
+		glCreateBuffers(1, &mID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mID);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
+	}
+
+	OpenGL_IndexBuffer::~OpenGL_IndexBuffer()
+	{
+		glDeleteBuffers(1, &mID);
+	}
+
+	void OpenGL_IndexBuffer::Bind()
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mID);
+	}
+
+	void OpenGL_IndexBuffer::Unbind()
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
+	/////////////////////////////////////////////////////
+	///////////UNIFORM BUFFER////////////////////////////
+	/////////////////////////////////////////////////////
+
+	UniformBuffer::UniformBuffer(uint32_t block_size, uint32_t slot)
+	{
+	}
+
+	UniformBuffer::~UniformBuffer()
+	{
+	}
+
+	void UniformBuffer::SetData(const void* data, uint32_t data_size)
+	{
+	}
+
+	void UniformBuffer::Bind(uint32_t binding)
+	{
+	}
+
 }
