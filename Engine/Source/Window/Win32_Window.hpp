@@ -42,7 +42,7 @@ namespace aio
 
 		inline void* GetHandle() const override { return nullptr; }
 
-		void SwapChain() override {};
+		void SwapBuffers() override {};
 	};
 }
 #endif

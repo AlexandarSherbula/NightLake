@@ -2,8 +2,9 @@
 
 #include "Utils/Math.hpp"
 
-#include "Renderer/RendererBackend.hpp"
-#include "Renderer/GraphicsContext.hpp"
+#include "RendererBackend.hpp"
+#include "GraphicsContext.hpp"
+#include "Buffers.hpp"
 
 enum GraphicsAPI
 {

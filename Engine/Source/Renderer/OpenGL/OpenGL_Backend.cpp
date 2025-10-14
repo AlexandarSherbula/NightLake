@@ -25,8 +25,6 @@ namespace aio
 		AIO_ASSERT(false, "Unknown severity level!");
 	}
 
-	static uint32_t vao;
-
 	OpenGL_Backend::OpenGL_Backend()
 	{
 		AIO_ASSERT(!sInstance, "OpenGL backend has already been made");
@@ -51,26 +49,6 @@ namespace aio
 		AIO_LOG_INFO(" Vendor: {0}",   (const char*)glGetString(GL_VENDOR));
 		AIO_LOG_INFO(" Renderer: {0}", (const char*)glGetString(GL_RENDERER));
 		AIO_LOG_INFO(" Version: {0}",  (const char*)glGetString(GL_VERSION));
-
-		float positions[6] = {
-		-0.5f, -0.5f,
-		0.5f, -0.5f,
-		0.0f, 0.5f
-		};
-
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
-
-		unsigned int vbo;
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6, positions, GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
 	}
 
 	void OpenGL_Backend::SetViewport(const Vector2& position, const Vector2& size)
@@ -80,9 +58,7 @@ namespace aio
 
 	void OpenGL_Backend::Draw(uint32_t vertexCount)
 	{
-		glBindVertexArray(vao);
 		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-		glBindVertexArray(0);
 	}
 
 	void OpenGL_Backend::DrawIndexed(uint32_t indexCount)

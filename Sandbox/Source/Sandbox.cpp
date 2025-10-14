@@ -1,5 +1,6 @@
 #include "Sandbox.hpp"
 
+
 Sandbox::Sandbox()
 {
 	
@@ -8,7 +9,7 @@ Sandbox::Sandbox()
 Sandbox::Sandbox(aio::AppSpecifications& appSpecs)
 	: Application (appSpecs)
 {
-	aio::Renderer::SetAPI(DX11);
+	aio::Renderer::SetAPI(OpenGL);
 	PushLayer(new MainLayer());
 }
 
@@ -23,6 +24,7 @@ MainLayer::MainLayer()
 
 void MainLayer::OnAttach()
 {
+	
 }
 
 void MainLayer::OnUpdate()

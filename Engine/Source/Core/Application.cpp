@@ -10,6 +10,7 @@
 namespace aio
 {
 	static Application* sInstance = nullptr;
+	static Ref<VertexBuffer> vb;
 
 	Application::Application()
 	{
@@ -40,6 +41,14 @@ namespace aio
 
 		imguiLayer = new ImGuiLayer();
 		PushOverlay(imguiLayer);
+
+		float positions[6] = {
+		-0.5f, -0.5f,
+		0.5f, -0.5f,
+		0.0f, 0.5f
+		};
+
+		vb = aio::VertexBuffer::Create(positions, sizeof(float) * 6);
 		
 		AppTimer::Start();
 		while (mRunning)
@@ -54,7 +63,9 @@ namespace aio
 			for (Layer* layer : mLayerStack)
 				layer->OnUpdate();
 
+			vb->Bind();
 			Renderer::Draw();
+			vb->Unbind();
 
 			for (Layer* layer : mLayerStack)
 				layer->OnImGuiRender();
