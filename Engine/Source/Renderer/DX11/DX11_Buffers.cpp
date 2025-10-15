@@ -86,7 +86,7 @@ namespace aio
 	{
 	}
 
-	void DX11_VertexInput::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
+	void DX11_VertexInput::SetVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 	{
 	}
 

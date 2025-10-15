@@ -143,36 +143,21 @@ namespace aio
 		glBindVertexArray(0);
 	}
 
-	void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
+	void VertexArray::SetVertexBuffer(const Ref<VertexBuffer>& vertexBuffer)
 	{
-		AIO_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "VertexBuffer has no layout");
-		vertexBuffer->Bind();
-
 		glBindVertexArray(mID);
-		uint32_t index = 0;
-		auto& layout = vertexBuffer->GetLayout();
-		for (auto& element : layout)
-		{
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index,
-				element.GetComponentCount(),
-				ShaderDataTypeToOpenGLBaseType(element.type),
-				element.normalized ? GL_TRUE : GL_FALSE,
-				layout.GetStride(),
-				(const void*)element.offset);
-			index++;
-		}
 
-		mVertexBuffers.push_back(vertexBuffer);
+		mVertexBuffers = vertexBuffer;
+		mVertexBuffers->Bind();
+
 		glBindVertexArray(0);
 	}
 
 	void VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer)
 	{
 		glBindVertexArray(mID);
-		indexBuffer->Bind();
-
 		mIndexBuffer = indexBuffer;
+		mIndexBuffer->Bind();
 		glBindVertexArray(0);
 	}
 

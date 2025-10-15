@@ -55,7 +55,7 @@ namespace aio
 		void Bind() const override;
 		void Unbind() const override;
 
-		void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override;
+		void SetVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) override;
 		void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) override;
 	private:
 		uint32_t mID;

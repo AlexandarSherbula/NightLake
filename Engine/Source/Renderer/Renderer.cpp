@@ -23,8 +23,6 @@ namespace aio
 	{
 #if defined (AIO_WINDOWS)
 		sAPI = api;
-#else
-		sAPI = OpenGL;
 #endif
 	}
 }

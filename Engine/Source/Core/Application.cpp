@@ -66,8 +66,10 @@ namespace aio
 
 		vb->SetLayout(layout);
 
-		vi->AddVertexBuffer(vb);
+		vi->SetVertexBuffer(vb);
 		vi->SetIndexBuffer(ib);
+
+		Ref<Shader> shader = aio::Shader::Create("shader", vi);
 		
 		AppTimer::Start();
 		while (mRunning)
@@ -83,7 +85,9 @@ namespace aio
 				layer->OnUpdate();
 
 			vi->Bind();
+			shader->Bind();
 			Renderer::Draw();
+			shader->Unbind();
 			vi->Unbind();
 
 			for (Layer* layer : mLayerStack)

@@ -155,15 +155,15 @@ namespace aio
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 	
-		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) = 0;
+		virtual void SetVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) = 0;
 		virtual void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) = 0;
 	
-		virtual inline const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const { return mVertexBuffers; };
+		virtual inline const Ref<VertexBuffer>& GetVertexBuffer() const { return mVertexBuffers; }
 		virtual inline const Ref<IndexBuffer>& GetIndexBuffer() const { return mIndexBuffer; }
 	
 		static Ref<VertexInput> Create();
 	protected:
-		std::vector<Ref<VertexBuffer>> mVertexBuffers;
+		Ref<VertexBuffer> mVertexBuffers;
 		Ref<IndexBuffer> mIndexBuffer;
 	};
 }

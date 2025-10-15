@@ -1,5 +1,8 @@
 #include "Sandbox.hpp"
 
+#include <string>
+#include <sstream>
+#include <fstream>
 
 Sandbox::Sandbox()
 {
