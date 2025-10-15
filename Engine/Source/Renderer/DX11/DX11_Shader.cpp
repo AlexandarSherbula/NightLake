@@ -1,5 +1,7 @@
 #include "aio_pch.hpp"
 
+#if defined (AIO_WINDOWS)
+
 #include "DX11_Shader.hpp"
 
 namespace aio
@@ -64,3 +66,5 @@ namespace aio
 	{
 	}
 }
+
+#endif
