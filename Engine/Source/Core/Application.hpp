@@ -24,6 +24,7 @@ namespace aio
 		Application(AppSpecifications& appSpecs);
 		~Application();
 
+		virtual void Start() = 0;
 		void Run();
 		void Stop();
 

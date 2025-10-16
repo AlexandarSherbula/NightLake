@@ -59,7 +59,7 @@ namespace aio
 			DXGI_ADAPTER_DESC desc;
 			adapter->GetDesc(&desc);
 
-			AIO_LOG_INFO("DirectX Info:");
+			AIO_LOG_INFO("DirectX 11 Info:");
 			AIO_LOG_INFO(" Vendor: {0}", GetVendorName(desc.VendorId));
 			AIO_LOG_INFO(" Renderer: {0}", WideToString(desc.Description).c_str());
 			AIO_LOG_INFO(" Version: Direct3D {0}", GetFeatureLevelString(mContext->GetFeatureLevel()));
@@ -77,10 +77,14 @@ namespace aio
 
 	void DX11_Backend::Draw(uint32_t vertexCount)
 	{
+		mDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		mDeviceContext->Draw(vertexCount, 0);
 	}
 
 	void DX11_Backend::DrawIndexed(uint32_t indexCount)
 	{
+		mDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		mDeviceContext->DrawIndexed(indexCount, 0, 0);
 	}
 
 	void DX11_Backend::Clear(const Vector4& color)

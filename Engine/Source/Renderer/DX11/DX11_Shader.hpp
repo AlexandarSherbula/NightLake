@@ -6,6 +6,8 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
+#include "DX11_Context.hpp"
+
 namespace aio
 {
 	class DX11_Shader : public Shader
@@ -20,15 +22,15 @@ namespace aio
 		void Bind() const override;
 		void Unbind() const override;
 
-		void SetInt(const std::string& name, int32_t value) override;
-		void SetIntArray(const std::string& name, int32_t* values, uint32_t count) override;
-		void SetFloat(const std::string& name, float value) override;
-		void SetFloat2(const std::string& name, const Vector2& value) override;
-		void SetFloat3(const std::string& name, const Vector3& value) override;
-		void SetFloat4(const std::string& name, const Vector4& value) override;
+		void SetInt(const std::string& name, int32_t value) override {}
+		void SetIntArray(const std::string& name, int32_t* values, uint32_t count) override {}
+		void SetFloat(const std::string& name, float value) override {}
+		void SetFloat2(const std::string& name, const Vector2& value) override {}
+		void SetFloat3(const std::string& name, const Vector3& value) override {}
+		void SetFloat4(const std::string& name, const Vector4& value) override {}
 
-		void SetMat3x3(const std::string& name, const glm::mat3x3& matrix) override;
-		void SetMat4x4(const std::string& name, const Mat4x4& matrix) override;
+		void SetMat3x3(const std::string& name, const glm::mat3x3& matrix) override {}
+		void SetMat4x4(const std::string& name, const Mat4x4& matrix) override {}
 	private:
 		void Compile(const Ref<VertexInput>& vertexInput);
 	private:
@@ -42,6 +44,8 @@ namespace aio
 		Microsoft::WRL::ComPtr<ID3DBlob> mPixelShaderBuffer;
 
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> mVertexLayout;
+
+		Ref<DX11_Context> mContext;
 	};
 }
 #else

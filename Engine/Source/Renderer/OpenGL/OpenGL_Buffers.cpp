@@ -147,8 +147,8 @@ namespace aio
 	{
 		glBindVertexArray(mID);
 
-		mVertexBuffers = vertexBuffer;
-		mVertexBuffers->Bind();
+		mVertexBuffer = vertexBuffer;
+		mVertexBuffer->Bind();
 
 		glBindVertexArray(0);
 	}

@@ -8,6 +8,8 @@ public:
 	Sandbox();
 	Sandbox(aio::AppSpecifications& appSpecs);
 	~Sandbox();
+
+	void Start() override;
 };
 
 class MainLayer : public aio::Layer
@@ -19,4 +21,9 @@ public:
 	void OnUpdate() override;
 	void OnImGuiRender() override;
 	void OnEvent(aio::Event& event) override;
+public:
+	aio::Ref<aio::VertexBuffer> vb;
+	aio::Ref<aio::IndexBuffer> ib;
+	aio::Ref<aio::VertexInput> vi;
+	aio::Ref<aio::Shader> shader;
 };

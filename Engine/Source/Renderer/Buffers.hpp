@@ -158,12 +158,12 @@ namespace aio
 		virtual void SetVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) = 0;
 		virtual void SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) = 0;
 	
-		virtual inline const Ref<VertexBuffer>& GetVertexBuffer() const { return mVertexBuffers; }
+		virtual inline const Ref<VertexBuffer>& GetVertexBuffer() const { return mVertexBuffer; }
 		virtual inline const Ref<IndexBuffer>& GetIndexBuffer() const { return mIndexBuffer; }
 	
 		static Ref<VertexInput> Create();
 	protected:
-		Ref<VertexBuffer> mVertexBuffers;
+		Ref<VertexBuffer> mVertexBuffer;
 		Ref<IndexBuffer> mIndexBuffer;
 	};
 }

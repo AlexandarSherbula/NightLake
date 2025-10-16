@@ -6,6 +6,8 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
+#include "DX11_Context.hpp"
+
 namespace aio
 {
 	class DX11_VertexBuffer : public VertexBuffer
@@ -23,6 +25,8 @@ namespace aio
 
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> mBuffer;
+
+		Ref<DX11_Context> mContext;
 	};
 
 	class DX11_IndexBuffer : public IndexBuffer
@@ -33,6 +37,10 @@ namespace aio
 
 		void Bind() override;
 		void Unbind() override;
+	private:
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mBuffer;
+
+		Ref<DX11_Context> mContext;
 	};
 
 	class DX11_ConstantBuffer : public ConstantBuffer
@@ -41,8 +49,12 @@ namespace aio
 		DX11_ConstantBuffer(uint32_t block_size, uint32_t slot);
 		~DX11_ConstantBuffer();
 
-		void SetData(const void* data, uint32_t data_size) override;
+		void SetData(const void* data, uint32_t size) override;
 		void Bind(uint32_t binding) override;
+	private:
+		Microsoft::WRL::ComPtr<ID3D11Buffer> mBuffer;
+
+		Ref<DX11_Context> mContext;
 	};
 
 	class DX11_VertexInput : public VertexInput
