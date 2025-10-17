@@ -43,7 +43,7 @@ namespace aio
 
 	void DX11_Backend::Init()
 	{
-		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetWindow()->GetContext());
+		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
 		mDevice = mContext->GetDevice();
 		mDeviceContext = mContext->GetDeviceContext();

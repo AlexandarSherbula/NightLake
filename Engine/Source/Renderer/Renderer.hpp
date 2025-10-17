@@ -6,6 +6,7 @@
 #include "GraphicsContext.hpp"
 #include "Buffers.hpp"
 #include "Shader.hpp"
+#include "Texture.hpp"
 
 enum GraphicsAPI
 {

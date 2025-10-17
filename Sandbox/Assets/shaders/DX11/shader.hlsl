@@ -1,26 +1,38 @@
-struct VSInput
+struct VS_INPUT
 {
-    float2 position : aPosition; // Matches input layout semantic
+    float3 inPos : aPosition;
+    float4 inColor : aColor;
+    float2 inTexCoord : aTexCoord;
 };
 
-struct VSOutput
+struct VS_OUTPUT
 {
-    float4 position : SV_POSITION; // Required for the pipeline
+    float4 outPos : SV_POSITION;
+    float4 outColor : COLOR;
+    float2 outTexCoord : TEXCOORD0;
 };
 
-VSOutput VSMain(VSInput input)
+VS_OUTPUT VSMain(VS_INPUT input)
 {
-    VSOutput output;
-    output.position = float4(input.position, 0.0f, 1.0f);
+    VS_OUTPUT output;
+    output.outPos = float4(input.inPos, 1.0);
+    output.outColor = input.inColor;
+    output.outTexCoord = input.inTexCoord;
     return output;
 }
 
-struct PSInput
+struct PS_INPUT
 {
-    float4 position : SV_POSITION;
+    float4 inPos : SV_POSITION;
+    float4 inColor : COLOR;
+    float2 inTexCoord : TEXCOORD;
 };
 
-float4 PSMain(PSInput input) : SV_TARGET
+Texture2D objTexture[32] : TEXTURE : register(t0);
+SamplerState objSampler : SAMPLER : register(s0);
+
+float4 PSMain(PS_INPUT input) : SV_TARGET
 {
-    return float4(0.0f, 0.0f, 1.0f, 1.0f); // Blue
+    float4 pixel = objTexture[0].Sample(objSampler, input.inTexCoord) * input.inColor;
+    return pixel;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/Layer.hpp"
+#include "Renderer/GraphicsContext.hpp"
 
 namespace aio
 {
@@ -19,5 +20,7 @@ namespace aio
 		void End();
 	private:
 		bool mBlockEvents = true;
+
+		Ref<GraphicsContext> mGraphicsContext;
 	};
 }

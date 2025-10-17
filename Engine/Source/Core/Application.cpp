@@ -33,12 +33,14 @@ namespace aio
 
 	void Application::Run()
 	{
-		mMainWindow = Window::Create({ mAppSpecs.title, mAppSpecs.width, mAppSpecs.height, mAppSpecs.vSync, AIO_BIND_EVENT_FN(Application::OnEvent) });
+		mAppWindow = Window::Create({ mAppSpecs.title, mAppSpecs.width, mAppSpecs.height, mAppSpecs.vSync, AIO_BIND_EVENT_FN(Application::OnEvent) });
 		Input::Init();
 
 		Renderer::Init();
 
 		Start();
+
+		AIO_LOG_INFO("Ref count: {0}", mAppWindow->GetContext().use_count());
 
 		imguiLayer = new ImGuiLayer();
 		PushOverlay(imguiLayer);
@@ -48,7 +50,7 @@ namespace aio
 		{
 			AppTimer::Update();
 
-			mMainWindow->PollEvents();
+			mAppWindow->PollEvents();
 			Input::Scan();
 
 			imguiLayer->Begin();
@@ -59,7 +61,7 @@ namespace aio
 			for (Layer* layer : mLayerStack)
 				layer->OnImGuiRender();
 
-			mMainWindow->SwapBuffers();
+			mAppWindow->SwapBuffers();
 
 			Input::Reset();
 		}

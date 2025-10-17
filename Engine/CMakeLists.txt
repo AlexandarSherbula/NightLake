@@ -39,6 +39,7 @@ target_compile_definitions(Engine PUBLIC
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/Source)
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/spdlog/include)
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/SDL/include)
+target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/stb/include)
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/glm)
 
 # SDL setup

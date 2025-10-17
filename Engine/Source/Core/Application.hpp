@@ -34,14 +34,14 @@ namespace aio
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* layer);
 
-		inline Window* GetWindow() { return mMainWindow.get(); }
+		inline const Ref<Window>& GetAppWindow() const { return mAppWindow; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
 		bool OnMouseMoved(MouseMovedEvent& e);
 		bool OnMouseScrolled(MouseScrolledEvent& e);
 	private:
-		Ref<Window> mMainWindow;
+		Ref<Window> mAppWindow;
 		bool mRunning;
 		LayerStack mLayerStack;
 		ImGuiLayer* imguiLayer;

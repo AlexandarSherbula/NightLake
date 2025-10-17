@@ -26,4 +26,5 @@ public:
 	aio::Ref<aio::IndexBuffer> ib;
 	aio::Ref<aio::VertexInput> vi;
 	aio::Ref<aio::Shader> shader;
+	aio::Ref<aio::Texture> texture;
 };

@@ -36,7 +36,7 @@ namespace aio
 		virtual void SwapBuffers() = 0;
 
 		WindowSpecifications& GetSpecs() { return mSpecs; }
-		Ref<GraphicsContext> GetContext() const{ return mGraphicsContext; }
+		const Ref<GraphicsContext>& GetContext() const { return mGraphicsContext; }
 
 		static Scope<Window> Create(const WindowSpecifications& windowSpec);
 	protected:

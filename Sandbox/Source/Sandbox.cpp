@@ -31,25 +31,29 @@ MainLayer::MainLayer()
 
 void MainLayer::OnAttach()
 {
-	float positions[6] = 
+	float positions[] = 
 	{
-		-0.5f, -0.5f,
-		 0.5f, -0.5f,
-		 0.0f,  0.5f
+		 0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
+		-0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,  1.0f, 1.0f
 	};
 
-	uint32_t indices[3] =
+	uint32_t indices[6] =
 	{
-		0, 1, 2
+		0, 1, 2,
+		2, 3, 0
 	};
 
 	vi = aio::VertexInput::Create();
-	vb = aio::VertexBuffer::Create(positions, sizeof(float) * 6);
-	ib = aio::IndexBuffer::Create(indices, 3);
+	vb = aio::VertexBuffer::Create(positions, sizeof(float) * 36);
+	ib = aio::IndexBuffer::Create(indices, 6);
 
 	aio::BufferLayout layout =
 	{
-		{aio::ShaderDataType::Float2, "aPosition" }
+		{aio::ShaderDataType::Float3, "aPosition" },
+		{aio::ShaderDataType::Float4, "aColor" },
+		{aio::ShaderDataType::Float2, "aTexCoord" }
 	};
 
 	vb->SetLayout(layout);
@@ -58,11 +62,13 @@ void MainLayer::OnAttach()
 	vi->SetIndexBuffer(ib);
 
 	shader = aio::Shader::Create("shader", vi);
+	texture = aio::Texture::Create("../../Sandbox/Assets/images/awesomeface.png");
 }
 
 void MainLayer::OnUpdate()
 {
 	using namespace aio;
+
 	if (Input::GetKeyboard()->IsHeld(KeyCode::F10))
 		AIO_LOG_TRACE("F10 was Held");
 	
@@ -71,6 +77,7 @@ void MainLayer::OnUpdate()
 
 	vi->Bind();
 	shader->Bind();
+	texture->Bind(0);
 	Renderer::Draw();
 }
 

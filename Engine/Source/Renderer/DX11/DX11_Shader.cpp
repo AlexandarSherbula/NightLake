@@ -32,7 +32,7 @@ namespace aio
 		mName = name;
 		mVertexSource = mPixelSource = "../../Sandbox/Assets/shaders/DX11/" + name + ".hlsl";
 
-		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetWindow()->GetContext());
+		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
 		Compile(vertexInput);
 	}
@@ -42,7 +42,7 @@ namespace aio
 		mName = name;
 		mVertexSource = mPixelSource = filepath;
 
-		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetWindow()->GetContext());
+		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
 		Compile(vertexInput);
 	}
@@ -53,7 +53,7 @@ namespace aio
 		mVertexSource = vertexSrc;
 		mPixelSource = pixelSrc;
 
-		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetWindow()->GetContext());
+		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
 		Compile(vertexInput);
 	}

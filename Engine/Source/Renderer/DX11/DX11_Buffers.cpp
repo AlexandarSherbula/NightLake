@@ -9,7 +9,7 @@ namespace aio
 {
 	DX11_VertexBuffer::DX11_VertexBuffer(uint32_t size)
 	{
-		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetWindow()->GetContext());
+		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
 		D3D11_BUFFER_DESC bufferDesc;
 		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
@@ -28,7 +28,7 @@ namespace aio
 
 	DX11_VertexBuffer::DX11_VertexBuffer(const void* data, uint32_t size)
 	{
-		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetWindow()->GetContext());
+		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
 		D3D11_BUFFER_DESC bufferDesc;
 		ZeroMemory(&bufferDesc, sizeof(bufferDesc));
@@ -78,7 +78,7 @@ namespace aio
 
 	DX11_IndexBuffer::DX11_IndexBuffer(uint32_t* indices, uint32_t count)
 	{
-		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetWindow()->GetContext());
+		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
 		D3D11_BUFFER_DESC indexBufferDesc;
 		ZeroMemory(&indexBufferDesc, sizeof(indexBufferDesc));
@@ -118,7 +118,7 @@ namespace aio
 
 	DX11_ConstantBuffer::DX11_ConstantBuffer(uint32_t block_size, uint32_t slot)
 	{
-		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetWindow()->GetContext());
+		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
 		D3D11_BUFFER_DESC bufferDesc;
 		ZeroMemory(&bufferDesc, sizeof(bufferDesc));

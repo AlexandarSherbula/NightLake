@@ -16,7 +16,7 @@ namespace aio
 	void Renderer::Draw()
 	{
 		sBackend->Clear(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
-		sBackend->DrawIndexed(3);
+		sBackend->DrawIndexed(6);
 	}
 
 	void Renderer::SetAPI(GraphicsAPI api)

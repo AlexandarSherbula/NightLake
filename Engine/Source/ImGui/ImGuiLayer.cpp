@@ -10,7 +10,7 @@
 
 namespace aio
 {
-	static Ref<GraphicsContext> glContext = nullptr;
+	
 
 	ImGuiLayer::ImGuiLayer()
 		: Layer("ImGui")
@@ -36,22 +36,25 @@ namespace aio
 
 		SetDarkThemeColors();
 
+		GraphicsContext* context;
+
 		Application& app = Application::Get();
-		Window* window = app.GetWindow();
-		glContext = window->GetContext();
+		Window* window = app.GetAppWindow().get();
+
+		mGraphicsContext = window->GetContext();
 
 		//API init here
-		glContext->ImGuiBackendInit();
+		mGraphicsContext->ImGuiBackendInit();
 	}
 
 	void ImGuiLayer::Begin()
 	{
-		glContext->ImGuiBackendBegin();
+		mGraphicsContext->ImGuiBackendBegin();
 	}
 
 	void ImGuiLayer::OnDetach()
 	{
-		glContext->ImGuiBackendShutDown();
+		mGraphicsContext->ImGuiBackendShutDown();
 	}
 
 	void ImGuiLayer::OnImGuiRender()
@@ -59,7 +62,7 @@ namespace aio
 		static bool show = true;
 		ImGui::ShowDemoWindow(&show);
 
-		glContext->ImGuiBackendUpdate();
+		mGraphicsContext->ImGuiBackendUpdate();
 	}
 
 	void ImGuiLayer::OnEvent(Event& e)
