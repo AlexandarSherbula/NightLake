@@ -43,7 +43,6 @@ namespace aio
 	
 		void Bind(uint32_t slot) const override {}
 		void Unbind() const override {}
-		void* GetBackendID() const override {}
 	
 		void SetData(const void* data, uint32_t size) override {}
 	};
