@@ -40,8 +40,6 @@ namespace aio
 
 		Start();
 
-		AIO_LOG_INFO("Ref count: {0}", mAppWindow->GetContext().use_count());
-
 		imguiLayer = new ImGuiLayer();
 		PushOverlay(imguiLayer);
 		
