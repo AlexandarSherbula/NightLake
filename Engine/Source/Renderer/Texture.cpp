@@ -1,6 +1,9 @@
 #include "aio_pch.hpp"
 #include "Texture.hpp"
 
+#if defined (AIO_LINUX)
+	#define STBI_NO_SIMD
+#endif
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.hpp"
 
