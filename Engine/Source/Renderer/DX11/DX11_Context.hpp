@@ -44,7 +44,8 @@ namespace aio
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext> mDeviceContext;
 		Microsoft::WRL::ComPtr<IDXGISwapChain> mSwapChain;
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> mRenderTargetView;
-		Microsoft::WRL::ComPtr<ID3D11RasterizerState> mRasterizerState;		
+		Microsoft::WRL::ComPtr<ID3D11RasterizerState> mRasterizerState;
+		Microsoft::WRL::ComPtr<ID3D11BlendState> mBlendState;
 	};
 }
 

@@ -16,7 +16,7 @@ namespace aio
 
 	void Renderer::Draw()
 	{
-		sBackend->Clear(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
+		sBackend->Clear(Vector4(0.0f, 0.8f, 1.0f, 1.0f));
 		sBackend->DrawIndexed(6);
 	}
 

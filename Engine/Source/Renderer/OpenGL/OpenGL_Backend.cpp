@@ -49,6 +49,10 @@ namespace aio
 		AIO_LOG_INFO(" Vendor: {0}",   (const char*)glGetString(GL_VENDOR));
 		AIO_LOG_INFO(" Renderer: {0}", (const char*)glGetString(GL_RENDERER));
 		AIO_LOG_INFO(" Version: {0}",  (const char*)glGetString(GL_VERSION));
+
+		glEnable(GL_BLEND);
+		glBlendEquation(GL_FUNC_ADD);
+		glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
 	}
 
 	void OpenGL_Backend::SetViewport(const Vector2& position, const Vector2& size)

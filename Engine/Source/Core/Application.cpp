@@ -67,8 +67,6 @@ namespace aio
 				layer->OnImGuiRender();
 
 			mAppWindow->SwapBuffers();
-
-			Input::Reset();
 		}
 
 		Input::Close();
@@ -105,6 +103,9 @@ namespace aio
 		dispatcher.Dispatch<WindowResizeEvent>(AIO_BIND_EVENT_FN(Application::OnWindowResize));
 		dispatcher.Dispatch<MouseMovedEvent>(AIO_BIND_EVENT_FN(Application::OnMouseMoved));
 		dispatcher.Dispatch<MouseScrolledEvent>(AIO_BIND_EVENT_FN(Application::OnMouseScrolled));
+
+		if (sMainCamera != nullptr)
+			sMainCamera->OnEvent(e);
 
 		for (auto it = mLayerStack.rbegin(); it != mLayerStack.rend(); ++it)
 		{
