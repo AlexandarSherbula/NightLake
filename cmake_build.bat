@@ -1,2 +1,2 @@
-cmake -S . -B build -DSDL_VIDEO=ON -DSDL_AUDIO=OFF -DSDL_RENDER=OFF -DSDL_TESTS=OFF
+cmake -S . -B build 
 PAUSE

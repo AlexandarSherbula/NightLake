@@ -43,9 +43,17 @@ target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/stb/i
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/glm)
 
 # SDL setup
-set(SDL_SHARED OFF CACHE BOOL "" FORCE)  
-set(SDL_STATIC ON CACHE BOOL "" FORCE) # build static SDL
+option(SDL_SHARED "Do not run this librarby as dynamic" OFF)
+option(SDL_STATIC "Run it as a static library" ON)
+option(SDL_VIDEO "Enable SDL video subsystem" ON)
+option(SDL_AUDIO "Enable SDL audio subsystem" OFF)
+option(SDL_RENDER "Enable SDL render subsystem" OFF)
+option(SDL_TESTS "Enable SDL tests" OFF)
+
 add_subdirectory(vendor/SDL EXCLUDE_FROM_ALL)
+
+
+
 target_link_libraries(Engine PRIVATE SDL3::SDL3)
 
 # GLAD setup

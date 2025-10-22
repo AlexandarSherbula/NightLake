@@ -39,7 +39,7 @@ jobs:
           CC: gcc
           CXX: g++
         run: |
-          cmake -S . -B build -DSDL_VIDEO=ON -DSDL_AUDIO=OFF -DSDL_RENDER=OFF -DSDL_TESTS=OFF
+          cmake -S . -B build 
           cmake --build build --config=${{ matrix.config }}
         shell: bash
 
@@ -59,7 +59,7 @@ jobs:
 
       - name: Build
         run: |
-          cmake -S . -B build -DSDL_VIDEO=ON -DSDL_AUDIO=OFF -DSDL_RENDER=OFF -DSDL_TESTS=OFF
+          cmake -S . -B build 
           cmake --build build --config=${{ matrix.config }}
         shell: pwsh
 
