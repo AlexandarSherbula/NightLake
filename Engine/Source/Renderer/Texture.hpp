@@ -16,7 +16,7 @@ namespace aio
 
 		virtual void SetData(const void* data, uint32_t size) = 0;
 
-		static Ref<Texture> Create(uint32_t width, uint32_t height, uint32_t whiteTexture = 0xffffffff);
+		static Ref<Texture> Create(uint32_t width, uint32_t height);
 		static Ref<Texture> Create(const std::string& filepath);
 	protected:
 		uint32_t mID;

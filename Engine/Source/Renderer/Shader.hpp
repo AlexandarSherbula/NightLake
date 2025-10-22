@@ -35,4 +35,22 @@ namespace aio
 	protected:
 		std::string mName;
 	};
+
+
+	class ShaderLibrary
+	{
+	public:
+		void Add(const std::string& name, const Ref<Shader>& shader);
+		void Add(const Ref<Shader>& shader);
+		Ref<Shader> Load(const std::string& name, const Ref<VertexInput>& vertexInput);
+		Ref<Shader> Load(const std::string& name, const std::string& filepath, const Ref<VertexInput>& vertexInput);
+		Ref<Shader> Load(const std::string& name, const std::string& vertexSrc, const std::string& pixelSrc, const Ref<VertexInput>& vertexInput);
+
+		Ref<Shader> Get(const std::string& name);
+
+		bool Exists(const std::string& name) const;
+	private:
+		std::unordered_map<std::string, Ref<Shader>> mShaders;
+	};
+
 }

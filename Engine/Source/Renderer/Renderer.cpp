@@ -4,8 +4,9 @@
 
 namespace aio
 {
-	Scope<RendererBackend> Renderer::sBackend = nullptr;
 	GraphicsAPI Renderer::sAPI = OpenGL;
+	Scope<RendererBackend> Renderer::sBackend = nullptr;
+	ShaderLibrary Renderer::sShaderLibrary;
 
 	void Renderer::Init()
 	{

@@ -4,6 +4,7 @@
 #include "ImGui/ImGuiLayer.hpp"
 
 #include "Window/Window.hpp"
+#include "Renderer/Camera.hpp"
 #include "Events/Events.hpp"
 #include "Input/Input.hpp"
 
@@ -41,10 +42,13 @@ namespace aio
 		bool OnMouseMoved(MouseMovedEvent& e);
 		bool OnMouseScrolled(MouseScrolledEvent& e);
 	private:
-		Ref<Window> mAppWindow;
 		bool mRunning;
+		AppSpecifications mAppSpecs;
+
+		Ref<Window> mAppWindow;
 		LayerStack mLayerStack;
 		ImGuiLayer* imguiLayer;
-		AppSpecifications mAppSpecs;
+	private:
+		static Ref<Camera> sMainCamera;
 	};
 }

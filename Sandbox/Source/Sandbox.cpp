@@ -33,10 +33,10 @@ void MainLayer::OnAttach()
 {
 	float positions[] = 
 	{
-		 0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,  1.0f, 0.0f,
-		-0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 0.0f,
-		-0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,  0.0f, 1.0f,
-		 0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,  1.0f, 1.0f
+		 0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    1.0f, 0.0f,   0.0f,
+		-0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    0.0f, 0.0f,   0.0f,
+		-0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    0.0f, 1.0f,   0.0f,
+		 0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    1.0f, 1.0f,   0.0f,
 	};
 
 	uint32_t indices[6] =
@@ -46,14 +46,15 @@ void MainLayer::OnAttach()
 	};
 
 	vi = aio::VertexInput::Create();
-	vb = aio::VertexBuffer::Create(positions, sizeof(float) * 36);
+	vb = aio::VertexBuffer::Create(positions, sizeof(positions));
 	ib = aio::IndexBuffer::Create(indices, 6);
 
 	aio::BufferLayout layout =
 	{
 		{aio::ShaderDataType::Float3, "aPosition" },
-		{aio::ShaderDataType::Float4, "aColor" },
-		{aio::ShaderDataType::Float2, "aTexCoord" }
+		{aio::ShaderDataType::Float4, "aColor"    },
+		{aio::ShaderDataType::Float2, "aTexCoord" },
+		{aio::ShaderDataType::Float,  "aTexIndex" }
 	};
 
 	vb->SetLayout(layout);
@@ -61,8 +62,9 @@ void MainLayer::OnAttach()
 	vi->SetVertexBuffer(vb);
 	vi->SetIndexBuffer(ib);
 
-	shader = aio::Shader::Create("shader", vi);
+	aio::Renderer::GetShaderLibrary().Load("Quad", vi);
 	texture = aio::Texture::Create("../../Sandbox/Assets/images/awesomeface.png");
+	//texture = aio::Texture::Create(1, 1);
 }
 
 void MainLayer::OnUpdate()
@@ -76,7 +78,7 @@ void MainLayer::OnUpdate()
 		AIO_LOG_TRACE("F10 was released");
 
 	vi->Bind();
-	shader->Bind();
+	aio::Renderer::GetShaderLibrary().Get("Quad")->Bind();
 	texture->Bind(0);
 	Renderer::Draw();
 }

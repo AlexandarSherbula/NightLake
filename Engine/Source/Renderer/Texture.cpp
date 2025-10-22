@@ -13,11 +13,11 @@
 
 namespace aio
 {
-	Ref<Texture> Texture::Create(uint32_t width, uint32_t height, uint32_t whiteTexture)
+	Ref<Texture> Texture::Create(uint32_t width, uint32_t height)
 	{
 		CHECK_API(
-			return CreateRef<OpenGL_Texture>(width, height, whiteTexture),
-			return CreateRef<DX11_Texture>(width, height, whiteTexture)
+			return CreateRef<OpenGL_Texture>(width, height),
+			return CreateRef<DX11_Texture>(width, height)
 		);
 
 		return nullptr;

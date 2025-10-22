@@ -13,7 +13,7 @@ namespace aio
 	class DX11_Texture : public Texture
 	{
 	public:
-		DX11_Texture(uint32_t width, uint32_t height, uint32_t whiteTexture);
+		DX11_Texture(uint32_t width, uint32_t height);
 		DX11_Texture(const std::string& filepath);
 		~DX11_Texture();
 

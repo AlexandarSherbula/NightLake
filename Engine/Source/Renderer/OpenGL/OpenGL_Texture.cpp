@@ -5,7 +5,7 @@
 
 namespace aio
 {
-	OpenGL_Texture::OpenGL_Texture(uint32_t width, uint32_t height, uint32_t whiteTexture)
+	OpenGL_Texture::OpenGL_Texture(uint32_t width, uint32_t height)
 	{
 		mWidth = width;
 		mHeight = height;
@@ -22,6 +22,7 @@ namespace aio
 		glTextureParameteri(mID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(mID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+		uint32_t whiteTexture = 0xffffffff;
 		glTextureSubImage2D(mID, 0, 0, 0, mWidth, mHeight, mDataFormat, GL_UNSIGNED_BYTE, &whiteTexture);
 	}
 

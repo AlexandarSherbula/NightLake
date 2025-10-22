@@ -6,10 +6,13 @@
 #include <backends/imgui_impl_opengl3.h>
 
 #include "Utils/Timer.hpp"
+#include "Renderer/Camera.hpp"
 
 namespace aio
 {
 	static Application* sInstance = nullptr;
+
+	Ref<Camera> Application::sMainCamera = nullptr;
 
 	Application::Application()
 	{
@@ -38,6 +41,8 @@ namespace aio
 
 		Renderer::Init();
 
+		sMainCamera = CreateRef<Camera>(static_cast<float>(mAppSpecs.width) / static_cast<float>(mAppSpecs.height));
+
 		Start();
 
 		imguiLayer = new ImGuiLayer();
@@ -52,6 +57,8 @@ namespace aio
 			Input::Scan();
 
 			imguiLayer->Begin();
+
+			sMainCamera->OnUpdate(AppTimer::DeltaTime());
 
 			for (Layer* layer : mLayerStack)
 				layer->OnUpdate();

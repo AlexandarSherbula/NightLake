@@ -81,20 +81,24 @@ namespace aio
 
 	UniformBuffer::UniformBuffer(uint32_t block_size, uint32_t slot)
 	{
-		
+		glCreateBuffers(1, &mID);
+		glNamedBufferData(mID, block_size, nullptr, GL_DYNAMIC_DRAW);
+		glBindBufferBase(GL_UNIFORM_BUFFER, slot, mID);
 	}
 
 	UniformBuffer::~UniformBuffer()
 	{
-		
+		glDeleteBuffers(1, &mID);
 	}
 
 	void UniformBuffer::SetData(const void* data, uint32_t data_size)
 	{
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, data_size, data);
 	}
 
 	void UniformBuffer::Bind(uint32_t binding)
 	{
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, mID);
 	}
 
 	/////////////////////////////////////////////////////
@@ -105,17 +109,20 @@ namespace aio
 	{
 		switch (type)
 		{
-		case ShaderDataType::Float:    return GL_FLOAT;
-		case ShaderDataType::Float2:   return GL_FLOAT;
-		case ShaderDataType::Float3:   return GL_FLOAT;
-		case ShaderDataType::Float4:   return GL_FLOAT;
-		case ShaderDataType::Mat3:     return GL_FLOAT;
-		case ShaderDataType::Mat4:     return GL_FLOAT;
-		case ShaderDataType::Int:      return GL_INT;
-		case ShaderDataType::Int2:     return GL_INT;
-		case ShaderDataType::Int3:     return GL_INT;
-		case ShaderDataType::Int4:     return GL_INT;
-		case ShaderDataType::Bool:     return GL_BOOL;
+		case ShaderDataType::Float:
+		case ShaderDataType::Float2:
+		case ShaderDataType::Float3:
+		case ShaderDataType::Float4:
+		case ShaderDataType::Mat3:
+		case ShaderDataType::Mat4:
+			return GL_FLOAT;
+		case ShaderDataType::Int:
+		case ShaderDataType::Int2:
+		case ShaderDataType::Int3:
+		case ShaderDataType::Int4:
+			return GL_INT;
+		case ShaderDataType::Bool:
+			return GL_BOOL;
 		}
 
 		AIO_ASSERT(false, "Unknown ShaderDataType!");

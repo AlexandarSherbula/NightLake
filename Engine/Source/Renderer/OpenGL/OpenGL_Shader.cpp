@@ -56,6 +56,7 @@ namespace aio
 
 	OpenGL_Shader::OpenGL_Shader(const std::string& name, const std::string& vertexSrc, const std::string& pixelSrc, const Ref<VertexInput>& vertexInput)
 	{
+		mName = name;
 		mShaderSource[GL_VERTEX_SHADER] = vertexSrc;
 		mShaderSource[GL_FRAGMENT_SHADER] = pixelSrc;
 

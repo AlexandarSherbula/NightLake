@@ -40,10 +40,13 @@ namespace aio
 
 		static void SetAPI(GraphicsAPI api);
 
-		inline static Scope<RendererBackend>& Backend() { return sBackend; }
-		inline static GraphicsAPI GetAPI() { return sAPI; }
+		inline static const Scope<RendererBackend>& Backend() { return sBackend; }
+		inline static const GraphicsAPI GetAPI() { return sAPI; }
+
+		static ShaderLibrary& GetShaderLibrary() { return sShaderLibrary; }
 	private:
-		static Scope<RendererBackend> sBackend;
 		static GraphicsAPI sAPI;
+		static Scope<RendererBackend> sBackend;
+		static ShaderLibrary sShaderLibrary;
 	};
 }

@@ -7,7 +7,7 @@ namespace aio
 	class OpenGL_Texture : public Texture
 	{
 	public:
-		OpenGL_Texture(uint32_t width, uint32_t height, uint32_t whiteTexture);
+		OpenGL_Texture(uint32_t width, uint32_t height);
 		OpenGL_Texture(const std::string& filepath);
 
 		~OpenGL_Texture();

@@ -9,7 +9,7 @@ namespace aio
 {
 	uint32_t DX11_Texture::sID = 1;
 
-	DX11_Texture::DX11_Texture(uint32_t width, uint32_t height, uint32_t whiteTexture)
+	DX11_Texture::DX11_Texture(uint32_t width, uint32_t height)
 	{
 		mID = sID;
 
@@ -50,6 +50,8 @@ namespace aio
 
 		ID3D11Texture2D* textureObject;
 		ZeroMemory(&textureObject, sizeof(textureObject));
+
+		uint32_t whiteTexture = 0xffffffff;
 
 		D3D11_SUBRESOURCE_DATA textureSubData;
 		ZeroMemory(&textureSubData, sizeof(textureSubData));
@@ -96,13 +98,13 @@ namespace aio
 			D3D11_SAMPLER_DESC sampDesc;
 			ZeroMemory(&sampDesc, sizeof(sampDesc));
 
-			sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+			sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 			sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 			sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 			sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 			sampDesc.MipLODBias = 0.0f;
 			sampDesc.MaxAnisotropy = 1;
-			sampDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+			sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
 			sampDesc.BorderColor[0] = 0;
 			sampDesc.BorderColor[1] = 0;
 			sampDesc.BorderColor[2] = 0;
