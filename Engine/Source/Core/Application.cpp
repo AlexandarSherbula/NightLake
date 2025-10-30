@@ -2,11 +2,10 @@
 #include "Application.hpp"
 #include "Renderer/Renderer.hpp"
 
-#include <backends/imgui_impl_sdl3.h>
-#include <backends/imgui_impl_opengl3.h>
-
 #include "Utils/Timer.hpp"
 #include "Renderer/Camera.hpp"
+
+#include "Utils/FileReading.hpp"
 
 namespace aio
 {

@@ -55,7 +55,7 @@ namespace aio
 
 		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
-		Compile(vertexInput);
+		ReadBinary(vertexInput);
 	}
 
 	DX11_Shader::~DX11_Shader()
@@ -72,6 +72,40 @@ namespace aio
 
 	void DX11_Shader::Unbind() const
 	{
+	}
+
+	void DX11_Shader::ReadBinary(const Ref<VertexInput>& vertexInput)
+	{
+		////////// VERTEX SHADER /////////////////
+		Microsoft::WRL::ComPtr<ID3DBlob> vsBlob;
+		HRESULT hr = D3DReadFileToBlob(StringToWide(mVertexSource).c_str(), vsBlob.GetAddressOf());
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to load shader: " + mVertexSource);
+
+		std::vector<D3D11_INPUT_ELEMENT_DESC> layoutDesc;
+
+		auto& layout = vertexInput->GetVertexBuffer()->GetLayout();
+		for (auto& element : layout)
+		{
+			layoutDesc.push_back({ element.name.c_str(), 0, DX11BaseType(element.type), 0, element.offset, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+		}
+
+		hr = mContext->GetDevice()->CreateInputLayout(layoutDesc.data(),
+			layoutDesc.size(),
+			vsBlob->GetBufferPointer(),
+			vsBlob->GetBufferSize(),
+			mVertexLayout.GetAddressOf());
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to create vertex layout: " + mVertexSource + "\n" + ResultInfo(hr));
+
+		hr = mContext->GetDevice()->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &mVertexShader);
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to create vertex shader: " + mVertexSource + "\n" + ResultInfo(hr));
+
+		////////// PIXEL SHADER /////////////////
+		Microsoft::WRL::ComPtr<ID3DBlob> psBlob;
+		hr = D3DReadFileToBlob(StringToWide(mPixelSource).c_str(), psBlob.GetAddressOf());
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to load shader: " + mPixelSource);
+
+		hr = mContext->GetDevice()->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &mPixelShader);
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to create pixel shader: " + mPixelSource + "\n" + ResultInfo(hr));
 	}
 
 	void DX11_Shader::Compile(const Ref<VertexInput>& vertexInput)
