@@ -33,6 +33,7 @@ namespace aio
 		void SetMat4x4(const std::string& name, const Mat4x4& matrix) override {}
 	private:
 		void Compile(const Ref<VertexInput>& vertexInput);
+		void ReadBinary(const Ref<VertexInput>& vertexInput);
 	private:
 		std::string mVertexSource;
 		std::string mPixelSource;

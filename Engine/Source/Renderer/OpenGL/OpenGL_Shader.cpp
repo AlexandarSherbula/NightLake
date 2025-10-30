@@ -57,8 +57,8 @@ namespace aio
 	OpenGL_Shader::OpenGL_Shader(const std::string& name, const std::string& vertexSrc, const std::string& pixelSrc, const Ref<VertexInput>& vertexInput)
 	{
 		mName = name;
-		mShaderSource[GL_VERTEX_SHADER] = vertexSrc;
-		mShaderSource[GL_FRAGMENT_SHADER] = pixelSrc;
+		mShaderSource[GL_VERTEX_SHADER] = ReadFromFiles(vertexSrc);
+		mShaderSource[GL_FRAGMENT_SHADER] = ReadFromFiles(pixelSrc);
 
 		Compile(vertexInput);
 	}
@@ -122,8 +122,10 @@ namespace aio
 				// We don't need the shader anymore.
 				glDeleteShader(shader);
 
+				const char* ch_type = (type == GL_VERTEX_SHADER ? "Vertex" : "Fragment");
+				AIO_LOG_ERROR("{0} shader compilation failed!", ch_type);
 				AIO_LOG_ERROR("{0}", message);
-				AIO_ASSERT(false, "Vertex shader compilation failure!");
+				AIO_DEBUG_BREAK();
 			}
 			glAttachShader(program, shader);
 			glShaderIDs[glShaderIDIndex++] = shader;

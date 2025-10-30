@@ -15,8 +15,6 @@ namespace aio
 
 		SDL_GL_MakeCurrent(mWindowHandle, mContextHandle);
 		AIO_ASSERT(gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress), "Failed to init glad.\n");
-
-		
 	}
 
 	void OpenGL_Context::SwapChain()
