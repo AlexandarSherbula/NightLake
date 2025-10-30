@@ -7,6 +7,10 @@
 
 #include "Utils/FileReading.hpp"
 
+#include "slang.h"
+#include "slang-com-helper.h"
+#include "slang-com-ptr.h"
+
 namespace aio
 {
 	static Application* sInstance = nullptr;
@@ -35,6 +39,23 @@ namespace aio
 
 	void Application::Run()
 	{
+		Slang::ComPtr<slang::IGlobalSession> globalSession;
+		createGlobalSession(globalSession.writeRef());
+
+		// 2. Create Session
+		slang::SessionDesc sessionDesc = {};
+		slang::TargetDesc targetDesc = {};
+
+		// --- GLSL target instead of SPIR-V ---
+		targetDesc.format = SLANG_GLSL;
+		targetDesc.profile = globalSession->findProfile("glsl_450");
+
+		sessionDesc.targets = &targetDesc;
+		sessionDesc.targetCount = 1;
+
+		Slang::ComPtr<slang::ISession> session;
+		globalSession->createSession(sessionDesc, session.writeRef());
+
 		mAppWindow = Window::Create({ mAppSpecs.title, mAppSpecs.width, mAppSpecs.height, mAppSpecs.vSync, AIO_BIND_EVENT_FN(Application::OnEvent) });
 		Input::Init();
 

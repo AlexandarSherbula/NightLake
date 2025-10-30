@@ -42,6 +42,14 @@ target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/SDL/i
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/stb/include)
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/glm)
 
+target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/slang/include)
+
+if(WIN32)
+    target_link_libraries(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/slang/lib/windows/slang.lib)
+elseif(UNIX)
+    target_link_libraries(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/slang/lib/linux/libslang.so)
+endif()
+
 # SDL setup
 option(SDL_SHARED "Do not run this librarby as dynamic" OFF)
 option(SDL_STATIC "Run it as a static library" ON)
