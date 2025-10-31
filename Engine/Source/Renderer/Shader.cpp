@@ -224,26 +224,24 @@ namespace aio
 		AIO_LOG_INFO("Vertex Shader succesfully compiled to {0} bytes of binary", vsCode->getBufferSize());
 		AIO_LOG_INFO("Pixel Shader succesfully compiled to {0} bytes of binary", psCode->getBufferSize());
 
-		auto writeBlobToFile = [](const char* filepath, slang::IBlob* blob)
+		auto writeBlobToFile = [](const std::string& filepath, slang::IBlob* blob)
 			{
-				// Ensure the folder exists (creates it if missing)
-				std::filesystem::create_directories(sCacheDirectory.c_str());
+				std::filesystem::create_directories(sCacheDirectory);
 
-				// Build full path
-				
+				std::ofstream file(filepath, std::ios::binary);
+				if (!file)
+					return false;
 
-				FILE* f = nullptr;
-				if (fopen_s(&f, filepath, "wb") == 0 && f)
-				{
-					fwrite(blob->getBufferPointer(), 1, blob->getBufferSize(), f);
-					fclose(f);
-					return true;
-				}
-				return false;
+				file.write(
+					reinterpret_cast<const char*>(blob->getBufferPointer()),
+					static_cast<std::streamsize>(blob->getBufferSize())
+				);
+
+				return file.good();
 			};
 
-		writeBlobToFile(GetVertexShaderCacheFilePath(shaderName).c_str(), vsCode);
-		writeBlobToFile(GetPixelShaderCacheFilePath(shaderName).c_str(), psCode);
+		writeBlobToFile(GetVertexShaderCacheFilePath(shaderName), vsCode);
+		writeBlobToFile(GetPixelShaderCacheFilePath(shaderName), psCode);
 	}
 
 	void SlangShader::CompileFromFilePath(const std::string& filePath)
