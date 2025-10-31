@@ -7,7 +7,7 @@
 
 namespace aio
 {
-	const std::string& GetProjectDirectory();
+	std::string GetProjectDirectory();
 
 	std::string ReadFromFiles(const std::string& filepath);
 }

@@ -62,7 +62,7 @@ void MainLayer::OnAttach()
 	vi->SetVertexBuffer(vb);
 	vi->SetIndexBuffer(ib);
 
-	aio::Renderer::GetShaderLibrary().Load("Quad", vi);
+	aio::Renderer::GetShaderLibrary().LoadSlang("Quad", vi);
 	texture = aio::Texture::Create("../../Sandbox/Assets/images/awesomeface.png");
 	//texture = aio::Texture::Create(1, 1);
 }

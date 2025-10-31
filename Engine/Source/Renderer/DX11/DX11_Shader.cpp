@@ -5,6 +5,8 @@
 #include "DX11_Shader.hpp"
 #include "Core/Application.hpp"
 
+#include "Utils/FileReading.hpp"
+
 namespace aio
 {
 
@@ -30,7 +32,7 @@ namespace aio
 	DX11_Shader::DX11_Shader(const std::string& name, const Ref<VertexInput>& vertexInput)
 	{
 		mName = name;
-		mVertexSource = mPixelSource = "../../Sandbox/Assets/shaders/DX11/" + name + ".hlsl";
+		mVertexSource = mPixelSource = GetProjectDirectory() + "Sandbox/Assets/shaders/DX11/" + name + ".hlsl";
 
 		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 

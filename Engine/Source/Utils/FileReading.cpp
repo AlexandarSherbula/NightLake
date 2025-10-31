@@ -5,11 +5,13 @@ namespace fs = std::filesystem;
 
 namespace aio
 {
-	const std::string& GetProjectDirectory()
+	std::string GetProjectDirectory()
 	{
 		fs::path projectDir = fs::current_path().parent_path().parent_path();
 
-		return projectDir.generic_string() + "/";
+		std::string proj = projectDir.generic_string() + "/";
+
+		return proj;
 	}
 
 	std::string ReadFromFiles(const std::string& filepath)

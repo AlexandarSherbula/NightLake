@@ -6,6 +6,10 @@
 #include "Utils/Math.hpp"
 #include "Buffers.hpp"
 
+#include "slang.h"
+#include "slang-com-helper.h"
+#include "slang-com-ptr.h"
+
 namespace aio
 {
 	class Shader
@@ -36,6 +40,23 @@ namespace aio
 		std::string mName;
 	};
 
+	class SlangShader
+	{
+	public:
+		static void Compile(const std::string& shaderName);
+		static void CompileFromFilePath(const std::string& filePath);
+		static void Reflection();
+
+		inline static std::string GetCacheDirectory() {	return sCacheDirectory; }
+		static std::string GetVertexShaderCacheFilePath(const std::string& shaderName);
+		static std::string GetPixelShaderCacheFilePath(const std::string& shaderName);
+	private:
+		static void DiagnoseIfNeeded(slang::IBlob* diagnosticsBlob);
+	private:
+		static Slang::ComPtr<slang::IGlobalSession> sGlobalSession;
+
+		static std::string sCacheDirectory;
+	};
 
 	class ShaderLibrary
 	{
@@ -45,6 +66,7 @@ namespace aio
 		Ref<Shader> Load(const std::string& name, const Ref<VertexInput>& vertexInput);
 		Ref<Shader> Load(const std::string& name, const std::string& filepath, const Ref<VertexInput>& vertexInput);
 		Ref<Shader> Load(const std::string& name, const std::string& vertexSrc, const std::string& pixelSrc, const Ref<VertexInput>& vertexInput);
+		Ref<Shader> LoadSlang(const std::string& name, const Ref<VertexInput>& vertexInput);
 
 		Ref<Shader> Get(const std::string& name);
 
@@ -53,4 +75,5 @@ namespace aio
 		std::unordered_map<std::string, Ref<Shader>> mShaders;
 	};
 
+	
 }

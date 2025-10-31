@@ -39,7 +39,7 @@ namespace aio
 	OpenGL_Shader::OpenGL_Shader(const std::string& name, const Ref<VertexInput>& vertexInput)
 	{
 		mName = name;
-		std::string source = ReadFromFiles("../../Sandbox/Assets/shaders/OpenGL/" + name + ".glsl");
+		std::string source = ReadFromFiles(GetProjectDirectory() + "Sandbox/Assets/shaders/OpenGL/" + name + ".glsl");
 		mShaderSource = PreProcess(source);
 
 		Compile(vertexInput);
