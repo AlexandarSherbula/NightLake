@@ -5,11 +5,13 @@ namespace fs = std::filesystem;
 
 namespace aio
 {
-	const std::string& GetProjectDirectory()
+	std::string GetProjectDirectory()
 	{
 		fs::path projectDir = fs::current_path().parent_path().parent_path();
 
-		return projectDir.generic_string() + "/";
+		std::string proj = projectDir.generic_string() + "/";
+
+		return proj;
 	}
 
 	std::string ReadFromFiles(const std::string& filepath)
@@ -30,6 +32,16 @@ namespace aio
 		}
 
 		return result;
+	}
+
+	std::string GetFileName(const std::string& filepath)
+	{
+		auto lastSlash = filepath.find_last_of("/\\");
+		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+		auto lastDot = filepath.rfind('.');
+		auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
+
+		return filepath.substr(lastSlash, count);
 	}
 }
 

@@ -5,6 +5,8 @@
 #include "Core/Application.hpp"
 #include "stb_image.hpp"
 
+#include "Utils/FileReading.hpp"
+
 namespace aio
 {
 	uint32_t DX11_Texture::sID = 1;
@@ -66,7 +68,7 @@ namespace aio
 		sID++;
 	}
 
-	DX11_Texture::DX11_Texture(const std::string& filepath)
+	DX11_Texture::DX11_Texture(const std::string& filepath, std::string name)
 	{
 		int width, height, channels;
 		stbi_uc* data = nullptr;
@@ -76,6 +78,7 @@ namespace aio
 
 		if (data)
 		{
+			mName = name;
 			mWidth = width;
 			mHeight = height;
 			mID = sID;

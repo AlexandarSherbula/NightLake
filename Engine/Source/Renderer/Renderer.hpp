@@ -43,10 +43,8 @@ namespace aio
 		inline static const Scope<RendererBackend>& Backend() { return sBackend; }
 		inline static const GraphicsAPI GetAPI() { return sAPI; }
 
-		static ShaderLibrary& GetShaderLibrary() { return sShaderLibrary; }
 	private:
 		static GraphicsAPI sAPI;
 		static Scope<RendererBackend> sBackend;
-		static ShaderLibrary sShaderLibrary;
 	};
 }
