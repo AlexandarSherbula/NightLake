@@ -5,9 +5,13 @@
 
 #include "Log.hpp"
 
+#if defined(AIO_DEBUG)
+	#define ASSETS_DIRECTORY GetProjectDirectory() + "Sandbox/Assets/"
+#else
+	#define ASSETS_DIRECTORY "Assets/"
+#endif
 
-#define ASSETS_DIRECTORY GetProjectDirectory() + "Sandbox/Assets/"
-#define CACHE_DIRECTORY ASSETS_DIRECTORY + "cache/"
+#define CACHE_DIRECTORY ASSETS_DIRECTORY "cache/"
 
 namespace aio
 {

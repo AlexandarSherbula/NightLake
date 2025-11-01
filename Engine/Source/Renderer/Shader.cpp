@@ -55,7 +55,7 @@ namespace aio
 		if (name == "")
 			name = GetFileName(shaderFile);
 
-		std::string shaderFilePath = ASSETS_DIRECTORY + "shaders/" + shaderFile;
+		std::string shaderFilePath = ASSETS_DIRECTORY  "shaders/" + shaderFile;
 
 		auto shader = Create(shaderFilePath, vertexInput, name);
 		Shader::Add(shader, name);
