@@ -2,6 +2,7 @@
 
 #include "Core/Application.hpp"
 #include "Core/Layer.hpp"
+#include "Core/Assets.hpp"
 
 #include "Events/Events.hpp"
 #include "Input/Input.hpp"

@@ -6,22 +6,32 @@
 #include "OpenGL/OpenGL_Shader.hpp"
 #include "DX11/DX11_Shader.hpp"
 
-#include "Utils/FileReading.hpp"
+#include "Utils/Timer.hpp"
+
+#include "Core/Assets.hpp"
 
 namespace aio
 {
-	Ref<Shader> Shader::Create(const std::string& name, const Ref<VertexInput>& vertexInput)
-	{
-		CHECK_API
-		(
-			return CreateRef<OpenGL_Shader>(name, vertexInput),
-			return CreateRef<DX11_Shader>(name, vertexInput)
-		);
-		return nullptr;
-	}
+	std::unordered_map<std::string, Ref<Shader>> Shader::sShaders;
 
-	Ref<Shader> Shader::Create(const std::string& name, const std::string& filepath, const Ref<VertexInput>& vertexInput)
+	Ref<Shader> Shader::Create(const std::string& filepath, const Ref<VertexInput>& vertexInput, std::string name)
 	{
+		if (name == "")
+			name = GetFileName(filepath);
+
+		if (filepath.find(".slang") != std::string::npos)
+		{
+			std::filesystem::path vsPath = SlangCompiler::GetVertexShaderCacheFilePath(name);
+			std::filesystem::path psPath = SlangCompiler::GetPixelShaderCacheFilePath(name);
+
+			if (!std::filesystem::exists(vsPath) || !std::filesystem::exists(psPath))
+			{
+				SlangCompiler::Run(filepath, name);
+			}
+
+			return Shader::Create(name, vsPath.string(), psPath.string(), vertexInput);
+		}
+
 		CHECK_API
 		(
 			return CreateRef<OpenGL_Shader>(name, filepath, vertexInput),
@@ -30,82 +40,51 @@ namespace aio
 		return nullptr;
 	}
 
-	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& pixelSrc, const Ref<VertexInput>& vertexInput)
+	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexFile, const std::string& pixelFile, const Ref<VertexInput>& vertexInput)
 	{
 		CHECK_API
 		(
-			return CreateRef<OpenGL_Shader>(name, vertexSrc, pixelSrc, vertexInput),
-			return CreateRef<DX11_Shader>(name, vertexSrc, pixelSrc, vertexInput)
+			return CreateRef<OpenGL_Shader>(name, vertexFile, pixelFile, vertexInput),
+			return CreateRef<DX11_Shader>(name, vertexFile, pixelFile, vertexInput)
 		);
 		return nullptr;
 	}
 
-	void ShaderLibrary::Add(const std::string& name, const Ref<Shader>& shader)
+	Ref<Shader> Shader::CreateAsset(const std::string& shaderFile, const Ref<VertexInput>& vertexInput, std::string name)
+	{
+		if (name == "")
+			name = GetFileName(shaderFile);
+
+		std::string shaderFilePath = ASSETS_DIRECTORY + "shaders/" + shaderFile;
+
+		auto shader = Create(shaderFilePath, vertexInput, name);
+		Shader::Add(shader, name);
+		return shader;
+	}
+
+	Ref<Shader> Shader::Get(const std::string& name)
+	{
+		AIO_ASSERT(Exists(name), "Shader doesn't exist!");
+		return sShaders[name];
+	}
+
+	void Shader::Add(const Ref<Shader>& shader, const std::string& name)
 	{
 		AIO_ASSERT(!Exists(name), "Shader already exists!");
-		mShaders[name] = shader;
+		sShaders[name] = shader;
 	}
 
-	void ShaderLibrary::Add(const Ref<Shader>& shader)
+	bool Shader::Exists(const std::string& name)
 	{
-		auto& name = shader->GetName();
-		Add(name, shader);
+		return sShaders.find(name) != sShaders.end();
 	}
 
-	Ref<Shader> ShaderLibrary::Load(const std::string& name, const Ref<VertexInput>& vertexInput)
-	{
-		auto shader = Shader::Create(name, vertexInput);
-		Add(shader);
-		return shader;
-	}
+	Slang::ComPtr<slang::IGlobalSession> SlangCompiler::sGlobalSession;
+	std::unordered_map<std::string, size_t> SlangCompiler::sShaderHashes;
 
-	Ref<Shader> ShaderLibrary::Load(const std::string& name, const std::string& filepath, const Ref<VertexInput>& vertexInput)
-	{
-		auto shader = Shader::Create(name, filepath, vertexInput);
-		Add(shader);
-		return shader;
-	}
+	static std::string GetSampledTexture();
 
-	Ref<Shader> ShaderLibrary::Load(const std::string& name, const std::string& vertexSrc, const std::string& pixelSrc, const Ref<VertexInput>& vertexInput)
-	{
-		auto shader = Shader::Create(name, vertexSrc, pixelSrc, vertexInput);
-		Add(shader);
-		return shader;
-	}
-
-	Ref<Shader> ShaderLibrary::LoadSlang(const std::string& name, const Ref<VertexInput>& vertexInput)
-	{
-		std::filesystem::path vsPath = SlangShader::GetVertexShaderCacheFilePath(name);
-		std::filesystem::path psPath = SlangShader::GetPixelShaderCacheFilePath(name);
-
-		if (!std::filesystem::exists(vsPath) || !std::filesystem::exists(psPath))
-		{
-			SlangShader::Compile(name);
-		}
-
-		auto shader = Shader::Create(name, vsPath.string(), psPath.string(), vertexInput);
-		Add(shader);
-		return shader;
-	}
-	
-	Ref<Shader> ShaderLibrary::Get(const std::string& name)
-	{
-		AIO_ASSERT(Exists(name), "Shader not found!");
-		return mShaders[name];
-	}
-
-	bool ShaderLibrary::Exists(const std::string& name) const
-	{
-		return mShaders.find(name) != mShaders.end();
-	}
-
-	Slang::ComPtr<slang::IGlobalSession> SlangShader::sGlobalSession;
-	std::string SlangShader::sCacheDirectory = GetProjectDirectory() + "Sandbox/Assets/shaders/Cache";
-
-	static std::string SampleTexture();
-
-
-	void SlangShader::Compile(const std::string& shaderName)
+	void SlangCompiler::Run(const std::string& slangFile, const std::string& name)
 	{
 		createGlobalSession(sGlobalSession.writeRef());
 
@@ -133,33 +112,28 @@ namespace aio
 		Slang::ComPtr<slang::ISession> session;
 		sGlobalSession->createSession(sessionDesc, session.writeRef());
 
-		std::string proj = GetProjectDirectory();
+		std::string shaderSource = ReadFromFiles(slangFile);
 
-		std::string slangShaderFilePath = GetProjectDirectory() + "Sandbox/Assets/shaders/" + shaderName + ".slang";
-
-		std::string slangShaderFileSource = ReadFromFiles(slangShaderFilePath);
-
-		std::string SampleTextureFunctionDeclaration = "float4 SampleTexture(float2 texCoord, int texIndex = 0);";
-		if (slangShaderFileSource.find(SampleTextureFunctionDeclaration) != std::string::npos)
+		if (shaderSource.find("GetSampledTexture") != std::string::npos)
 		{
-			std::string SampleTextureFunctionDefintion = SampleTexture();
+			std::string SampleTextureFunctionDefintion = GetSampledTexture();
 
-			if (Renderer::GetAPI() == OpenGL)
+			if (Renderer::GetAPI() == OpenGL && shaderSource.find("Texture2D") != std::string::npos)
 			{
 				std::string typedefAdd = "typedef Sampler2D Texture2D;\n";
-				slangShaderFileSource = typedefAdd + slangShaderFileSource + "\n" + SampleTextureFunctionDefintion;
+				shaderSource = typedefAdd + shaderSource + "\n" + SampleTextureFunctionDefintion;
 			}
 			else
-				slangShaderFileSource = slangShaderFileSource + "\n" + SampleTextureFunctionDefintion;
+				shaderSource += "\n" + SampleTextureFunctionDefintion;
 		}
 		
 		Slang::ComPtr<slang::IModule> slangModule;
 		{
 			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
 			slangModule = session->loadModuleFromSourceString(
-				shaderName.c_str(),
-				slangShaderFilePath.c_str(),
-				slangShaderFileSource.c_str(),
+				name.c_str(),
+				slangFile.c_str(),
+				shaderSource.c_str(),
 				diagnosticsBlob.writeRef());
 			DiagnoseIfNeeded(diagnosticsBlob);
 			AIO_ASSERT(slangModule, "Failed to create a slang module");
@@ -226,7 +200,7 @@ namespace aio
 
 		auto writeBlobToFile = [](const std::string& filepath, slang::IBlob* blob)
 			{
-				std::filesystem::create_directories(sCacheDirectory);
+				std::filesystem::create_directories(GetShaderCacheDirectory());
 
 				std::ofstream file(filepath, std::ios::binary);
 				if (!file)
@@ -240,19 +214,15 @@ namespace aio
 				return file.good();
 			};
 
-		writeBlobToFile(GetVertexShaderCacheFilePath(shaderName), vsCode);
-		writeBlobToFile(GetPixelShaderCacheFilePath(shaderName), psCode);
+		writeBlobToFile(GetVertexShaderCacheFilePath(name), vsCode);
+		writeBlobToFile(GetPixelShaderCacheFilePath(name), psCode);
 	}
 
-	void SlangShader::CompileFromFilePath(const std::string& filePath)
+	void SlangCompiler::Reflection()
 	{
 	}
 
-	void SlangShader::Reflection()
-	{
-	}
-
-	std::string SlangShader::GetVertexShaderCacheFilePath(const std::string& shaderName)
+	std::string SlangCompiler::GetVertexShaderCacheFilePath(const std::string& shaderName)
 	{
 		std::string fileExtension;
 
@@ -262,10 +232,10 @@ namespace aio
 			fileExtension = ".cso"
 		);
 
-		return SlangShader::GetCacheDirectory() + "/" + shaderName + "-vs" + fileExtension;
+		return SlangCompiler::GetShaderCacheDirectory() + shaderName + "-vs" + fileExtension;
 	}
 
-	std::string SlangShader::GetPixelShaderCacheFilePath(const std::string& shaderName)
+	std::string SlangCompiler::GetPixelShaderCacheFilePath(const std::string& shaderName)
 	{
 		std::string fileExtension;
 
@@ -275,10 +245,10 @@ namespace aio
 			fileExtension = ".cso"
 		);
 
-		return SlangShader::GetCacheDirectory() + "/" + shaderName + "-ps" + fileExtension;
+		return SlangCompiler::GetShaderCacheDirectory() + shaderName + "-ps" + fileExtension;
 	}
 
-	void SlangShader::DiagnoseIfNeeded(slang::IBlob* diagnosticsBlob)
+	void SlangCompiler::DiagnoseIfNeeded(slang::IBlob* diagnosticsBlob)
 	{
 		if (diagnosticsBlob != nullptr)
 		{
@@ -286,18 +256,18 @@ namespace aio
 		}
 	}
 
-	std::string SampleTexture()
+	std::string GetSampledTexture()
 	{
 		CHECK_API
 		(
 			return R"(
-				float4 SampleTexture(float2 texCoord, int texIndex)
+				float4 GetSampledTexture(float2 texCoord, int texIndex)
 				{
 				return textures[texIndex].Sample(texCoord);
 				})",
 
 			return R"(
-				float4 SampleTexture(float2 texCoord, int texIndex)
+				float4 GetSampledTexture(float2 texCoord, int texIndex)
 				{
 				switch (texIndex)
 				{

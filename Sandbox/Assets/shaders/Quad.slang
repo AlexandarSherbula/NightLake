@@ -1,4 +1,4 @@
-float4 SampleTexture(float2 texCoord, int texIndex = 0);
+float4 GetSampledTexture(float2 texCoord, int texIndex = 0);
 
 struct VS_INPUT
 {
@@ -29,7 +29,7 @@ struct VS_OUTPUT
 VS_OUTPUT VSMain(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.outPos = mul(camera.mvp, float4(input.inPos, 1.0));
+    output.outPos = mul(float4(input.inPos, 1.0), camera.mvp);
     output.outColor = input.inColor;
     output.outTexCoord = input.inTexCoord;
     output.outTexIndex = input.inTexIndex;
@@ -39,5 +39,5 @@ VS_OUTPUT VSMain(VS_INPUT input)
 [shader("pixel")]
 float4 PSMain(VS_OUTPUT input) : SV_Target
 {
-    return SampleTexture(input.outTexCoord, input.outTexIndex) * input.outColor;
+    return GetSampledTexture(input.outTexCoord, input.outTexIndex) * input.outColor;
 }

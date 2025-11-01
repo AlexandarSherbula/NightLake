@@ -17,9 +17,17 @@ namespace aio
 		virtual void SetData(const void* data, uint32_t size) = 0;
 
 		static Ref<Texture> Create(uint32_t width, uint32_t height);
-		static Ref<Texture> Create(const std::string& filepath);
+		static Ref<Texture> Create(const std::string& filepath, std::string name = "");
+		static Ref<Texture> CreateAsset(const std::string& imageFile, std::string name = "");
+
+		static Ref<Texture> Get(const std::string& name);
+		static void Add(const Ref<Texture>& texture, std::string name = "");
+		static bool Exists(const std::string& name);
 	protected:
 		uint32_t mID;
 		uint32_t mWidth, mHeight;
+		std::string mName;
+
+		static std::unordered_map<std::string, Ref<Texture>> sTextures;
 	};
 }

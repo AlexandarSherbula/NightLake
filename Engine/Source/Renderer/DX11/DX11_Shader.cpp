@@ -28,36 +28,32 @@ namespace aio
 		return DXGI_FORMAT_UNKNOWN;
 	}
 
-
-	DX11_Shader::DX11_Shader(const std::string& name, const Ref<VertexInput>& vertexInput)
-	{
-		mName = name;
-		mVertexSource = mPixelSource = GetProjectDirectory() + "Sandbox/Assets/shaders/DX11/" + name + ".hlsl";
-
-		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
-
-		Compile(vertexInput);
-	}
-
 	DX11_Shader::DX11_Shader(const std::string& name, const std::string& filepath, const Ref<VertexInput>& vertexInput)
 	{
 		mName = name;
-		mVertexSource = mPixelSource = filepath;
+		mVertexFile = mPixelFile = filepath;
 
 		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
-		Compile(vertexInput);
+		if (filepath.find(".cso") != std::string::npos)
+			ReadBinary(vertexInput);
+		else
+			Compile(vertexInput);
 	}
 
-	DX11_Shader::DX11_Shader(const std::string& name, const std::string& vertexSrc, const std::string& pixelSrc, const Ref<VertexInput>& vertexInput)
+	DX11_Shader::DX11_Shader(const std::string& name, const std::string& vertexFile, const std::string& pixelFile, const Ref<VertexInput>& vertexInput)
 	{
 		mName = name;
-		mVertexSource = vertexSrc;
-		mPixelSource = pixelSrc;
+
+		mVertexFile = vertexFile;
+		mPixelFile = pixelFile;
 
 		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
-		ReadBinary(vertexInput);
+		if (mVertexFile.find(".cso") != std::string::npos && mPixelFile.find(".cso") != std::string::npos)
+			ReadBinary(vertexInput);
+		else
+			Compile(vertexInput);
 	}
 
 	DX11_Shader::~DX11_Shader()
@@ -80,8 +76,8 @@ namespace aio
 	{
 		////////// VERTEX SHADER /////////////////
 		Microsoft::WRL::ComPtr<ID3DBlob> vsBlob;
-		HRESULT hr = D3DReadFileToBlob(StringToWide(mVertexSource).c_str(), vsBlob.GetAddressOf());
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to load shader: " + mVertexSource);
+		HRESULT hr = D3DReadFileToBlob(StringToWide(mVertexFile).c_str(), vsBlob.GetAddressOf());
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to load shader: " + mVertexFile);
 
 		std::vector<D3D11_INPUT_ELEMENT_DESC> layoutDesc;
 
@@ -96,27 +92,27 @@ namespace aio
 			vsBlob->GetBufferPointer(),
 			vsBlob->GetBufferSize(),
 			mVertexLayout.GetAddressOf());
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to create vertex layout: " + mVertexSource + "\n" + ResultInfo(hr));
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to create vertex layout: " + mVertexFile + "\n" + ResultInfo(hr));
 
 		hr = mContext->GetDevice()->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), NULL, &mVertexShader);
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to create vertex shader: " + mVertexSource + "\n" + ResultInfo(hr));
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to create vertex shader: " + mVertexFile + "\n" + ResultInfo(hr));
 
 		////////// PIXEL SHADER /////////////////
 		Microsoft::WRL::ComPtr<ID3DBlob> psBlob;
-		hr = D3DReadFileToBlob(StringToWide(mPixelSource).c_str(), psBlob.GetAddressOf());
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to load shader: " + mPixelSource);
+		hr = D3DReadFileToBlob(StringToWide(mPixelFile).c_str(), psBlob.GetAddressOf());
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to load shader: " + mPixelFile);
 
 		hr = mContext->GetDevice()->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), NULL, &mPixelShader);
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to create pixel shader: " + mPixelSource + "\n" + ResultInfo(hr));
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to create pixel shader: " + mPixelFile + "\n" + ResultInfo(hr));
 	}
 
 	void DX11_Shader::Compile(const Ref<VertexInput>& vertexInput)
 	{
 		////////// VERTEX SHADER /////////////////
 		ID3DBlob* vertexErrorMessage;
-		HRESULT hr = D3DCompileFromFile(StringToWide(mVertexSource).c_str(), NULL, NULL, "VSMain", "vs_5_0", D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_WARNINGS_ARE_ERRORS,
+		HRESULT hr = D3DCompileFromFile(StringToWide(mVertexFile).c_str(), NULL, NULL, "VSMain", "vs_5_0", D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_WARNINGS_ARE_ERRORS,
 			0, &mVertexShaderBuffer, &vertexErrorMessage);
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to load shader: " + mVertexSource + "\n" + reinterpret_cast<const char*>(vertexErrorMessage->GetBufferPointer()));
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to load shader: " + mVertexFile + "\n" + reinterpret_cast<const char*>(vertexErrorMessage->GetBufferPointer()));
 
 		std::vector<D3D11_INPUT_ELEMENT_DESC> layoutDesc;
 
@@ -131,19 +127,19 @@ namespace aio
 			mVertexShaderBuffer->GetBufferPointer(),
 			mVertexShaderBuffer->GetBufferSize(),
 			mVertexLayout.GetAddressOf());
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to create vertex layout: " + mVertexSource + "\n" + ResultInfo(hr));
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to create vertex layout: " + mVertexFile + "\n" + ResultInfo(hr));
 
 		hr = mContext->GetDevice()->CreateVertexShader(mVertexShaderBuffer->GetBufferPointer(), mVertexShaderBuffer->GetBufferSize(), NULL, &mVertexShader);
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to create vertex shader: " + mVertexSource + "\n" + ResultInfo(hr));
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to create vertex shader: " + mVertexFile + "\n" + ResultInfo(hr));
 
 		////////// PIXEL SHADER /////////////////
 		ID3DBlob* pixelErrorMessage;
-		hr = D3DCompileFromFile(StringToWide(mPixelSource).c_str(), NULL, NULL, "PSMain", "ps_5_0", D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_WARNINGS_ARE_ERRORS,
+		hr = D3DCompileFromFile(StringToWide(mPixelFile).c_str(), NULL, NULL, "PSMain", "ps_5_0", D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_WARNINGS_ARE_ERRORS,
 			0, mPixelShaderBuffer.GetAddressOf(), &pixelErrorMessage);
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to load shader: " + mPixelSource + "\n" + reinterpret_cast<const char*>(pixelErrorMessage->GetBufferPointer()));
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to load shader: " + mPixelFile + "\n" + reinterpret_cast<const char*>(pixelErrorMessage->GetBufferPointer()));
 
 		hr = mContext->GetDevice()->CreatePixelShader(mPixelShaderBuffer->GetBufferPointer(), mPixelShaderBuffer->GetBufferSize(), NULL, &mPixelShader);
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to create pixel shader: " + mPixelSource + "\n" + ResultInfo(hr));
+		AIO_ASSERT(SUCCEEDED(hr), "Failed to create pixel shader: " + mPixelFile + "\n" + ResultInfo(hr));
 	}
 }
 

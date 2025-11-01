@@ -4,6 +4,8 @@
 #include <sstream>
 #include <fstream>
 
+using namespace aio;
+
 Sandbox::Sandbox()
 {
 	
@@ -62,15 +64,14 @@ void MainLayer::OnAttach()
 	vi->SetVertexBuffer(vb);
 	vi->SetIndexBuffer(ib);
 
-	aio::Renderer::GetShaderLibrary().LoadSlang("Quad", vi);
-	texture = aio::Texture::Create("../../Sandbox/Assets/images/awesomeface.png");
-	//texture = aio::Texture::Create(1, 1);
+	Assets::Load<Shader>("Quad.slang", vi);
+	Assets::Load<Texture>("awesomeface.png");
+
+	texture = aio::Texture::Create(1, 1);
 }
 
 void MainLayer::OnUpdate()
 {
-	using namespace aio;
-
 	if (Input::GetKeyboard()->IsHeld(KeyCode::F10))
 		AIO_LOG_TRACE("F10 was Held");
 	
@@ -78,8 +79,8 @@ void MainLayer::OnUpdate()
 		AIO_LOG_TRACE("F10 was released");
 
 	vi->Bind();
-	aio::Renderer::GetShaderLibrary().Get("Quad")->Bind();
-	texture->Bind(0);
+	Assets::Get<Shader>("Quad")->Bind();
+	Assets::Get<Texture>("awesomeface")->Bind(0);
 	Renderer::Draw();
 }
 

@@ -3,6 +3,8 @@
 
 #include "stb_image.hpp"
 
+#include "Utils/FileReading.hpp"
+
 namespace aio
 {
 	OpenGL_Texture::OpenGL_Texture(uint32_t width, uint32_t height)
@@ -26,7 +28,7 @@ namespace aio
 		glTextureSubImage2D(mID, 0, 0, 0, mWidth, mHeight, mDataFormat, GL_UNSIGNED_BYTE, &whiteTexture);
 	}
 
-	OpenGL_Texture::OpenGL_Texture(const std::string& filepath)
+	OpenGL_Texture::OpenGL_Texture(const std::string& filepath, std::string name)
 	{
 		int width, height, channels;
 		stbi_uc* data = nullptr;
@@ -34,6 +36,7 @@ namespace aio
 
 		if (data)
 		{
+			mName = name;
 			mWidth = width;
 			mHeight = height;
 

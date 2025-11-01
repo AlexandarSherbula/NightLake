@@ -36,29 +36,22 @@ namespace aio
 		return 0;
 	}
 
-	OpenGL_Shader::OpenGL_Shader(const std::string& name, const Ref<VertexInput>& vertexInput)
-	{
-		mName = name;
-		std::string source = ReadFromFiles(GetProjectDirectory() + "Sandbox/Assets/shaders/OpenGL/" + name + ".glsl");
-		mShaderSource = PreProcess(source);
-
-		Compile(vertexInput);
-	}
-
 	OpenGL_Shader::OpenGL_Shader(const std::string& name, const std::string& filepath, const Ref<VertexInput>& vertexInput)
 	{
 		mName = name;
+
 		std::string source = ReadFromFiles(filepath);
 		mShaderSource = PreProcess(source);
 
 		Compile(vertexInput);
 	}
 
-	OpenGL_Shader::OpenGL_Shader(const std::string& name, const std::string& vertexSrc, const std::string& pixelSrc, const Ref<VertexInput>& vertexInput)
+	OpenGL_Shader::OpenGL_Shader(const std::string& name, const std::string& vertexFile, const std::string& pixelFile, const Ref<VertexInput>& vertexInput)
 	{
 		mName = name;
-		mShaderSource[GL_VERTEX_SHADER] = ReadFromFiles(vertexSrc);
-		mShaderSource[GL_FRAGMENT_SHADER] = ReadFromFiles(pixelSrc);
+
+		mShaderSource[GL_VERTEX_SHADER] = ReadFromFiles(vertexFile);
+		mShaderSource[GL_FRAGMENT_SHADER] = ReadFromFiles(pixelFile);
 
 		Compile(vertexInput);
 	}
