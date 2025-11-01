@@ -43,7 +43,7 @@ namespace aio
 		if (name == "")
 			name = GetFileName(imageFile);
 
-		std::string textureFilePath = ASSETS_DIRECTORY + "images/" + imageFile;
+		std::string textureFilePath = ASSETS_DIRECTORY "images/" + imageFile;
 		auto texture = Texture::Create(textureFilePath, name);
 		Add(texture, name);
 		return texture;
