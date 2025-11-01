@@ -64,8 +64,8 @@ void MainLayer::OnAttach()
 	vi->SetVertexBuffer(vb);
 	vi->SetIndexBuffer(ib);
 
-	Assets::Load<Shader>("Quad.slang", vi);
-	Assets::Load<Texture>("awesomeface.png");
+	Assets::Create<Shader>("Quad.slang", vi);
+	Assets::Create<Texture>("awesomeface.png");
 
 	texture = aio::Texture::Create(1, 1);
 }

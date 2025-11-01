@@ -10,7 +10,7 @@ namespace aio
 	{
 	public:
 		template<typename T, typename ... Args>
-		static Ref<T> Load(Args&& ... args)
+		static Ref<T> Create(Args&& ... args)
 		{
 			return T::CreateAsset(std::forward<Args>(args)...);
 		}
