@@ -12,79 +12,14 @@
 
 namespace aio
 {
+	Slang::ComPtr<slang::IGlobalSession> SlangCompiler::sGlobalSession;
 	std::unordered_map<std::string, Ref<Shader>> Shader::sShaders;
 
-	Ref<Shader> Shader::Create(const std::string& filepath, const Ref<VertexInput>& vertexInput, std::string name)
-	{
-		if (name == "")
-			name = GetFileName(filepath);
-
-		if (filepath.find(".slang") != std::string::npos)
-		{
-			std::filesystem::path vsPath = SlangCompiler::GetVertexShaderCacheFilePath(name);
-			std::filesystem::path psPath = SlangCompiler::GetPixelShaderCacheFilePath(name);
-
-			if (!std::filesystem::exists(vsPath) || !std::filesystem::exists(psPath))
-			{
-				SlangCompiler::Run(filepath, name);
-			}
-
-			return Shader::Create(name, vsPath.string(), psPath.string(), vertexInput);
-		}
-
-		CHECK_API
-		(
-			return CreateRef<OpenGL_Shader>(name, filepath, vertexInput),
-			return CreateRef<DX11_Shader>(name, filepath, vertexInput)
-		);
-		return nullptr;
-	}
-
-	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexFile, const std::string& pixelFile, const Ref<VertexInput>& vertexInput)
-	{
-		CHECK_API
-		(
-			return CreateRef<OpenGL_Shader>(name, vertexFile, pixelFile, vertexInput),
-			return CreateRef<DX11_Shader>(name, vertexFile, pixelFile, vertexInput)
-		);
-		return nullptr;
-	}
-
-	Ref<Shader> Shader::CreateAsset(const std::string& shaderFile, const Ref<VertexInput>& vertexInput, std::string name)
-	{
-		if (name == "")
-			name = GetFileName(shaderFile);
-
-		std::string shaderFilePath = ASSETS_DIRECTORY  "shaders/" + shaderFile;
-
-		auto shader = Create(shaderFilePath, vertexInput, name);
-		Shader::Add(shader, name);
-		return shader;
-	}
-
-	Ref<Shader> Shader::Get(const std::string& name)
-	{
-		AIO_ASSERT(Exists(name), "Shader doesn't exist!");
-		return sShaders[name];
-	}
-
-	void Shader::Add(const Ref<Shader>& shader, const std::string& name)
-	{
-		AIO_ASSERT(!Exists(name), "Shader already exists!");
-		sShaders[name] = shader;
-	}
-
-	bool Shader::Exists(const std::string& name)
-	{
-		return sShaders.find(name) != sShaders.end();
-	}
-
-	Slang::ComPtr<slang::IGlobalSession> SlangCompiler::sGlobalSession;
-	std::unordered_map<std::string, size_t> SlangCompiler::sShaderHashes;
-
+	static const char* PrintKind(slang::TypeReflection::Kind kind);
+	static void printParamLayout(slang::VariableLayoutReflection* varLayout);
 	static std::string GetSampledTexture();
 
-	void SlangCompiler::Run(const std::string& slangFile, const std::string& name)
+	void SlangCompiler::Run(const std::string& slangFile, const std::string& slangSource, const std::string& name)
 	{
 		createGlobalSession(sGlobalSession.writeRef());
 
@@ -112,28 +47,13 @@ namespace aio
 		Slang::ComPtr<slang::ISession> session;
 		sGlobalSession->createSession(sessionDesc, session.writeRef());
 
-		std::string shaderSource = ReadFromFiles(slangFile);
-
-		if (shaderSource.find("GetSampledTexture") != std::string::npos)
-		{
-			std::string SampleTextureFunctionDefintion = GetSampledTexture();
-
-			if (Renderer::GetAPI() == OpenGL && shaderSource.find("Texture2D") != std::string::npos)
-			{
-				std::string typedefAdd = "typedef Sampler2D Texture2D;\n";
-				shaderSource = typedefAdd + shaderSource + "\n" + SampleTextureFunctionDefintion;
-			}
-			else
-				shaderSource += "\n" + SampleTextureFunctionDefintion;
-		}
-		
 		Slang::ComPtr<slang::IModule> slangModule;
 		{
 			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
 			slangModule = session->loadModuleFromSourceString(
 				name.c_str(),
 				slangFile.c_str(),
-				shaderSource.c_str(),
+				slangSource.c_str(),
 				diagnosticsBlob.writeRef());
 			DiagnoseIfNeeded(diagnosticsBlob);
 			AIO_ASSERT(slangModule, "Failed to create a slang module");
@@ -214,12 +134,61 @@ namespace aio
 				return file.good();
 			};
 
+		auto writeSlangToCacheFile = [](const std::string& filepath, const std::string& source)
+			{
+				std::filesystem::create_directories(GetShaderCacheDirectory());
+
+				std::ofstream file(filepath, std::ios::binary);
+				if (!file)
+					return false;
+
+				file.write(
+					source.c_str(),
+					static_cast<std::streamsize>(source.size())
+				);
+
+				return file.good();
+			};
+
 		writeBlobToFile(GetVertexShaderCacheFilePath(name), vsCode);
 		writeBlobToFile(GetPixelShaderCacheFilePath(name), psCode);
-	}
 
-	void SlangCompiler::Reflection()
-	{
+		writeSlangToCacheFile(GetShaderCacheDirectory() + name + ".cache", slangSource);
+
+		/////////////////////////////////////////////////////
+		//////////////REFLECTION/////////////////////////////
+		/////////////////////////////////////////////////////
+
+		printf("\n");
+		AIO_LOG_TRACE("SLANG COMPILING REFLECTION");
+		printf("\n");
+		AIO_LOG_TRACE("Global Parameters");
+		slang::ProgramLayout* layout = linkedProgram->getLayout(0);
+		int32_t paramCount = layout->getParameterCount();
+
+		for (int32_t i = 0; i < paramCount; ++i)
+		{
+			auto param = layout->getParameterByIndex(i);
+			const char* name = param->getName();
+			AIO_LOG_INFO(" parameter name: {0}", name);
+			printParamLayout(param);
+		}
+
+		printf("\n");
+		AIO_LOG_TRACE("Entry Point Parameters");
+		int32_t entryCount = layout->getEntryPointCount();
+		for (int32_t ei = 0; ei < entryCount; ++ei)
+		{
+			auto entry = layout->getEntryPointByIndex(ei);
+			AIO_LOG_INFO(" entry: {0}", entry->getName());
+			int usedParams = entry->getParameterCount();
+			for (int pi = 0; pi < usedParams; ++pi)
+			{
+				auto p = entry->getParameterByIndex(pi);
+				AIO_LOG_INFO(" param: {0}", p->getName());
+				printParamLayout(p);
+			}
+		}
 	}
 
 	std::string SlangCompiler::GetVertexShaderCacheFilePath(const std::string& shaderName)
@@ -255,6 +224,111 @@ namespace aio
 			AIO_LOG_ERROR((const char*)diagnosticsBlob->getBufferPointer());
 		}
 	}
+
+	Ref<Shader> Shader::Create(const std::string& filepath, const Ref<VertexInput>& vertexInput, std::string name)
+	{
+		if (name == "")
+			name = GetFileName(filepath);
+
+		if (filepath.find(".slang") != std::string::npos)
+		{
+			std::filesystem::path vsPath = SlangCompiler::GetVertexShaderCacheFilePath(name);
+			std::filesystem::path psPath = SlangCompiler::GetPixelShaderCacheFilePath(name);
+
+			std::string shaderSource = ReadFromFiles(filepath);
+
+			if (shaderSource.find("GetSampledTexture") != std::string::npos)
+			{
+				std::string SampleTextureFunctionDefintion = GetSampledTexture();
+
+				if (Renderer::GetAPI() == OpenGL && shaderSource.find("Texture2D") != std::string::npos)
+				{
+					std::string typedefAdd = "typedef Sampler2D Texture2D;\n";
+					shaderSource = typedefAdd + shaderSource + "\n" + SampleTextureFunctionDefintion;
+				}
+				else
+					shaderSource += "\n" + SampleTextureFunctionDefintion;
+			}
+
+			auto HasShaderChanged = [&](std::string currentSource)
+				{
+					std::string cachePath = SlangCompiler::GetShaderCacheDirectory() + name + ".cache";
+
+					if (!std::filesystem::exists(cachePath))
+					{
+						return true;
+					}
+
+					std::string cachedSource = ReadFromFiles(cachePath);
+
+					currentSource.erase(std::remove_if(currentSource.begin(), currentSource.end(), [](unsigned char c)
+						{
+							return std::isspace(c);
+						}), currentSource.end());
+
+					cachedSource.erase(std::remove_if(cachedSource.begin(), cachedSource.end(), [](unsigned char c)
+						{
+							return std::isspace(c); 
+						}), cachedSource.end());
+
+					return currentSource != cachedSource;
+				};
+
+			if (!std::filesystem::exists(vsPath) || !std::filesystem::exists(psPath) || HasShaderChanged(shaderSource))
+			{
+				SlangCompiler::Run(filepath, shaderSource, name);
+			}
+
+			return Shader::Create(name, vsPath.string(), psPath.string(), vertexInput);
+		}
+
+		CHECK_API
+		(
+			return CreateRef<OpenGL_Shader>(name, filepath, vertexInput),
+			return CreateRef<DX11_Shader>(name, filepath, vertexInput)
+		);
+		return nullptr;
+	}
+
+	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexFile, const std::string& pixelFile, const Ref<VertexInput>& vertexInput)
+	{
+		CHECK_API
+		(
+			return CreateRef<OpenGL_Shader>(name, vertexFile, pixelFile, vertexInput),
+			return CreateRef<DX11_Shader>(name, vertexFile, pixelFile, vertexInput)
+		);
+		return nullptr;
+	}
+
+	Ref<Shader> Shader::CreateAsset(const std::string& shaderFile, const Ref<VertexInput>& vertexInput, std::string name)
+	{
+		if (name == "")
+			name = GetFileName(shaderFile);
+
+		std::string shaderFilePath = ASSETS_DIRECTORY "shaders/" + shaderFile;
+
+		auto shader = Create(shaderFilePath, vertexInput, name);
+		Shader::Add(shader, name);
+		return shader;
+	}
+
+	Ref<Shader> Shader::Get(const std::string& name)
+	{
+		AIO_ASSERT(Exists(name), "Shader doesn't exist!");
+		return sShaders[name];
+	}
+
+	void Shader::Add(const Ref<Shader>& shader, const std::string& name)
+	{
+		AIO_ASSERT(!Exists(name), "Shader already exists!");
+		sShaders[name] = shader;
+	}
+
+	bool Shader::Exists(const std::string& name)
+	{
+		return sShaders.find(name) != sShaders.end();
+	}
+
 
 	std::string GetSampledTexture()
 	{
@@ -310,6 +384,92 @@ namespace aio
 
 		return "";
 	}
+	
+	const char* PrintKind(slang::TypeReflection::Kind kind)
+	{
+		typedef slang::TypeReflection::Kind Kind;
+
+		switch (kind)
+		{
+		case Kind::None:                        return "None";
+		case Kind::Struct:                      return "Struct";
+		case Kind::Array:                       return "Array";
+		case Kind::Matrix:                      return "Matrix";
+		case Kind::Vector:                      return "Vector";
+		case Kind::Scalar:                      return "Scalar";
+		case Kind::ConstantBuffer:              return "ConstantBuffer";
+		case Kind::Resource:                    return "Resource";
+		case Kind::SamplerState:                return "SamplerState";
+		case Kind::TextureBuffer:               return "TextureBuffer";
+		case Kind::ShaderStorageBuffer:         return "ShaderStorageBuffer";
+		case Kind::ParameterBlock:              return "ParameterBlock";
+		case Kind::GenericTypeParameter:        return "GenericTypeParameter";
+		case Kind::Interface:                   return "Interface";
+		case Kind::OutputStream:                return "OutputStream";
+		case Kind::Specialized:                 return "Specialized";
+		case Kind::Feedback:                    return "Feedback";
+		case Kind::Pointer:                     return "Pointer";
+		case Kind::DynamicResource:             return "DynamicResource";
+		case Kind::MeshOutput:                  return "MeshOutput";
+		}
+
+		return "";
+	};
+
+	void printParamLayout(slang::VariableLayoutReflection* varLayout)
+	{
+		auto typeLayout = varLayout->getTypeLayout();
+		AIO_LOG_TRACE("  kind: {0}", PrintKind(typeLayout->getKind()));
+
+		int32_t catCount = varLayout->getCategoryCount();
+		for (int32_t ci = 0; ci < catCount; ++ci)
+		{
+			auto cat = varLayout->getCategoryByIndex(ci);
+			size_t slot = varLayout->getOffset(cat);
+			AIO_LOG_TRACE("  binding slot: {0}", slot);
+		}
+
+		switch (typeLayout->getKind())
+		{
+			case slang::TypeReflection::Kind::Array:
+			{
+				AIO_LOG_TRACE("  array element size: {0}", typeLayout->getElementCount());
+				if (auto elemLayout = typeLayout->getElementTypeLayout())
+				{
+					AIO_LOG_TRACE("    element kind: {0}", PrintKind(elemLayout->getKind()));
+				}
+				break;
+			}
+			case slang::TypeReflection::Kind::Struct:
+			{
+				int32_t fieldCount = typeLayout->getFieldCount();
+				AIO_LOG_TRACE("  Struct fields:");
+				for (int f = 0; f < fieldCount; ++f)
+				{
+					auto field = typeLayout->getFieldByIndex(f);
+					auto name = field->getName();
+					AIO_LOG_INFO("   name: {0}", name);
+					printParamLayout(field);
+				}
+				break;
+			}
+			case slang::TypeReflection::Kind::ConstantBuffer:
+			case slang::TypeReflection::Kind::ParameterBlock:
+			case slang::TypeReflection::Kind::TextureBuffer:
+			case slang::TypeReflection::Kind::ShaderStorageBuffer:
+			{
+				auto elementVarLayout = typeLayout->getElementVarLayout();
+				if (elementVarLayout)
+				{
+					auto elemTypeLayout = elementVarLayout->getTypeLayout();
+					size_t size = elemTypeLayout->getSize();
+					AIO_LOG_TRACE("  field kind: {0}", PrintKind(elemTypeLayout->getKind()));
+					AIO_LOG_TRACE("  size={0}", size);
+				}
+				break;
+			}
+		}
+	};
 }
 
 
