@@ -12,10 +12,12 @@
 
 namespace aio
 {
-	static std::string GetSampledTexture();
 	Slang::ComPtr<slang::IGlobalSession> SlangCompiler::sGlobalSession;
-
 	std::unordered_map<std::string, Ref<Shader>> Shader::sShaders;
+
+	static const char* PrintKind(slang::TypeReflection::Kind kind);
+	static void printParamLayout(slang::VariableLayoutReflection* varLayout);
+	static std::string GetSampledTexture();
 
 	void SlangCompiler::Run(const std::string& slangFile, const std::string& name)
 	{
@@ -154,83 +156,34 @@ namespace aio
 		//////////////REFLECTION/////////////////////////////
 		/////////////////////////////////////////////////////
 
-
-		auto PrintKind = [](slang::TypeReflection::Kind kind)
-			{
-				typedef slang::TypeReflection::Kind Kind;
-
-				switch (kind)
-				{
-				case Kind::None:                        return "None";
-				case Kind::Struct:                      return "Struct";
-				case Kind::Array:                       return "Array";
-				case Kind::Matrix:                      return "Matrix";
-				case Kind::Vector:                      return "Vector";
-				case Kind::Scalar:                      return "Scalar";
-				case Kind::ConstantBuffer:              return "ConstantBuffer";
-				case Kind::Resource:                    return "Resource";
-				case Kind::SamplerState:                return "SamplerState";
-				case Kind::TextureBuffer:               return "TextureBuffer";
-				case Kind::ShaderStorageBuffer:         return "ShaderStorageBuffer";
-				case Kind::ParameterBlock:              return "ParameterBlock";
-				case Kind::GenericTypeParameter:        return "GenericTypeParameter";
-				case Kind::Interface:                   return "Interface";
-				case Kind::OutputStream:                return "OutputStream";
-				case Kind::Specialized:                 return "Specialized";
-				case Kind::Feedback:                    return "Feedback";
-				case Kind::Pointer:                     return "Pointer";
-				case Kind::DynamicResource:             return "DynamicResource";
-				case Kind::MeshOutput:                  return "MeshOutput";
-				}
-
-				return "";
-			};
-
 		printf("\n");
 		AIO_LOG_TRACE("SLANG COMPILING REFLECTION");
+		printf("\n");
+		AIO_LOG_TRACE("Global Parameters");
 		slang::ProgramLayout* layout = linkedProgram->getLayout(0);
-		int paramCount = layout->getParameterCount();
+		int32_t paramCount = layout->getParameterCount();
 
-		for (int i = 0; i < paramCount; ++i)
+		for (int32_t i = 0; i < paramCount; ++i)
 		{
 			auto param = layout->getParameterByIndex(i);
 			const char* name = param->getName();
-			AIO_LOG_TRACE("parameter name: {0}", name);
-			auto typeLayout = param->getTypeLayout();
-			AIO_LOG_TRACE("  kind: {0}", PrintKind(typeLayout->getKind()));
+			AIO_LOG_INFO(" parameter name: {0}", name);
+			printParamLayout(param);
+		}
 
-			int catCount = param->getCategoryCount();
-			for (int ci = 0; ci < catCount; ++ci)
+		printf("\n");
+		AIO_LOG_TRACE("Entry Point Parameters");
+		int32_t entryCount = layout->getEntryPointCount();
+		for (int32_t ei = 0; ei < entryCount; ++ei)
+		{
+			auto entry = layout->getEntryPointByIndex(ei);
+			AIO_LOG_INFO(" entry: {0}", entry->getName());
+			int usedParams = entry->getParameterCount();
+			for (int pi = 0; pi < usedParams; ++pi)
 			{
-				auto cat = param->getCategoryByIndex(ci);
-				size_t slot = param->getOffset(cat);
-				AIO_LOG_TRACE("  binding slot: {0}", slot);
-			}
-
-			switch (typeLayout->getKind())
-			{
-			case slang::TypeReflection::Kind::Array:
-				AIO_LOG_TRACE("  array element size: {0}", typeLayout->getElementCount());
-				if (auto elemLayout = typeLayout->getElementTypeLayout())
-				{
-					AIO_LOG_TRACE("    element kind: {0}", PrintKind(elemLayout->getKind()));
-				}
-				break;
-			case slang::TypeReflection::Kind::ConstantBuffer:
-			case slang::TypeReflection::Kind::ParameterBlock:
-			case slang::TypeReflection::Kind::TextureBuffer:
-			case slang::TypeReflection::Kind::ShaderStorageBuffer:
-			{
-				auto elementVarLayout = typeLayout->getElementVarLayout();
-				if (elementVarLayout)
-				{
-					auto elemTypeLayout = elementVarLayout->getTypeLayout();
-					size_t size = elemTypeLayout->getSize();
-					AIO_LOG_TRACE("  field kind: {0}", PrintKind(elemTypeLayout->getKind()));
-					AIO_LOG_TRACE("  size={0}", size);
-				}
-				break;
-			}
+				auto p = entry->getParameterByIndex(pi);
+				AIO_LOG_INFO(" param: {0}", p->getName());
+				printParamLayout(p);
 			}
 		}
 	}
@@ -389,6 +342,92 @@ namespace aio
 
 		return "";
 	}
+	
+	const char* PrintKind(slang::TypeReflection::Kind kind)
+	{
+		typedef slang::TypeReflection::Kind Kind;
+
+		switch (kind)
+		{
+		case Kind::None:                        return "None";
+		case Kind::Struct:                      return "Struct";
+		case Kind::Array:                       return "Array";
+		case Kind::Matrix:                      return "Matrix";
+		case Kind::Vector:                      return "Vector";
+		case Kind::Scalar:                      return "Scalar";
+		case Kind::ConstantBuffer:              return "ConstantBuffer";
+		case Kind::Resource:                    return "Resource";
+		case Kind::SamplerState:                return "SamplerState";
+		case Kind::TextureBuffer:               return "TextureBuffer";
+		case Kind::ShaderStorageBuffer:         return "ShaderStorageBuffer";
+		case Kind::ParameterBlock:              return "ParameterBlock";
+		case Kind::GenericTypeParameter:        return "GenericTypeParameter";
+		case Kind::Interface:                   return "Interface";
+		case Kind::OutputStream:                return "OutputStream";
+		case Kind::Specialized:                 return "Specialized";
+		case Kind::Feedback:                    return "Feedback";
+		case Kind::Pointer:                     return "Pointer";
+		case Kind::DynamicResource:             return "DynamicResource";
+		case Kind::MeshOutput:                  return "MeshOutput";
+		}
+
+		return "";
+	};
+
+	void printParamLayout(slang::VariableLayoutReflection* varLayout)
+	{
+		auto typeLayout = varLayout->getTypeLayout();
+		AIO_LOG_TRACE("  kind: {0}", PrintKind(typeLayout->getKind()));
+
+		int32_t catCount = varLayout->getCategoryCount();
+		for (int32_t ci = 0; ci < catCount; ++ci)
+		{
+			auto cat = varLayout->getCategoryByIndex(ci);
+			size_t slot = varLayout->getOffset(cat);
+			AIO_LOG_TRACE("  binding slot: {0}", slot);
+		}
+
+		switch (typeLayout->getKind())
+		{
+			case slang::TypeReflection::Kind::Array:
+			{
+				AIO_LOG_TRACE("  array element size: {0}", typeLayout->getElementCount());
+				if (auto elemLayout = typeLayout->getElementTypeLayout())
+				{
+					AIO_LOG_TRACE("    element kind: {0}", PrintKind(elemLayout->getKind()));
+				}
+				break;
+			}
+			case slang::TypeReflection::Kind::Struct:
+			{
+				int32_t fieldCount = typeLayout->getFieldCount();
+				AIO_LOG_TRACE("  Struct fields:");
+				for (int f = 0; f < fieldCount; ++f)
+				{
+					auto field = typeLayout->getFieldByIndex(f);
+					auto name = field->getName();
+					AIO_LOG_INFO("   name: {0}", name);
+					printParamLayout(field);
+				}
+				break;
+			}
+			case slang::TypeReflection::Kind::ConstantBuffer:
+			case slang::TypeReflection::Kind::ParameterBlock:
+			case slang::TypeReflection::Kind::TextureBuffer:
+			case slang::TypeReflection::Kind::ShaderStorageBuffer:
+			{
+				auto elementVarLayout = typeLayout->getElementVarLayout();
+				if (elementVarLayout)
+				{
+					auto elemTypeLayout = elementVarLayout->getTypeLayout();
+					size_t size = elemTypeLayout->getSize();
+					AIO_LOG_TRACE("  field kind: {0}", PrintKind(elemTypeLayout->getKind()));
+					AIO_LOG_TRACE("  size={0}", size);
+				}
+				break;
+			}
+		}
+	};
 }
 
 
