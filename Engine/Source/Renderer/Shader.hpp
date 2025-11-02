@@ -15,6 +15,22 @@
 
 namespace aio
 {
+	class SlangCompiler
+	{
+	public:
+		static void Run(const std::string& slangFile, const std::string& name);
+
+		inline static std::string GetShaderCacheDirectory() { return CACHE_DIRECTORY "shaders/"; }
+		static std::string GetVertexShaderCacheFilePath(const std::string& shaderName);
+		static std::string GetPixelShaderCacheFilePath(const std::string& shaderName);
+	private:
+		static void DiagnoseIfNeeded(slang::IBlob* diagnosticsBlob);
+	private:
+		static Slang::ComPtr<slang::IGlobalSession> sGlobalSession;
+
+		static std::unordered_map<std::string, size_t> sShaderHashes;
+	};
+
 	class Shader
 	{
 	public:
@@ -38,22 +54,5 @@ namespace aio
 		static std::unordered_map<std::string, Ref<Shader>> sShaders;
 	};
 
-	class SlangCompiler
-	{
-	public:
-		static void Run(const std::string& slangFile, const std::string& name);
-		static void Reflection();
-
-		inline static std::string GetShaderCacheDirectory() {	return CACHE_DIRECTORY "shaders/"; }
-		static std::string GetVertexShaderCacheFilePath(const std::string& shaderName);
-		static std::string GetPixelShaderCacheFilePath(const std::string& shaderName);
-	private:
-		static void DiagnoseIfNeeded(slang::IBlob* diagnosticsBlob);
-	private:
-		static Slang::ComPtr<slang::IGlobalSession> sGlobalSession;
-
-		static std::unordered_map<std::string, size_t> sShaderHashes;
-		static std::string sSlangShaderFilePath;
-		static std::string sSlangShaderFileSource;
-	};
+	
 }
