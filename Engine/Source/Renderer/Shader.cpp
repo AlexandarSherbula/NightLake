@@ -19,7 +19,7 @@ namespace aio
 	static void printParamLayout(slang::VariableLayoutReflection* varLayout);
 	static std::string GetSampledTexture();
 
-	void SlangCompiler::Run(const std::string& slangFile, const std::string& name)
+	void SlangCompiler::Run(const std::string& slangFile, const std::string& slangSource, const std::string& name)
 	{
 		createGlobalSession(sGlobalSession.writeRef());
 
@@ -47,28 +47,13 @@ namespace aio
 		Slang::ComPtr<slang::ISession> session;
 		sGlobalSession->createSession(sessionDesc, session.writeRef());
 
-		std::string shaderSource = ReadFromFiles(slangFile);
-
-		if (shaderSource.find("GetSampledTexture") != std::string::npos)
-		{
-			std::string SampleTextureFunctionDefintion = GetSampledTexture();
-
-			if (Renderer::GetAPI() == OpenGL && shaderSource.find("Texture2D") != std::string::npos)
-			{
-				std::string typedefAdd = "typedef Sampler2D Texture2D;\n";
-				shaderSource = typedefAdd + shaderSource + "\n" + SampleTextureFunctionDefintion;
-			}
-			else
-				shaderSource += "\n" + SampleTextureFunctionDefintion;
-		}
-
 		Slang::ComPtr<slang::IModule> slangModule;
 		{
 			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
 			slangModule = session->loadModuleFromSourceString(
 				name.c_str(),
 				slangFile.c_str(),
-				shaderSource.c_str(),
+				slangSource.c_str(),
 				diagnosticsBlob.writeRef());
 			DiagnoseIfNeeded(diagnosticsBlob);
 			AIO_ASSERT(slangModule, "Failed to create a slang module");
@@ -149,8 +134,26 @@ namespace aio
 				return file.good();
 			};
 
+		auto writeSlangToCacheFile = [](const std::string& filepath, const std::string& source)
+			{
+				std::filesystem::create_directories(GetShaderCacheDirectory());
+
+				std::ofstream file(filepath, std::ios::binary);
+				if (!file)
+					return false;
+
+				file.write(
+					source.c_str(),
+					static_cast<std::streamsize>(source.size())
+				);
+
+				return file.good();
+			};
+
 		writeBlobToFile(GetVertexShaderCacheFilePath(name), vsCode);
 		writeBlobToFile(GetPixelShaderCacheFilePath(name), psCode);
+
+		writeSlangToCacheFile(GetShaderCacheDirectory() + name + ".cache", slangSource);
 
 		/////////////////////////////////////////////////////
 		//////////////REFLECTION/////////////////////////////
@@ -232,10 +235,49 @@ namespace aio
 			std::filesystem::path vsPath = SlangCompiler::GetVertexShaderCacheFilePath(name);
 			std::filesystem::path psPath = SlangCompiler::GetPixelShaderCacheFilePath(name);
 
-			//if (!std::filesystem::exists(vsPath) || !std::filesystem::exists(psPath))
-			//{
-				SlangCompiler::Run(filepath, name);
-			//}
+			std::string shaderSource = ReadFromFiles(filepath);
+
+			if (shaderSource.find("GetSampledTexture") != std::string::npos)
+			{
+				std::string SampleTextureFunctionDefintion = GetSampledTexture();
+
+				if (Renderer::GetAPI() == OpenGL && shaderSource.find("Texture2D") != std::string::npos)
+				{
+					std::string typedefAdd = "typedef Sampler2D Texture2D;\n";
+					shaderSource = typedefAdd + shaderSource + "\n" + SampleTextureFunctionDefintion;
+				}
+				else
+					shaderSource += "\n" + SampleTextureFunctionDefintion;
+			}
+
+			auto HasShaderChanged = [&](std::string currentSource)
+				{
+					std::string cachePath = SlangCompiler::GetShaderCacheDirectory() + name + ".cache";
+
+					if (!std::filesystem::exists(cachePath))
+					{
+						return true;
+					}
+
+					std::string cachedSource = ReadFromFiles(cachePath);
+
+					currentSource.erase(std::remove_if(currentSource.begin(), currentSource.end(), [](unsigned char c)
+						{
+							return std::isspace(c);
+						}), currentSource.end());
+
+					cachedSource.erase(std::remove_if(cachedSource.begin(), cachedSource.end(), [](unsigned char c)
+						{
+							return std::isspace(c); 
+						}), cachedSource.end());
+
+					return currentSource != cachedSource;
+				};
+
+			if (!std::filesystem::exists(vsPath) || !std::filesystem::exists(psPath) || HasShaderChanged(shaderSource))
+			{
+				SlangCompiler::Run(filepath, shaderSource, name);
+			}
 
 			return Shader::Create(name, vsPath.string(), psPath.string(), vertexInput);
 		}

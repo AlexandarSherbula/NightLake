@@ -18,7 +18,7 @@ namespace aio
 	class SlangCompiler
 	{
 	public:
-		static void Run(const std::string& slangFile, const std::string& name);
+		static void Run(const std::string& slangFile, const std::string& slangSource, const std::string& name);
 
 		inline static std::string GetShaderCacheDirectory() { return CACHE_DIRECTORY "shaders/"; }
 		static std::string GetVertexShaderCacheFilePath(const std::string& shaderName);
