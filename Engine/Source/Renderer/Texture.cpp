@@ -25,14 +25,16 @@ namespace aio
 		return nullptr;
 	}
 
-	Ref<Texture> Texture::Create(const std::string& filepath, std::string name)
+	Ref<Texture> Texture::Create(const std::filesystem::path& filepath, std::string name)
 	{
+		AIO_ASSERT(std::filesystem::exists(filepath));
+
 		if (name == "")
 			name = GetFileName(filepath);
 
 		CHECK_API(
-			return CreateRef<OpenGL_Texture>(filepath),
-			return CreateRef<DX11_Texture>(filepath)
+			return CreateRef<OpenGL_Texture>(filepath, name),
+			return CreateRef<DX11_Texture>(filepath, name)
 		);
 
 		return nullptr;
@@ -43,7 +45,7 @@ namespace aio
 		if (name == "")
 			name = GetFileName(imageFile);
 
-		std::string textureFilePath = ASSETS_DIRECTORY "images/" + imageFile;
+		std::filesystem::path textureFilePath = ASSETS_DIRECTORY / "images" / imageFile;
 		auto texture = Texture::Create(textureFilePath, name);
 		Add(texture, name);
 		return texture;

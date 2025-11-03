@@ -8,7 +8,7 @@ namespace aio
 	{
 	public:
 		OpenGL_Texture(uint32_t width, uint32_t height);
-		OpenGL_Texture(const std::string& filepath, std::string name = "");
+		OpenGL_Texture(const std::filesystem::path& filepath, std::string name = "");
 
 		~OpenGL_Texture();
 

@@ -33,7 +33,7 @@ namespace aio
 		D3D11_SAMPLER_DESC sampDesc;
 		ZeroMemory(&sampDesc, sizeof(sampDesc));
 
-		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
 		sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -68,11 +68,11 @@ namespace aio
 		sID++;
 	}
 
-	DX11_Texture::DX11_Texture(const std::string& filepath, std::string name)
+	DX11_Texture::DX11_Texture(const std::filesystem::path& filepath, std::string name)
 	{
 		int width, height, channels;
 		stbi_uc* data = nullptr;
-		data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
+		data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 0);
 
 		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 

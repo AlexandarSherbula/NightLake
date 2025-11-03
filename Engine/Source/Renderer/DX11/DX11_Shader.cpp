@@ -28,14 +28,14 @@ namespace aio
 		return DXGI_FORMAT_UNKNOWN;
 	}
 
-	DX11_Shader::DX11_Shader(const std::string& name, const std::string& filepath, const Ref<VertexInput>& vertexInput)
+	DX11_Shader::DX11_Shader(const std::string& name, const std::filesystem::path& filepath, const Ref<VertexInput>& vertexInput)
 	{
 		mName = name;
-		mVertexFile = mPixelFile = filepath;
+		mVertexFile = mPixelFile = filepath.string();
 
 		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
-		if (filepath.find(".cso") != std::string::npos)
+		if (filepath.string().find(".cso") != std::string::npos)
 			ReadBinary(vertexInput);
 		else
 			Compile(vertexInput);

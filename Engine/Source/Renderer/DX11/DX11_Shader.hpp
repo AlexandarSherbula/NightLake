@@ -13,7 +13,7 @@ namespace aio
 	class DX11_Shader : public Shader
 	{
 	public:
-		DX11_Shader(const std::string& name, const std::string& filepath, const Ref<VertexInput>& vertexInput);
+		DX11_Shader(const std::string& name, const std::filesystem::path& filepath, const Ref<VertexInput>& vertexInput);
 		DX11_Shader(const std::string& name, const std::string& vertexFile, const std::string& pixelFile, const Ref<VertexInput>& vertexInput);
 		~DX11_Shader();
 

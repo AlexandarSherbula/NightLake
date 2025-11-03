@@ -8,18 +8,16 @@
 
 #include "Utils/Timer.hpp"
 
-#include "Core/Assets.hpp"
-
 namespace aio
 {
 	Slang::ComPtr<slang::IGlobalSession> SlangCompiler::sGlobalSession;
 	std::unordered_map<std::string, Ref<Shader>> Shader::sShaders;
 
 	static const char* PrintKind(slang::TypeReflection::Kind kind);
-	static void printParamLayout(slang::VariableLayoutReflection* varLayout);
+	static void PrintParameterLayout(slang::VariableLayoutReflection* varLayout);
 	static std::string GetSampledTexture();
 
-	void SlangCompiler::Run(const std::string& slangFile, const std::string& slangSource, const std::string& name)
+	void SlangCompiler::Run(const std::filesystem::path& slangFile, const std::string& slangSource, const std::string& name)
 	{
 		createGlobalSession(sGlobalSession.writeRef());
 
@@ -52,7 +50,7 @@ namespace aio
 			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
 			slangModule = session->loadModuleFromSourceString(
 				name.c_str(),
-				slangFile.c_str(),
+				slangFile.string().c_str(),
 				slangSource.c_str(),
 				diagnosticsBlob.writeRef());
 			DiagnoseIfNeeded(diagnosticsBlob);
@@ -118,7 +116,7 @@ namespace aio
 		AIO_LOG_INFO("Vertex Shader succesfully compiled to {0} bytes of binary", vsCode->getBufferSize());
 		AIO_LOG_INFO("Pixel Shader succesfully compiled to {0} bytes of binary", psCode->getBufferSize());
 
-		auto writeBlobToFile = [](const std::string& filepath, slang::IBlob* blob)
+		auto writeBlobToFile = [](const std::filesystem::path& filepath, slang::IBlob* blob)
 			{
 				std::filesystem::create_directories(GetShaderCacheDirectory());
 
@@ -134,7 +132,7 @@ namespace aio
 				return file.good();
 			};
 
-		auto writeSlangToCacheFile = [](const std::string& filepath, const std::string& source)
+		auto writeSlangToCacheFile = [](const std::filesystem::path& filepath, const std::string& source)
 			{
 				std::filesystem::create_directories(GetShaderCacheDirectory());
 
@@ -153,7 +151,7 @@ namespace aio
 		writeBlobToFile(GetVertexShaderCacheFilePath(name), vsCode);
 		writeBlobToFile(GetPixelShaderCacheFilePath(name), psCode);
 
-		writeSlangToCacheFile(GetShaderCacheDirectory() + name + ".cache", slangSource);
+		writeSlangToCacheFile(GetShaderCacheDirectory() / std::filesystem::path(name + ".cache"), slangSource);
 
 		/////////////////////////////////////////////////////
 		//////////////REFLECTION/////////////////////////////
@@ -171,7 +169,7 @@ namespace aio
 			auto param = layout->getParameterByIndex(i);
 			const char* name = param->getName();
 			AIO_LOG_INFO(" parameter name: {0}", name);
-			printParamLayout(param);
+			PrintParameterLayout(param);
 		}
 
 		printf("\n");
@@ -186,12 +184,12 @@ namespace aio
 			{
 				auto p = entry->getParameterByIndex(pi);
 				AIO_LOG_INFO(" param: {0}", p->getName());
-				printParamLayout(p);
+				PrintParameterLayout(p);
 			}
 		}
 	}
 
-	std::string SlangCompiler::GetVertexShaderCacheFilePath(const std::string& shaderName)
+	std::filesystem::path SlangCompiler::GetVertexShaderCacheFilePath(const std::string& shaderName)
 	{
 		std::string fileExtension;
 
@@ -201,10 +199,10 @@ namespace aio
 			fileExtension = ".cso"
 		);
 
-		return SlangCompiler::GetShaderCacheDirectory() + shaderName + "-vs" + fileExtension;
+		return SlangCompiler::GetShaderCacheDirectory() / std::filesystem::path(shaderName + "-vs" + fileExtension);
 	}
 
-	std::string SlangCompiler::GetPixelShaderCacheFilePath(const std::string& shaderName)
+	std::filesystem::path SlangCompiler::GetPixelShaderCacheFilePath(const std::string& shaderName)
 	{
 		std::string fileExtension;
 
@@ -214,7 +212,7 @@ namespace aio
 			fileExtension = ".cso"
 		);
 
-		return SlangCompiler::GetShaderCacheDirectory() + shaderName + "-ps" + fileExtension;
+		return SlangCompiler::GetShaderCacheDirectory() / std::filesystem::path(shaderName + "-ps" + fileExtension);
 	}
 
 	void SlangCompiler::DiagnoseIfNeeded(slang::IBlob* diagnosticsBlob)
@@ -225,12 +223,14 @@ namespace aio
 		}
 	}
 
-	Ref<Shader> Shader::Create(const std::string& filepath, const Ref<VertexInput>& vertexInput, std::string name)
+	Ref<Shader> Shader::Create(const std::filesystem::path& filepath, const Ref<VertexInput>& vertexInput, std::string name)
 	{
+		AIO_ASSERT(std::filesystem::exists(filepath), "Filepath doesn't exist");
+
 		if (name == "")
 			name = GetFileName(filepath);
 
-		if (filepath.find(".slang") != std::string::npos)
+		if (filepath.string().find(".slang") != std::string::npos)
 		{
 			std::filesystem::path vsPath = SlangCompiler::GetVertexShaderCacheFilePath(name);
 			std::filesystem::path psPath = SlangCompiler::GetPixelShaderCacheFilePath(name);
@@ -244,15 +244,15 @@ namespace aio
 				if (Renderer::GetAPI() == OpenGL && shaderSource.find("Texture2D") != std::string::npos)
 				{
 					std::string typedefAdd = "typedef Sampler2D Texture2D;\n";
-					shaderSource = typedefAdd + shaderSource + "\n" + SampleTextureFunctionDefintion;
+					shaderSource = typedefAdd + shaderSource;
 				}
-				else
-					shaderSource += "\n" + SampleTextureFunctionDefintion;
+
+				shaderSource += "\n" + SampleTextureFunctionDefintion;
 			}
 
 			auto HasShaderChanged = [&](std::string currentSource)
 				{
-					std::string cachePath = SlangCompiler::GetShaderCacheDirectory() + name + ".cache";
+					std::filesystem::path cachePath = SlangCompiler::GetShaderCacheDirectory() / std::filesystem::path(name + ".cache");
 
 					if (!std::filesystem::exists(cachePath))
 					{
@@ -305,7 +305,7 @@ namespace aio
 		if (name == "")
 			name = GetFileName(shaderFile);
 
-		std::string shaderFilePath = ASSETS_DIRECTORY "shaders/" + shaderFile;
+		std::filesystem::path shaderFilePath = ASSETS_DIRECTORY / "shaders" / std::filesystem::path(shaderFile);
 
 		auto shader = Create(shaderFilePath, vertexInput, name);
 		Shader::Add(shader, name);
@@ -335,51 +335,51 @@ namespace aio
 		CHECK_API
 		(
 			return R"(
-				float4 GetSampledTexture(float2 texCoord, int texIndex)
-				{
-				return textures[texIndex].Sample(texCoord);
-				})",
+float4 GetSampledTexture(float2 texCoord, int texIndex)
+{
+	return textures[texIndex].Sample(texCoord);
+})",
 
 			return R"(
-				float4 GetSampledTexture(float2 texCoord, int texIndex)
-				{
-				switch (texIndex)
-				{
-				case 0: return textures[0].Sample(samplerState, texCoord);
-				case 1: return textures[1].Sample(samplerState, texCoord);
-				case 2: return textures[2].Sample(samplerState, texCoord);
-				case 3: return textures[3].Sample(samplerState, texCoord);
-				case 4: return textures[4].Sample(samplerState, texCoord);
-				case 5: return textures[5].Sample(samplerState, texCoord);
-				case 6: return textures[6].Sample(samplerState, texCoord);
-				case 7: return textures[7].Sample(samplerState, texCoord);
-				case 8: return textures[8].Sample(samplerState, texCoord);
-				case 9: return textures[9].Sample(samplerState, texCoord);
-				case 10: return textures[10].Sample(samplerState, texCoord);
-				case 11: return textures[11].Sample(samplerState, texCoord);
-				case 12: return textures[12].Sample(samplerState, texCoord);
-				case 13: return textures[13].Sample(samplerState, texCoord);
-				case 14: return textures[14].Sample(samplerState, texCoord);
-				case 15: return textures[15].Sample(samplerState, texCoord);
-				case 16: return textures[16].Sample(samplerState, texCoord);
-				case 17: return textures[17].Sample(samplerState, texCoord);
-				case 18: return textures[18].Sample(samplerState, texCoord);
-				case 19: return textures[19].Sample(samplerState, texCoord);
-				case 20: return textures[20].Sample(samplerState, texCoord);
-				case 21: return textures[21].Sample(samplerState, texCoord);
-				case 22: return textures[22].Sample(samplerState, texCoord);
-				case 23: return textures[23].Sample(samplerState, texCoord);
-				case 24: return textures[24].Sample(samplerState, texCoord);
-				case 25: return textures[25].Sample(samplerState, texCoord);
-				case 26: return textures[26].Sample(samplerState, texCoord);
-				case 27: return textures[27].Sample(samplerState, texCoord);
-				case 28: return textures[28].Sample(samplerState, texCoord);
-				case 29: return textures[29].Sample(samplerState, texCoord);
-				case 30: return textures[30].Sample(samplerState, texCoord);
-				case 31: return textures[31].Sample(samplerState, texCoord);
-				}
-				return float4(1.0, 1.0, 1.0, 1.0);
-				})"
+float4 GetSampledTexture(float2 texCoord, int texIndex)
+{
+	switch (texIndex)
+	{
+		case 0: return textures[0].Sample(samplerState, texCoord);
+		case 1: return textures[1].Sample(samplerState, texCoord);
+		case 2: return textures[2].Sample(samplerState, texCoord);
+		case 3: return textures[3].Sample(samplerState, texCoord);
+		case 4: return textures[4].Sample(samplerState, texCoord);
+		case 5: return textures[5].Sample(samplerState, texCoord);
+		case 6: return textures[6].Sample(samplerState, texCoord);
+		case 7: return textures[7].Sample(samplerState, texCoord);
+		case 8: return textures[8].Sample(samplerState, texCoord);
+		case 9: return textures[9].Sample(samplerState, texCoord);
+		case 10: return textures[10].Sample(samplerState, texCoord);
+		case 11: return textures[11].Sample(samplerState, texCoord);
+		case 12: return textures[12].Sample(samplerState, texCoord);
+		case 13: return textures[13].Sample(samplerState, texCoord);
+		case 14: return textures[14].Sample(samplerState, texCoord);
+		case 15: return textures[15].Sample(samplerState, texCoord);
+		case 16: return textures[16].Sample(samplerState, texCoord);
+		case 17: return textures[17].Sample(samplerState, texCoord);
+		case 18: return textures[18].Sample(samplerState, texCoord);
+		case 19: return textures[19].Sample(samplerState, texCoord);
+		case 20: return textures[20].Sample(samplerState, texCoord);
+		case 21: return textures[21].Sample(samplerState, texCoord);
+		case 22: return textures[22].Sample(samplerState, texCoord);
+		case 23: return textures[23].Sample(samplerState, texCoord);
+		case 24: return textures[24].Sample(samplerState, texCoord);
+		case 25: return textures[25].Sample(samplerState, texCoord);
+		case 26: return textures[26].Sample(samplerState, texCoord);
+		case 27: return textures[27].Sample(samplerState, texCoord);
+		case 28: return textures[28].Sample(samplerState, texCoord);
+		case 29: return textures[29].Sample(samplerState, texCoord);
+		case 30: return textures[30].Sample(samplerState, texCoord);
+		case 31: return textures[31].Sample(samplerState, texCoord);
+	}
+	return float4(1.0, 1.0, 1.0, 1.0);
+})"
 		);
 
 		return "";
@@ -416,7 +416,7 @@ namespace aio
 		return "";
 	};
 
-	void printParamLayout(slang::VariableLayoutReflection* varLayout)
+	void PrintParameterLayout(slang::VariableLayoutReflection* varLayout)
 	{
 		auto typeLayout = varLayout->getTypeLayout();
 		AIO_LOG_TRACE("  kind: {0}", PrintKind(typeLayout->getKind()));
@@ -449,7 +449,7 @@ namespace aio
 					auto field = typeLayout->getFieldByIndex(f);
 					auto name = field->getName();
 					AIO_LOG_INFO("   name: {0}", name);
-					printParamLayout(field);
+					PrintParameterLayout(field);
 				}
 				break;
 			}

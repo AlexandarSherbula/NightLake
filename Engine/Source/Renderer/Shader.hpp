@@ -12,17 +12,18 @@
 #include "slang-com-helper.h"
 #include "slang-com-ptr.h"
 
+#include <filesystem>
 
 namespace aio
 {
 	class SlangCompiler
 	{
 	public:
-		static void Run(const std::string& slangFile, const std::string& slangSource, const std::string& name);
+		static void Run(const std::filesystem::path& slangFile, const std::string& slangSource, const std::string& name);
 
-		inline static std::string GetShaderCacheDirectory() { return CACHE_DIRECTORY "shaders/"; }
-		static std::string GetVertexShaderCacheFilePath(const std::string& shaderName);
-		static std::string GetPixelShaderCacheFilePath(const std::string& shaderName);
+		inline static std::filesystem::path GetShaderCacheDirectory() { return CACHE_DIRECTORY / "shaders"; }
+		static std::filesystem::path GetVertexShaderCacheFilePath(const std::string& shaderName);
+		static std::filesystem::path GetPixelShaderCacheFilePath(const std::string& shaderName);
 	private:
 		static void DiagnoseIfNeeded(slang::IBlob* diagnosticsBlob);
 	private:
@@ -36,7 +37,7 @@ namespace aio
 	public:
 		virtual ~Shader() = default;
 
-		static Ref<Shader> Create(const std::string& filepath, const Ref<VertexInput>& vertexInput, std::string name = "");
+		static Ref<Shader> Create(const std::filesystem::path& filepath, const Ref<VertexInput>& vertexInput, std::string name = "");
 		static Ref<Shader> Create(const std::string& name, const std::string& vertexFile, const std::string& pixelFile, const Ref<VertexInput>& vertexInput);
 		static Ref<Shader> CreateAsset(const std::string& shaderFile, const Ref<VertexInput>& vertexInput, std::string name = "");
 

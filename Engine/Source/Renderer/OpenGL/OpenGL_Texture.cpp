@@ -28,11 +28,11 @@ namespace aio
 		glTextureSubImage2D(mID, 0, 0, 0, mWidth, mHeight, mDataFormat, GL_UNSIGNED_BYTE, &whiteTexture);
 	}
 
-	OpenGL_Texture::OpenGL_Texture(const std::string& filepath, std::string name)
+	OpenGL_Texture::OpenGL_Texture(const std::filesystem::path& filepath, std::string name)
 	{
 		int width, height, channels;
 		stbi_uc* data = nullptr;
-		data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
+		data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 0);
 
 		if (data)
 		{
