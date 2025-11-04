@@ -19,10 +19,16 @@ namespace aio
 	{
 		if (filepath != "")
 		{
-			AIO_ASSERT(std::filesystem::exists(filepath));
-
-			if (name == "")
-				name = GetFileName(filepath);
+			if (std::filesystem::exists(filepath))
+			{
+				if (name == "")
+					name = GetFileName(filepath);
+			}
+			else
+			{
+				AIO_LOG_ERROR("Filepath '{0}' doesn't exist", filepath.string());
+				AIO_DEBUG_BREAK();
+			}
 		}
 
 		CHECK_API(

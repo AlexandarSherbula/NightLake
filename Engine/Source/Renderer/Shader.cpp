@@ -225,69 +225,76 @@ namespace aio
 
 	Ref<Shader> Shader::Create(const std::filesystem::path& filepath, const Ref<VertexInput>& vertexInput, std::string name)
 	{
-		AIO_ASSERT(std::filesystem::exists(filepath), "Filepath doesn't exist");
-
-		if (name == "")
-			name = GetFileName(filepath);
-
-		if (filepath.string().find(".slang") != std::string::npos)
+		if (std::filesystem::exists(filepath))
 		{
-			std::filesystem::path vsPath = SlangCompiler::GetVertexShaderCacheFilePath(name);
-			std::filesystem::path psPath = SlangCompiler::GetPixelShaderCacheFilePath(name);
+			if (name == "")
+				name = GetFileName(filepath);
 
-			std::string shaderSource = ReadFromFiles(filepath);
-
-			if (shaderSource.find("GetSampledTexture") != std::string::npos)
+			if (filepath.string().find(".slang") != std::string::npos)
 			{
-				std::string SampleTextureFunctionDefintion = GetSampledTexture();
+				std::filesystem::path vsPath = SlangCompiler::GetVertexShaderCacheFilePath(name);
+				std::filesystem::path psPath = SlangCompiler::GetPixelShaderCacheFilePath(name);
 
-				if (Renderer::GetAPI() == OpenGL && shaderSource.find("Texture2D") != std::string::npos)
+				std::string shaderSource = ReadFromFiles(filepath);
+
+				if (shaderSource.find("GetSampledTexture") != std::string::npos)
 				{
-					std::string typedefAdd = "typedef Sampler2D Texture2D;\n";
-					shaderSource = typedefAdd + shaderSource;
-				}
+					std::string SampleTextureFunctionDefintion = GetSampledTexture();
 
-				shaderSource += "\n" + SampleTextureFunctionDefintion;
-			}
-
-			auto HasShaderChanged = [&](std::string currentSource)
-				{
-					std::filesystem::path cachePath = SlangCompiler::GetShaderCacheDirectory() / std::filesystem::path(name + ".cache");
-
-					if (!std::filesystem::exists(cachePath))
+					if (Renderer::GetAPI() == OpenGL && shaderSource.find("Texture2D") != std::string::npos)
 					{
-						return true;
+						std::string typedefAdd = "typedef Sampler2D Texture2D;\n";
+						shaderSource = typedefAdd + shaderSource;
 					}
 
-					std::string cachedSource = ReadFromFiles(cachePath);
+					shaderSource += "\n" + SampleTextureFunctionDefintion;
+				}
 
-					currentSource.erase(std::remove_if(currentSource.begin(), currentSource.end(), [](unsigned char c)
+				auto HasShaderChanged = [&](std::string currentSource)
+					{
+						std::filesystem::path cachePath = SlangCompiler::GetShaderCacheDirectory() / std::filesystem::path(name + ".cache");
+
+						if (!std::filesystem::exists(cachePath))
 						{
-							return std::isspace(c);
-						}), currentSource.end());
+							return true;
+						}
 
-					cachedSource.erase(std::remove_if(cachedSource.begin(), cachedSource.end(), [](unsigned char c)
-						{
-							return std::isspace(c); 
-						}), cachedSource.end());
+						std::string cachedSource = ReadFromFiles(cachePath);
 
-					return currentSource != cachedSource;
-				};
+						currentSource.erase(std::remove_if(currentSource.begin(), currentSource.end(), [](unsigned char c)
+							{
+								return std::isspace(c);
+							}), currentSource.end());
 
-			if (!std::filesystem::exists(vsPath) || !std::filesystem::exists(psPath) || HasShaderChanged(shaderSource))
-			{
-				SlangCompiler::Run(filepath, shaderSource, name);
+						cachedSource.erase(std::remove_if(cachedSource.begin(), cachedSource.end(), [](unsigned char c)
+							{
+								return std::isspace(c);
+							}), cachedSource.end());
+
+						return currentSource != cachedSource;
+					};
+
+				if (!std::filesystem::exists(vsPath) || !std::filesystem::exists(psPath) || HasShaderChanged(shaderSource))
+				{
+					SlangCompiler::Run(filepath, shaderSource, name);
+				}
+
+				return Shader::Create(name, vsPath.string(), psPath.string(), vertexInput);
 			}
 
-			return Shader::Create(name, vsPath.string(), psPath.string(), vertexInput);
+			CHECK_API
+			(
+				return CreateRef<OpenGL_Shader>(name, filepath, vertexInput),
+				return CreateRef<DX11_Shader>(name, filepath, vertexInput)
+			);
+			return nullptr;
 		}
-
-		CHECK_API
-		(
-			return CreateRef<OpenGL_Shader>(name, filepath, vertexInput),
-			return CreateRef<DX11_Shader>(name, filepath, vertexInput)
-		);
-		return nullptr;
+		else
+		{
+			AIO_LOG_ERROR("Filepath '{0}' doesn't exist", filepath.string());
+			AIO_DEBUG_BREAK();
+			return nullptr;
+		}
 	}
 
 	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexFile, const std::string& pixelFile, const Ref<VertexInput>& vertexInput)
