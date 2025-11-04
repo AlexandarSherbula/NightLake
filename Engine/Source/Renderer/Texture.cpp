@@ -15,36 +15,43 @@ namespace aio
 {
 	std::unordered_map<std::string, Ref<Texture>> Texture::sTextures;
 
-	Ref<Texture> Texture::Create(uint32_t width, uint32_t height)
+	Ref<Texture> Texture::Create(const TextureSpecification& specification, const std::filesystem::path& filepath, std::string name)
 	{
+		if (filepath != "")
+		{
+			if (std::filesystem::exists(filepath))
+			{
+				if (name == "")
+					name = GetFileName(filepath);
+			}
+			else
+			{
+				AIO_LOG_ERROR("Filepath '{0}' doesn't exist", filepath.string());
+				AIO_DEBUG_BREAK();
+			}
+		}
+
 		CHECK_API(
-			return CreateRef<OpenGL_Texture>(width, height),
-			return CreateRef<DX11_Texture>(width, height)
+			return CreateRef<OpenGL_Texture>(specification, filepath, name),
+			return CreateRef<DX11_Texture>(specification, filepath, name)
 		);
 
 		return nullptr;
 	}
 
-	Ref<Texture> Texture::Create(const std::string& filepath, std::string name)
+	Ref<Texture> Texture::CreateAsset(const TextureSpecification& specification, const std::string& imageFile, std::string name)
 	{
-		if (name == "")
-			name = GetFileName(filepath);
+		std::filesystem::path textureFilePath = imageFile;
 
-		CHECK_API(
-			return CreateRef<OpenGL_Texture>(filepath),
-			return CreateRef<DX11_Texture>(filepath)
-		);
+		if (imageFile != "")
+		{
+			if (name == "")
+				name = GetFileName(imageFile);
 
-		return nullptr;
-	}
-
-	Ref<Texture> Texture::CreateAsset(const std::string& imageFile, std::string name)
-	{
-		if (name == "")
-			name = GetFileName(imageFile);
-
-		std::string textureFilePath = ASSETS_DIRECTORY "images/" + imageFile;
-		auto texture = Texture::Create(textureFilePath, name);
+			textureFilePath = ASSETS_DIRECTORY / "images" / imageFile;
+		}
+		
+		auto texture = Texture::Create(specification, textureFilePath, name);
 		Add(texture, name);
 		return texture;
 	}

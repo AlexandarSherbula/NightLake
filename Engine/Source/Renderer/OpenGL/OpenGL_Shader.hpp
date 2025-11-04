@@ -7,7 +7,7 @@ namespace aio
 	class OpenGL_Shader : public Shader
 	{
 	public:
-		OpenGL_Shader(const std::string& name, const std::string& filepath, const Ref<VertexInput>& vertexInput);
+		OpenGL_Shader(const std::string& name, const std::filesystem::path& filepath, const Ref<VertexInput>& vertexInput);
 		OpenGL_Shader(const std::string& name, const std::string& vertexFile, const std::string& pixelFile, const Ref<VertexInput>& vertexInput);
 		~OpenGL_Shader();
 

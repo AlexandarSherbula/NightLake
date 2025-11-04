@@ -36,7 +36,7 @@ namespace aio
 		return 0;
 	}
 
-	OpenGL_Shader::OpenGL_Shader(const std::string& name, const std::string& filepath, const Ref<VertexInput>& vertexInput)
+	OpenGL_Shader::OpenGL_Shader(const std::string& name, const std::filesystem::path& filepath, const Ref<VertexInput>& vertexInput)
 	{
 		mName = name;
 

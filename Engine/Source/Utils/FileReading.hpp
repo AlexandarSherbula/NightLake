@@ -2,23 +2,25 @@
 
 #include <fstream>
 #include <sstream>
+#include <filesystem>
 
 #include "Log.hpp"
 
 #if defined(AIO_DEBUG)
-	#define ASSETS_DIRECTORY GetProjectDirectory() + "Sandbox/Assets/"
+	#define ASSETS_DIRECTORY GetProjectDirectory() / "Sandbox" / "Assets"
 #else
-	#define ASSETS_DIRECTORY "Assets/"
+	#define ASSETS_DIRECTORY std::filesystem::path("Assets")
 #endif
 
-#define CACHE_DIRECTORY ASSETS_DIRECTORY "cache/"
+
+#define CACHE_DIRECTORY ASSETS_DIRECTORY / "cache"
 
 namespace aio
 {
-	std::string GetProjectDirectory();
+	std::filesystem::path GetProjectDirectory();
 
-	std::string ReadFromFiles(const std::string& filepath);
+	std::string ReadFromFiles(const std::filesystem::path& filepath);
 
-	std::string GetFileName(const std::string& filepath);
+	std::string GetFileName(const std::filesystem::path& filepath);
 }
 

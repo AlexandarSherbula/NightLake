@@ -59,15 +59,17 @@ void MainLayer::OnAttach()
 		{aio::ShaderDataType::Float,  "aTexIndex" }
 	};
 
+	TextureSpecification texSpec;
+
 	vb->SetLayout(layout);
 
 	vi->SetVertexBuffer(vb);
 	vi->SetIndexBuffer(ib);
 
 	Assets::Create<Shader>("Quad.slang", vi);
-	Assets::Create<Texture>("awesomeface.png");
+	Assets::Create<Texture>(texSpec, "awesomeface.png");
 
-	texture = aio::Texture::Create(1, 1);
+	texture = Texture::Create(texSpec);
 }
 
 void MainLayer::OnUpdate()

@@ -7,69 +7,105 @@
 
 namespace aio
 {
-	OpenGL_Texture::OpenGL_Texture(uint32_t width, uint32_t height)
+	static GLenum GLFormatFromImageFormat(ImageFormat format)
 	{
-		mWidth = width;
-		mHeight = height;
-
-		mInternalFormat = GL_RGBA8;
-		mDataFormat = GL_RGBA;
-
-		glCreateTextures(GL_TEXTURE_2D, 1, &mID);
-		glTextureStorage2D(mID, 1, mInternalFormat, mWidth, mHeight);
-
-		glTextureParameteri(mID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTextureParameteri(mID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		glTextureParameteri(mID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(mID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-		uint32_t whiteTexture = 0xffffffff;
-		glTextureSubImage2D(mID, 0, 0, 0, mWidth, mHeight, mDataFormat, GL_UNSIGNED_BYTE, &whiteTexture);
+		switch (format)
+		{
+		case ImageFormat::RED8UN:               return GL_R8;
+		case ImageFormat::RED8UI:               return GL_R8UI;
+		case ImageFormat::RED16UI:              return GL_R16UI;
+		case ImageFormat::RED32UI:              return GL_R32UI;
+		case ImageFormat::RED32F:               return GL_R32F;
+		case ImageFormat::RG8:                  return GL_RG8;
+		case ImageFormat::RG16F:                return GL_RG16F;
+		case ImageFormat::RG32F:                return GL_RG32F;
+		case ImageFormat::RGB:                  return GL_RGB8;
+		case ImageFormat::RGBA:                 return GL_RGBA8;
+		case ImageFormat::RGBA16F:              return GL_RGBA16F;
+		case ImageFormat::RGBA32F:              return GL_RGBA32F;
+		case ImageFormat::B10R11G11UF:          return GL_R11F_G11F_B10F;
+		case ImageFormat::SRGB:                 return GL_SRGB8;
+		case ImageFormat::SRGBA:                return GL_SRGB8_ALPHA8;
+		case ImageFormat::DEPTH32FSTENCIL8UINT: return GL_DEPTH32F_STENCIL8;
+		case ImageFormat::DEPTH32F:             return GL_DEPTH_COMPONENT32F;
+		case ImageFormat::DEPTH24STENCIL8:      return GL_DEPTH24_STENCIL8;
+		default:                                return 0;
+		}
 	}
 
-	OpenGL_Texture::OpenGL_Texture(const std::string& filepath, std::string name)
+	static GLenum GLWrapFromTextureWrap(TextureWrap wrap)
 	{
-		int width, height, channels;
-		stbi_uc* data = nullptr;
-		data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
-
-		if (data)
+		switch (wrap)
 		{
-			mName = name;
-			mWidth = width;
-			mHeight = height;
+		case TextureWrap::Clamp:  return GL_CLAMP_TO_EDGE;
+		case TextureWrap::Repeat: return GL_REPEAT;
+		default:                  return GL_CLAMP_TO_EDGE; // sensible fallback
+		}
+	}
 
-			GLenum internalFormat = 0, dataFormat = 0;
-			if (channels == 4)
-			{
-				internalFormat = GL_RGBA8;
-				dataFormat = GL_RGBA;
-			}
-			else if (channels == 3)
-			{
-				internalFormat = GL_RGB8;
-				dataFormat = GL_RGB;
-			}
+	static GLenum GLFilterFromTextureFilter(TextureFilter filter)
+	{
+		switch (filter)
+		{
+		case TextureFilter::Linear:  return GL_LINEAR;
+		case TextureFilter::Nearest: return GL_NEAREST;
+		default:                     return GL_LINEAR;
+		}
+	}
 
-			mInternalFormat = internalFormat;
-			mDataFormat = dataFormat;
+	OpenGL_Texture::OpenGL_Texture(const TextureSpecification& specification, const std::filesystem::path& filepath, std::string name)
+	{
+		mSpecification = specification;
 
-			AIO_ASSERT(internalFormat & dataFormat, "Format not supported!");
+		if (filepath == "")
+		{
+			mUploadImageFormat = GL_RGBA;
 
 			glCreateTextures(GL_TEXTURE_2D, 1, &mID);
-			glTextureStorage2D(mID, 1, internalFormat, mWidth, mHeight);
+			glTextureStorage2D(mID, 1, GLFormatFromImageFormat(mSpecification.Format), mSpecification.Width, mSpecification.Height);
 
-			glTextureParameteri(mID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTextureParameteri(mID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			glTextureParameteri(mID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			glTextureParameteri(mID, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-			glTextureSubImage2D(mID, 0, 0, 0, mWidth, mHeight, dataFormat, GL_UNSIGNED_BYTE, data);
-
-			stbi_image_free(data);
+			uint32_t whiteTexture = 0xffffffff;
+			glTextureSubImage2D(mID, 0, 0, 0, mSpecification.Width, mSpecification.Height, mUploadImageFormat, GL_UNSIGNED_BYTE, &whiteTexture);
 		}
+		else
+		{
+			int32_t width, height, channels;
+			stbi_uc* data = nullptr;
+			data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 0);
+
+			if (data)
+			{
+				mName = name;
+				mSpecification.Width = width;
+				mSpecification.Height = height;
+
+				if (channels == 4)
+				{
+					mSpecification.Format = ImageFormat::RGBA;
+					mUploadImageFormat = GL_RGBA;
+				}
+				else if (channels == 3)
+				{
+					mSpecification.Format = ImageFormat::RGB;
+					mUploadImageFormat = GL_RGB;
+				}
+
+				AIO_ASSERT(GLFormatFromImageFormat(mSpecification.Format) & mUploadImageFormat, "Format not supported!");
+
+				glCreateTextures(GL_TEXTURE_2D, 1, &mID);
+				glTextureStorage2D(mID, 1, GLFormatFromImageFormat(mSpecification.Format), mSpecification.Width, mSpecification.Height);
+
+				glTextureSubImage2D(mID, 0, 0, 0, mSpecification.Width, mSpecification.Height, mUploadImageFormat, GL_UNSIGNED_BYTE, data);
+
+				stbi_image_free(data);
+			}
+		}
+
+		glTextureParameteri(mID, GL_TEXTURE_MIN_FILTER, GLFilterFromTextureFilter(mSpecification.SamplerFilter));
+		glTextureParameteri(mID, GL_TEXTURE_MAG_FILTER, GLFilterFromTextureFilter(mSpecification.SamplerFilter));
+
+		glTextureParameteri(mID, GL_TEXTURE_WRAP_S, GLWrapFromTextureWrap(mSpecification.SamplerWrap));
+		glTextureParameteri(mID, GL_TEXTURE_WRAP_T, GLWrapFromTextureWrap(mSpecification.SamplerWrap));
 	}
 
 	OpenGL_Texture::~OpenGL_Texture()
@@ -89,9 +125,9 @@ namespace aio
 
 	void OpenGL_Texture::SetData(const void* data, uint32_t size)
 	{
-		uint32_t bpp = mDataFormat == GL_RGBA ? 4 : 3;
-		AIO_ASSERT(size == mWidth * mHeight * bpp, "Data must be entire texture!");
-		glTextureSubImage2D(mID, 0, 0, 0, mWidth, mHeight, mDataFormat, GL_UNSIGNED_BYTE, data);
+		uint32_t bpp = mUploadImageFormat == GL_RGBA ? 4 : 3;
+		AIO_ASSERT(size == mSpecification.Width * mSpecification.Height * bpp, "Data must be entire texture!");
+		glTextureSubImage2D(mID, 0, 0, 0, mSpecification.Width, mSpecification.Height, mUploadImageFormat, GL_UNSIGNED_BYTE, data);
 	}
 }
 

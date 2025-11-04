@@ -13,8 +13,7 @@ namespace aio
 	class DX11_Texture : public Texture
 	{
 	public:
-		DX11_Texture(uint32_t width, uint32_t height);
-		DX11_Texture(const std::string& filepath, std::string name = "");
+		DX11_Texture(const TextureSpecification& specification, const std::filesystem::path& filepath, std::string name = "");
 		~DX11_Texture();
 
 		void Bind(uint32_t slot) const override;

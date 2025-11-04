@@ -11,32 +11,81 @@ namespace aio
 {
 	uint32_t DX11_Texture::sID = 1;
 
-	DX11_Texture::DX11_Texture(uint32_t width, uint32_t height)
+	static DXGI_FORMAT DXGIFormatFromImageFormat(ImageFormat format)
 	{
-		mID = sID;
+		switch (format)
+		{
+		case ImageFormat::RED8UN:               return DXGI_FORMAT_R8_UNORM;
+		case ImageFormat::RED8UI:               return DXGI_FORMAT_R8_UINT;
+		case ImageFormat::RED16UI:              return DXGI_FORMAT_R16_UINT;
+		case ImageFormat::RED32UI:              return DXGI_FORMAT_R32_UINT;
+		case ImageFormat::RED32F:               return DXGI_FORMAT_R32_FLOAT;
+		case ImageFormat::RG8:                  return DXGI_FORMAT_R8G8_UNORM;
+		case ImageFormat::RG16F:                return DXGI_FORMAT_R16G16_FLOAT;
+		case ImageFormat::RG32F:                return DXGI_FORMAT_R32G32_FLOAT;
+		case ImageFormat::RGB:                  // DX11 lacks RGB-only
+		case ImageFormat::RGBA:                 return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case ImageFormat::RGBA16F:              return DXGI_FORMAT_R16G16B16A16_FLOAT;
+		case ImageFormat::RGBA32F:              return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		case ImageFormat::B10R11G11UF:          return DXGI_FORMAT_R11G11B10_FLOAT;
+		case ImageFormat::SRGB:                 
+		case ImageFormat::SRGBA:                return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		case ImageFormat::DEPTH32FSTENCIL8UINT: return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+		case ImageFormat::DEPTH32F:             return DXGI_FORMAT_D32_FLOAT;
+		case ImageFormat::DEPTH24STENCIL8:      return DXGI_FORMAT_D24_UNORM_S8_UINT;
+		default:                                return DXGI_FORMAT_UNKNOWN;
+		}
+	}
 
-		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
+	static D3D11_FILTER DXFilterFromTextureFilter(TextureFilter filter)
+	{
+		switch (filter)
+		{
+		case TextureFilter::Linear:
+			return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+
+		case TextureFilter::Nearest:
+			return D3D11_FILTER_MIN_MAG_MIP_POINT;
+
+		default:
+			return D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		}
+	}
+
+	static D3D11_TEXTURE_ADDRESS_MODE DXWrapFromTextureWrap(TextureWrap wrap)
+	{
+		switch (wrap)
+		{
+		case TextureWrap::Clamp:  return D3D11_TEXTURE_ADDRESS_CLAMP; 
+		case TextureWrap::Repeat: return D3D11_TEXTURE_ADDRESS_WRAP;
+		default:                  return D3D11_TEXTURE_ADDRESS_WRAP;
+		}
+	}
+
+	DX11_Texture::DX11_Texture(const TextureSpecification& specification, const std::filesystem::path& filepath, std::string name)
+	{
+		mSpecification = specification;
+		mID = sID;
 
 		D3D11_TEXTURE2D_DESC textureDesc;
 		ZeroMemory(&textureDesc, sizeof(textureDesc));
-
-		textureDesc.Width = width;
-		textureDesc.Height = height;
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
-		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		textureDesc.Format = DXGIFormatFromImageFormat(mSpecification.Format);
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;
 		textureDesc.Usage = D3D11_USAGE_DEFAULT;
 		textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.MiscFlags = 0;
 
 		D3D11_SAMPLER_DESC sampDesc;
 		ZeroMemory(&sampDesc, sizeof(sampDesc));
 
-		sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-		sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-		sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-		sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		sampDesc.Filter = DXFilterFromTextureFilter(mSpecification.SamplerFilter);
+		sampDesc.AddressU = DXWrapFromTextureWrap(mSpecification.SamplerWrap);
+		sampDesc.AddressV = DXWrapFromTextureWrap(mSpecification.SamplerWrap);
+		sampDesc.AddressW = DXWrapFromTextureWrap(mSpecification.SamplerWrap);
 		sampDesc.MipLODBias = 0.0f;
 		sampDesc.MaxAnisotropy = 1;
 		sampDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
@@ -47,90 +96,66 @@ namespace aio
 		sampDesc.MinLOD = 0;
 		sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-		HRESULT hr = mContext->GetDevice()->CreateSamplerState(&sampDesc, mSamplerState.GetAddressOf());
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to create sampler state: " + ResultInfo(hr) + "\n");
-
-		ID3D11Texture2D* textureObject;
-		ZeroMemory(&textureObject, sizeof(textureObject));
-
-		uint32_t whiteTexture = 0xffffffff;
-
 		D3D11_SUBRESOURCE_DATA textureSubData;
 		ZeroMemory(&textureSubData, sizeof(textureSubData));
-		textureSubData.pSysMem = &whiteTexture;
-		textureSubData.SysMemPitch = width * 4;
 
-		hr = mContext->GetDevice()->CreateTexture2D(&textureDesc, &textureSubData, mTextureBuffer.GetAddressOf());
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to create white texture: " + ResultInfo(hr) + "\n");
-
-		hr = mContext->GetDevice()->CreateShaderResourceView(mTextureBuffer.Get(), nullptr, mTextureResource.GetAddressOf());
-		AIO_ASSERT(SUCCEEDED(hr), "Failed to create texture shader resource view: " + ResultInfo(hr) + "\n");
-		sID++;
-	}
-
-	DX11_Texture::DX11_Texture(const std::string& filepath, std::string name)
-	{
-		int width, height, channels;
-		stbi_uc* data = nullptr;
-		data = stbi_load(filepath.c_str(), &width, &height, &channels, 0);
-
-		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
-
-		if (data)
+		if (filepath == "")
 		{
-			mName = name;
-			mWidth = width;
-			mHeight = height;
-			mID = sID;
+			mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
-			D3D11_TEXTURE2D_DESC textureDesc;
-			ZeroMemory(&textureDesc, sizeof(textureDesc));
+			textureDesc.Width = mSpecification.Width;
+			textureDesc.Height = mSpecification.Height;
 
-			textureDesc.Width = mWidth;
-			textureDesc.Height = mHeight;
-			textureDesc.MipLevels = 1;
-			textureDesc.ArraySize = 1;
-			textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-			textureDesc.SampleDesc.Count = 1;
-			textureDesc.SampleDesc.Quality = 0;
-			textureDesc.Usage = D3D11_USAGE_DEFAULT;
-			textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-			textureDesc.CPUAccessFlags = 0;
-			textureDesc.MiscFlags = 0;
+			ID3D11Texture2D* textureObject;
+			ZeroMemory(&textureObject, sizeof(textureObject));
 
-			D3D11_SAMPLER_DESC sampDesc;
-			ZeroMemory(&sampDesc, sizeof(sampDesc));
+			uint32_t whiteTexture = 0xffffffff;
 
-			sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-			sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-			sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-			sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-			sampDesc.MipLODBias = 0.0f;
-			sampDesc.MaxAnisotropy = 1;
-			sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-			sampDesc.BorderColor[0] = 0;
-			sampDesc.BorderColor[1] = 0;
-			sampDesc.BorderColor[2] = 0;
-			sampDesc.BorderColor[3] = 0;
-			sampDesc.MinLOD = 0;
-			sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+			textureSubData.pSysMem = &whiteTexture;
+			textureSubData.SysMemPitch = mSpecification.Width * 4;
 
 			HRESULT hr = mContext->GetDevice()->CreateSamplerState(&sampDesc, mSamplerState.GetAddressOf());
 			AIO_ASSERT(SUCCEEDED(hr), "Failed to create sampler state: " + ResultInfo(hr) + "\n");
 
-			D3D11_SUBRESOURCE_DATA textureSubData;
-			ZeroMemory(&textureSubData, sizeof(textureSubData));
-			textureSubData.pSysMem = data;
-			textureSubData.SysMemPitch = mWidth * channels;
+			hr = mContext->GetDevice()->CreateTexture2D(&textureDesc, &textureSubData, mTextureBuffer.GetAddressOf());
+			AIO_ASSERT(SUCCEEDED(hr), "Failed to create white texture: " + ResultInfo(hr) + "\n");
 
-			Microsoft::WRL::ComPtr<ID3D11Texture2D> textureObject;
-			hr = mContext->GetDevice()->CreateTexture2D(&textureDesc, &textureSubData, &textureObject);
-			AIO_ASSERT(SUCCEEDED(hr), "Failed to create a texture: " + ResultInfo(hr) + "\n");
-
-			hr = mContext->GetDevice()->CreateShaderResourceView(textureObject.Get(), nullptr, mTextureResource.GetAddressOf());
+			hr = mContext->GetDevice()->CreateShaderResourceView(mTextureBuffer.Get(), nullptr, mTextureResource.GetAddressOf());
 			AIO_ASSERT(SUCCEEDED(hr), "Failed to create texture shader resource view: " + ResultInfo(hr) + "\n");
-			sID++;
 		}
+		else
+		{
+			int width, height, channels;
+			stbi_uc* data = nullptr;
+			data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 0);
+
+			mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
+
+			if (data)
+			{
+				mName = name;
+				mSpecification = specification;
+				mSpecification.Width = width;
+				mSpecification.Height = height;
+				mID = sID;
+
+				textureDesc.Width = mSpecification.Width;
+				textureDesc.Height = mSpecification.Height;
+
+				textureSubData.pSysMem = data;
+				textureSubData.SysMemPitch = mSpecification.Width * channels;
+
+				HRESULT hr = mContext->GetDevice()->CreateSamplerState(&sampDesc, mSamplerState.GetAddressOf());
+				AIO_ASSERT(SUCCEEDED(hr), "Failed to create sampler state: " + ResultInfo(hr) + "\n");
+				
+				hr = mContext->GetDevice()->CreateTexture2D(&textureDesc, &textureSubData, mTextureBuffer.GetAddressOf());
+				AIO_ASSERT(SUCCEEDED(hr), "Failed to create a texture: " + ResultInfo(hr) + "\n");
+
+				hr = mContext->GetDevice()->CreateShaderResourceView(mTextureBuffer.Get(), nullptr, mTextureResource.GetAddressOf());
+				AIO_ASSERT(SUCCEEDED(hr), "Failed to create texture shader resource view: " + ResultInfo(hr) + "\n");
+			}
+		}
+		sID++;
 	}
 
 	DX11_Texture::~DX11_Texture()
