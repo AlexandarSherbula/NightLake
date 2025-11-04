@@ -1,8 +1,6 @@
 #include "aio_pch.hpp"
 #include "FileReading.hpp"
 
-
-
 namespace aio
 {
 	std::filesystem::path GetProjectDirectory()
