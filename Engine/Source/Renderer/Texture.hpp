@@ -2,7 +2,8 @@
 
 namespace aio
 {
-	enum class ImageFormat {
+	enum class ImageFormat 
+	{
 		None = 0, 
 		RED8UN, 
 		RED8UI, 
@@ -28,17 +29,14 @@ namespace aio
 
 	enum class TextureWrap
 	{
-		None = 0,
 		Clamp,
 		Repeat
 	};
 
 	enum class TextureFilter
 	{
-		None = 0,
 		Linear,
-		Nearest,
-		Cubic
+		Nearest
 	};
 
 	struct TextureSpecification
@@ -60,8 +58,8 @@ namespace aio
 	public:
 		virtual ~Texture() {}
 
-		inline uint32_t GetWidth() const { return mWidth; }
-		inline uint32_t GetHeight() const { return mHeight; }
+		inline uint32_t GetWidth() const { return mSpecification.Width; }
+		inline uint32_t GetHeight() const { return mSpecification.Height; }
 		inline uint32_t GetID() const { return mID; }
 
 		virtual void Bind(uint32_t slot) const = 0;
@@ -69,16 +67,17 @@ namespace aio
 
 		virtual void SetData(const void* data, uint32_t size) = 0;
 
-		static Ref<Texture> Create(uint32_t width, uint32_t height);
-		static Ref<Texture> Create(const std::filesystem::path& filepath, std::string name = "");
-		static Ref<Texture> CreateAsset(const std::string& imageFile, std::string name = "");
+		inline const TextureSpecification GetTextureSpecification() const { return mSpecification; }
+
+		static Ref<Texture> Create(const TextureSpecification& specification, const std::filesystem::path& filepath = "", std::string name = "");
+		static Ref<Texture> CreateAsset(const TextureSpecification& specification, const std::string& imageFile = "", std::string name = "");
 
 		static Ref<Texture> Get(const std::string& name);
 		static void Add(const Ref<Texture>& texture, std::string name = "");
 		static bool Exists(const std::string& name);
 	protected:
+		TextureSpecification mSpecification;
 		uint32_t mID;
-		uint32_t mWidth, mHeight;
 		std::string mName;
 
 		static std::unordered_map<std::string, Ref<Texture>> sTextures;

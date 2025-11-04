@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Renderer/Texture.hpp"
+#include <cstdint>
 
 namespace aio
 {
 	class OpenGL_Texture : public Texture
 	{
 	public:
-		OpenGL_Texture(uint32_t width, uint32_t height);
-		OpenGL_Texture(const std::filesystem::path& filepath, std::string name = "");
+		OpenGL_Texture(const TextureSpecification& specification, const std::filesystem::path& filepath, std::string name = "");
 
 		~OpenGL_Texture();
 
@@ -17,7 +17,7 @@ namespace aio
 
 		void SetData(const void* data, uint32_t size) override;
 	private:
-		GLenum mInternalFormat, mDataFormat;
+		GLenum mUploadImageFormat;
 	};
 }
 

@@ -8,7 +8,7 @@
 #if defined(AIO_DEBUG)
 	#define ASSETS_DIRECTORY GetProjectDirectory() / "Sandbox" / "Assets"
 #else
-	#define ASSETS_DIRECTORY "Assets/"
+	#define ASSETS_DIRECTORY std::filesystem::path("Assets")
 #endif
 
 
