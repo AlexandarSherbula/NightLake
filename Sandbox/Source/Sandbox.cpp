@@ -70,12 +70,17 @@ void MainLayer::OnAttach()
 
 	texture = Texture::Create(texSpec);
 }
-
+int pixeSize = 1;
 void MainLayer::OnUpdate()
 {
-	if (Input::GetKeyboard()->IsPressed(KeyCode::F11))
+	if (Input::GetKeyboard()->IsPressed(KeyCode::SPACE))
 	{
-		Application::Get().GetAppWindow()->SetFullScreen();
+		if (pixeSize == 4)
+			pixeSize = 1;
+		else
+			pixeSize++;
+
+		Application::Get().GetAppWindow()->PixelResize(pixeSize);
 	}
 
 	vi->Bind();

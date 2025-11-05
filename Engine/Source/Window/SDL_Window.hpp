@@ -19,6 +19,7 @@ namespace aio
 
 		inline void* GetHandle() const override { return mHandle; }
 		void SetFullScreen() override;
+		void PixelResize(uint32_t pixelSize) override;
 
 		void SwapBuffers() override;
 	private:

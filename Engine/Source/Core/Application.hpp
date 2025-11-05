@@ -12,11 +12,7 @@ namespace aio
 {
 	struct AppSpecifications
 	{
-		const char* title = "Alexio Engine";
-		int32_t width = 1280;
-		int32_t height = 720;
-		bool vSync = true;
-		bool isFullScreen = false;
+		WindowSpecifications windowSpecs;
 
 		GraphicsAPI graphicsAPI = GraphicsAPI::OpenGL;
 	};

@@ -15,8 +15,8 @@ namespace aio
 	Win32_Window::Win32_Window(const WindowSpecifications& windowSpec)
 	{
 		mSpecs.title = windowSpec.title;
-		mSpecs.width = windowSpec.width;
-		mSpecs.height = windowSpec.height;
+		mSpecs.width = mProjectionSize.x = windowSpec.width;
+		mSpecs.height = mProjectionSize.y = windowSpec.height;
 		mSpecs.vSync = windowSpec.vSync;
 		mSpecs.eventCallback = windowSpec.eventCallback;
 		mSpecs.isFullScreen = windowSpec.isFullScreen;
@@ -39,6 +39,9 @@ namespace aio
 		wc.cbSize = sizeof(WNDCLASSEX);
 
 		AIO_ASSERT(RegisterClassEx(&wc), "Failed to register window class.");
+
+		mSpecs.width  = mProjectionSize.x * mSpecs.pixelWidth;
+		mSpecs.height = mProjectionSize.y * mSpecs.pixelHeight;
 
 		mPosition = { GetSystemMetrics(SM_CXSCREEN) / 2.0f - mSpecs.width / 2.0f, GetSystemMetrics(SM_CYSCREEN) / 2.0f - mSpecs.height / 2.0f };
 
@@ -140,6 +143,29 @@ namespace aio
 		}
 		else
 		{
+			SetWindowPos(mHandle, NULL,
+				mWindowRect.left, mWindowRect.top, mWindowRect.right - mWindowRect.left, mWindowRect.bottom - mWindowRect.top,
+				SWP_SHOWWINDOW);
+		}
+	}
+
+	void Win32_Window::PixelResize(uint32_t pixelSize)
+	{
+		if (!mSpecs.isFullScreen)
+		{
+			mSpecs.pixelWidth = pixelSize;
+			mSpecs.pixelHeight = pixelSize;
+
+			mSpecs.width = mProjectionSize.x * mSpecs.pixelWidth;
+			mSpecs.height = mProjectionSize.y * mSpecs.pixelHeight;
+
+			mPosition = { GetSystemMetrics(SM_CXSCREEN) / 2.0f - mSpecs.width / 2.0f, GetSystemMetrics(SM_CYSCREEN) / 2.0f - mSpecs.height / 2.0f };
+
+			mWindowRect.left = mPosition.x;
+			mWindowRect.top = mPosition.y;
+			mWindowRect.right = mWindowRect.left + mSpecs.width;
+			mWindowRect.bottom = mWindowRect.top + mSpecs.height;
+
 			SetWindowPos(mHandle, NULL,
 				mWindowRect.left, mWindowRect.top, mWindowRect.right - mWindowRect.left, mWindowRect.bottom - mWindowRect.top,
 				SWP_SHOWWINDOW);

@@ -47,14 +47,9 @@ namespace aio
 
 		inline static const Scope<RendererBackend>& Backend() { return sBackend; }
 		inline static const GraphicsAPI CheckAPI() { return sAPI; }
-
 #if defined (AIO_WINDOWS)
-		inline static void SetAPI(GraphicsAPI api)
-		{
-			sAPI = api;
-		}
+		inline static void SetAPI(GraphicsAPI api) { sAPI = api; }
 #endif
-
 	private:
 		static GraphicsAPI sAPI;
 		static Scope<RendererBackend> sBackend;
