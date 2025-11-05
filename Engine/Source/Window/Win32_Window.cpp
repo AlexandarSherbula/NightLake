@@ -220,7 +220,7 @@ namespace aio
 				if (wParam == 18)
 					keycode = (isRight) ? KeyCode::R_ALT : KeyCode::L_ALT;
 				else
-					keycode = Input::GetKeyboard()->MapKeys[wParam];
+					keycode = Keyboard::MapKeys[wParam];
 
 				if ((GetKeyState(VK_MENU) & 0x8000) && wParam == VK_F4)
 					break; 
@@ -240,7 +240,7 @@ namespace aio
 				if (wParam == 18)
 					 keycode = (isRight) ? KeyCode::R_ALT : KeyCode::L_ALT; 
 				else
-					keycode = Input::GetKeyboard()->MapKeys[wParam];
+					keycode = Keyboard::MapKeys[wParam];
 				KeyPressedEvent event(wParam, LOWORD(lParam));
 				data->eventCallback(event);
 				Input::GetKeyboard()->SetNewState(keycode, false);
@@ -269,7 +269,7 @@ namespace aio
 					keycode = (isRight) ? KeyCode::R_CTRL : KeyCode::L_CTRL; break;
 				}
 				default:
-					keycode = Input::GetKeyboard()->MapKeys[wParam];
+					keycode = Keyboard::MapKeys[wParam];
 				}
 
 				Input::GetKeyboard()->SetNewState(keycode, true);
@@ -299,7 +299,7 @@ namespace aio
 					keycode = (isRight) ? KeyCode::R_CTRL : KeyCode::L_CTRL; break;
 				}
 				default:
-					keycode = Input::GetKeyboard()->MapKeys[wParam];
+					keycode = Keyboard::MapKeys[wParam];
 				}
 
 				Input::GetKeyboard()->SetNewState(keycode, false);
