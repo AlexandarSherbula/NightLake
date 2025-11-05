@@ -35,6 +35,8 @@ namespace aio
 
 	void Application::Run()
 	{
+		SET_API(mAppSpecs.graphicsAPI);
+
 		mAppWindow = Window::Create({ mAppSpecs.title, mAppSpecs.width, mAppSpecs.height, mAppSpecs.vSync, mAppSpecs.isFullScreen, AIO_BIND_EVENT_FN(Application::OnEvent) });
 		Input::Init();
 

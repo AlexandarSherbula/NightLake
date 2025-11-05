@@ -4,7 +4,7 @@
 #include "ImGui/ImGuiLayer.hpp"
 
 #include "Window/Window.hpp"
-#include "Renderer/Camera.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Events/Events.hpp"
 #include "Input/Input.hpp"
 
@@ -12,11 +12,13 @@ namespace aio
 {
 	struct AppSpecifications
 	{
-		const char* title;
-		int32_t width;
-		int32_t height;
+		const char* title = "Alexio Engine";
+		int32_t width = 1280;
+		int32_t height = 720;
 		bool vSync = true;
 		bool isFullScreen = false;
+
+		GraphicsAPI graphicsAPI = GraphicsAPI::OpenGL;
 	};
 
 	class Application

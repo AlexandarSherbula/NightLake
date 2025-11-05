@@ -7,10 +7,11 @@
 #include "Buffers.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
+#include "Camera.hpp"
 
 #include "Events/WindowEvent.hpp"
 
-enum GraphicsAPI
+enum class GraphicsAPI
 {
 	OpenGL,
 	DX11
@@ -20,15 +21,17 @@ enum GraphicsAPI
 
 #define CHECK_API(x, y)                                                    \
         do {                                                               \
-            switch (aio::Renderer::GetAPI())                               \
+            switch (aio::Renderer::CheckAPI())                             \
             {                                                              \
-                case OpenGL: { x; break; }                                 \
-                case DX11:   { y; break; }                                 \
+                case GraphicsAPI::OpenGL: { x; break; }                    \
+                case GraphicsAPI::DX11:   { y; break; }                    \
                 default:     { AIO_ASSERT(false, "Unknown API."); break; } \
             }                                                              \
         } while(0)
+#define SET_API(x) aio::Renderer::SetAPI(x)
 #else
 #define CHECK_API(x, y) do { x; } while(0)
+#define SET_API(x)
 #endif
 
 
@@ -40,11 +43,17 @@ namespace aio
 		static void Init();
 		static void Draw();
 
-		static void SetAPI(GraphicsAPI api);
 		static void OnWindowResize(WindowResizeEvent& e);
 
 		inline static const Scope<RendererBackend>& Backend() { return sBackend; }
-		inline static const GraphicsAPI GetAPI() { return sAPI; }
+		inline static const GraphicsAPI CheckAPI() { return sAPI; }
+
+#if defined (AIO_WINDOWS)
+		inline static void SetAPI(GraphicsAPI api)
+		{
+			sAPI = api;
+		}
+#endif
 
 	private:
 		static GraphicsAPI sAPI;
