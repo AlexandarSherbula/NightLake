@@ -17,12 +17,16 @@ namespace aio
 		void Update() override {}
 
 		inline void* GetHandle() const override { return mHandle; }
+		void SetFullScreen() override;
 
 		void SwapBuffers() override;
 	private:
 		HWND mHandle;
 		HINSTANCE m_hInstance;
 		const CHAR* mWindowClass;
+		RECT mWindowRect;
+
+		aio::Vector2 mPosition;
 	};
 
 	LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

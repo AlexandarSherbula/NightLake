@@ -25,4 +25,10 @@ namespace aio
 		sAPI = api;
 #endif
 	}
+
+	void Renderer::OnWindowResize(WindowResizeEvent& e)
+	{
+		if (sBackend != nullptr)
+			sBackend->SetViewport(Vector2(0.0f, 0.0f), Vector2(e.GetWidth(), e.GetHeight()));
+	}
 }

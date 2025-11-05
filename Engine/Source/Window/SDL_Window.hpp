@@ -18,9 +18,11 @@ namespace aio
 		void Update() override;
 
 		inline void* GetHandle() const override { return mHandle; }
+		void SetFullScreen() override;
 
 		void SwapBuffers() override;
 	private:
+		aio::Vector2i mPosition;
 		SDLwindowHandler* mHandle;
 		
 	};

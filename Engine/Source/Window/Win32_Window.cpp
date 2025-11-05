@@ -19,6 +19,7 @@ namespace aio
 		mSpecs.height = windowSpec.height;
 		mSpecs.vSync = windowSpec.vSync;
 		mSpecs.eventCallback = windowSpec.eventCallback;
+		mSpecs.isFullScreen = windowSpec.isFullScreen;
 		
 		mWindowClass = "Win32 Class";
 		m_hInstance = GetModuleHandle(nullptr);
@@ -39,17 +40,35 @@ namespace aio
 
 		AIO_ASSERT(RegisterClassEx(&wc), "Failed to register window class.");
 
-		RECT windowRect;
+		mPosition = { GetSystemMetrics(SM_CXSCREEN) / 2.0f - mSpecs.width / 2.0f, GetSystemMetrics(SM_CYSCREEN) / 2.0f - mSpecs.height / 2.0f };
 
-		windowRect.left = 50;
-		windowRect.top = 50;
-		windowRect.right = windowRect.left + mSpecs.width;
-		windowRect.bottom = windowRect.top + mSpecs.height;
-		AIO_ASSERT(AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE), "Failed to adjust window");
+		mWindowRect.left = mPosition.x;
+		mWindowRect.top = mPosition.y;
+		mWindowRect.right = mWindowRect.left + mSpecs.width;
+		mWindowRect.bottom = mWindowRect.top + mSpecs.height;
+		AIO_ASSERT(AdjustWindowRect(&mWindowRect, WS_OVERLAPPEDWINDOW, FALSE), "Failed to adjust window");
 
 		mHandle = CreateWindowEx(WS_EX_APPWINDOW, mWindowClass, mSpecs.title, WS_OVERLAPPEDWINDOW,
-			windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
+			mWindowRect.left, mWindowRect.top, mWindowRect.right - mWindowRect.left, mWindowRect.bottom - mWindowRect.top,
 			NULL, NULL, m_hInstance, &mSpecs);
+
+		AIO_ASSERT(mHandle, "Failed to create a Window: {0}", ResultInfo(GetLastError()));
+
+		if (mSpecs.isFullScreen)
+		{
+			SetWindowLong(mHandle, GWL_STYLE, WS_POPUP);
+			MONITORINFO mi = { sizeof(mi) };
+			if (GetMonitorInfo(MonitorFromWindow(mHandle,
+				MONITOR_DEFAULTTOPRIMARY), &mi))
+			{
+				GetWindowRect(mHandle, &mWindowRect);
+				SetWindowPos(mHandle, HWND_TOP,
+					mi.rcMonitor.left, mi.rcMonitor.top,
+					mi.rcMonitor.right - mi.rcMonitor.left,
+					mi.rcMonitor.bottom - mi.rcMonitor.top,
+					SWP_SHOWWINDOW);
+			}
+		}
 
 		AIO_ASSERT(mHandle, "Failed to create a Window: {0}", ResultInfo(GetLastError()));
 
@@ -96,6 +115,37 @@ namespace aio
 		mGraphicsContext->SwapChain();
 	}
 
+	void Win32_Window::SetFullScreen()
+	{
+		mSpecs.isFullScreen = !mSpecs.isFullScreen;
+
+		static RECT windowRect = {};
+
+		DWORD style = mSpecs.isFullScreen ? WS_POPUP : WS_OVERLAPPEDWINDOW;
+		SetWindowLong(mHandle, GWL_STYLE, style);
+
+		if (mSpecs.isFullScreen)
+		{
+			MONITORINFO mi = { sizeof(mi) };
+			if (GetMonitorInfo(MonitorFromWindow(mHandle,
+				MONITOR_DEFAULTTOPRIMARY), &mi))
+			{
+				GetWindowRect(mHandle, &windowRect);
+				SetWindowPos(mHandle, HWND_TOP,
+					mi.rcMonitor.left, mi.rcMonitor.top,
+					mi.rcMonitor.right - mi.rcMonitor.left,
+					mi.rcMonitor.bottom - mi.rcMonitor.top,
+					SWP_SHOWWINDOW);
+			}
+		}
+		else
+		{
+			SetWindowPos(mHandle, NULL,
+				mWindowRect.left, mWindowRect.top, mWindowRect.right - mWindowRect.left, mWindowRect.bottom - mWindowRect.top,
+				SWP_SHOWWINDOW);
+		}
+	}
+
 	LRESULT WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
@@ -103,7 +153,6 @@ namespace aio
 
 		switch (uMsg)
 		{
-
 			// WINDOW EVENTS
 			case WM_CREATE:
 			{

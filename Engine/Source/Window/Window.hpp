@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Utils/Utilities.hpp"
+#include "Utils/Math.hpp"
 #include "Events/Events.hpp"
 #include "Input/Input.hpp"
 #include "Renderer/GraphicsContext.hpp"
@@ -15,9 +16,10 @@ namespace aio
 	struct WindowSpecifications
 	{
 		const char* title;
-		uint32_t width;
-		uint32_t height;
+		int32_t width;
+		int32_t height;
 		bool vSync = true;
+		bool isFullScreen = false;
 
 		EventCallbackFn eventCallback;
 	};
@@ -35,8 +37,12 @@ namespace aio
 
 		virtual void SwapBuffers() = 0;
 
+		
+		virtual void SetFullScreen() = 0;
+
 		WindowSpecifications& GetSpecs() { return mSpecs; }
 		const Ref<GraphicsContext>& GetContext() const { return mGraphicsContext; }
+		inline bool IsFullScreen() const { return mSpecs.isFullScreen; }
 
 		static Scope<Window> Create(const WindowSpecifications& windowSpec);
 	protected:

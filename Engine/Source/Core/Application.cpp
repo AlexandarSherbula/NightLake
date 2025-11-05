@@ -35,7 +35,7 @@ namespace aio
 
 	void Application::Run()
 	{
-		mAppWindow = Window::Create({ mAppSpecs.title, mAppSpecs.width, mAppSpecs.height, mAppSpecs.vSync, AIO_BIND_EVENT_FN(Application::OnEvent) });
+		mAppWindow = Window::Create({ mAppSpecs.title, mAppSpecs.width, mAppSpecs.height, mAppSpecs.vSync, mAppSpecs.isFullScreen, AIO_BIND_EVENT_FN(Application::OnEvent) });
 		Input::Init();
 
 		Renderer::Init();
@@ -122,11 +122,7 @@ namespace aio
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
-		RendererBackend* backend = Renderer::Backend().get();
-		if (backend != nullptr)
-		{
-			Renderer::Backend()->SetViewport(Vector2(0.0f, 0.0f), Vector2(e.GetWidth(), e.GetHeight()));
-		}
+		Renderer::OnWindowResize(e);
 		return true;
 	}
 

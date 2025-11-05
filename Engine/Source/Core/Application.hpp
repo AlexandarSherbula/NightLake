@@ -13,9 +13,10 @@ namespace aio
 	struct AppSpecifications
 	{
 		const char* title;
-		uint32_t width;
-		uint32_t height;
+		int32_t width;
+		int32_t height;
 		bool vSync = true;
+		bool isFullScreen = false;
 	};
 
 	class Application

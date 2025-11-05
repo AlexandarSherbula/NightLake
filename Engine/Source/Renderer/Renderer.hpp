@@ -8,6 +8,8 @@
 #include "Shader.hpp"
 #include "Texture.hpp"
 
+#include "Events/WindowEvent.hpp"
+
 enum GraphicsAPI
 {
 	OpenGL,
@@ -39,6 +41,7 @@ namespace aio
 		static void Draw();
 
 		static void SetAPI(GraphicsAPI api);
+		static void OnWindowResize(WindowResizeEvent& e);
 
 		inline static const Scope<RendererBackend>& Backend() { return sBackend; }
 		inline static const GraphicsAPI GetAPI() { return sAPI; }
