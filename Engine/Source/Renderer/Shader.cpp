@@ -241,7 +241,7 @@ namespace aio
 				{
 					std::string SampleTextureFunctionDefintion = GetSampledTexture();
 
-					if (Renderer::GetAPI() == OpenGL && shaderSource.find("Texture2D") != std::string::npos)
+					if (Renderer::CheckAPI() == GraphicsAPI::OpenGL && shaderSource.find("Texture2D") != std::string::npos)
 					{
 						std::string typedefAdd = "typedef Sampler2D Texture2D;\n";
 						shaderSource = typedefAdd + shaderSource;

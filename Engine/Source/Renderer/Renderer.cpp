@@ -4,7 +4,7 @@
 
 namespace aio
 {
-	GraphicsAPI Renderer::sAPI = OpenGL;
+	GraphicsAPI Renderer::sAPI = GraphicsAPI::OpenGL;
 	Scope<RendererBackend> Renderer::sBackend = nullptr;
 
 	void Renderer::Init()
@@ -19,10 +19,9 @@ namespace aio
 		sBackend->DrawIndexed(6);
 	}
 
-	void Renderer::SetAPI(GraphicsAPI api)
+	void Renderer::OnWindowResize(WindowResizeEvent& e)
 	{
-#if defined (AIO_WINDOWS)
-		sAPI = api;
-#endif
+		if (sBackend != nullptr)
+			sBackend->SetViewport(Vector2(0.0f, 0.0f), Vector2(e.GetWidth(), e.GetHeight()));
 	}
 }

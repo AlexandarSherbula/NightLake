@@ -4,7 +4,7 @@
 #include "ImGui/ImGuiLayer.hpp"
 
 #include "Window/Window.hpp"
-#include "Renderer/Camera.hpp"
+#include "Renderer/Renderer.hpp"
 #include "Events/Events.hpp"
 #include "Input/Input.hpp"
 
@@ -12,10 +12,9 @@ namespace aio
 {
 	struct AppSpecifications
 	{
-		const char* title;
-		uint32_t width;
-		uint32_t height;
-		bool vSync = true;
+		WindowSpecifications windowSpecs;
+
+		GraphicsAPI graphicsAPI = GraphicsAPI::OpenGL;
 	};
 
 	class Application

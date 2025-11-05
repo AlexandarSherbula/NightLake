@@ -12,6 +12,10 @@ namespace aio
 	using Vector3 = glm::vec3;
 	using Vector4 = glm::vec4;
 
+	using Vector2i = glm::ivec2;
+	using Vector3i = glm::ivec3;
+	using Vector4i = glm::ivec4;
+
 	using Mat2 = glm::mat2;
 	using Mat2x2 = glm::mat2x2;
 

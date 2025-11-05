@@ -3,9 +3,11 @@
 int main()
 {
 	aio::AppSpecifications appSpecs;
-	appSpecs.title  = "Alexio Engine";
-	appSpecs.width  = 1280;
-	appSpecs.height = 720;
+	appSpecs.windowSpecs.title  = "Alexio Engine";
+	appSpecs.windowSpecs.width  = 424;
+	appSpecs.windowSpecs.height = 240;
+	appSpecs.windowSpecs.isFullScreen = false;
+	appSpecs.graphicsAPI = GraphicsAPI::OpenGL;
 
 	Sandbox sandbox(appSpecs);
 	sandbox.Run();

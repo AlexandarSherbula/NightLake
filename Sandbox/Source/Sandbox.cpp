@@ -14,7 +14,6 @@ Sandbox::Sandbox()
 Sandbox::Sandbox(aio::AppSpecifications& appSpecs)
 	: Application (appSpecs)
 {
-	aio::Renderer::SetAPI(DX11);
 }
 
 Sandbox::~Sandbox()
@@ -71,14 +70,18 @@ void MainLayer::OnAttach()
 
 	texture = Texture::Create(texSpec);
 }
-
+int pixeSize = 1;
 void MainLayer::OnUpdate()
 {
-	if (Input::GetKeyboard()->IsHeld(KeyCode::F10))
-		AIO_LOG_TRACE("F10 was Held");
-	
-	if (Input::GetKeyboard()->IsReleased(KeyCode::F10))
-		AIO_LOG_TRACE("F10 was released");
+	if (Input::GetKeyboard()->IsPressed(KeyCode::SPACE))
+	{
+		if (pixeSize == 4)
+			pixeSize = 1;
+		else
+			pixeSize++;
+
+		Application::Get().GetAppWindow()->PixelResize(pixeSize);
+	}
 
 	vi->Bind();
 	Assets::Get<Shader>("Quad")->Bind();
