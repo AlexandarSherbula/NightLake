@@ -14,6 +14,7 @@ Sandbox::Sandbox()
 Sandbox::Sandbox(aio::AppSpecifications& appSpecs)
 	: Application (appSpecs)
 {
+	PushLayer(new MainLayer());
 }
 
 Sandbox::~Sandbox()
@@ -22,7 +23,6 @@ Sandbox::~Sandbox()
 
 void Sandbox::Start()
 {
-	PushLayer(new MainLayer());
 }
 
 MainLayer::MainLayer()
@@ -32,6 +32,7 @@ MainLayer::MainLayer()
 
 void MainLayer::OnAttach()
 {
+	AIO_PROFILE_FUNCTION();
 	float positions[] = 
 	{
 		 0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    1.0f, 0.0f,    0.0f,
@@ -70,18 +71,10 @@ void MainLayer::OnAttach()
 
 	texture = Texture::Create(texSpec);
 }
-int pixeSize = 1;
+
 void MainLayer::OnUpdate()
 {
-	if (Input::GetKeyboard()->IsPressed(KeyCode::SPACE))
-	{
-		if (pixeSize == 4)
-			pixeSize = 1;
-		else
-			pixeSize++;
-
-		Application::Get().GetAppWindow()->PixelResize(pixeSize);
-	}
+	AIO_PROFILE_FUNCTION();
 
 	vi->Bind();
 	Assets::Get<Shader>("Quad")->Bind();

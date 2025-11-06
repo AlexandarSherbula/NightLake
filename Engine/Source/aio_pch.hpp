@@ -18,6 +18,7 @@
 
 #include "Utils/Log.hpp"
 #include "Utils/Utilities.hpp"
+#include "Utils/Instrumentor.hpp"
 
 #include "glad/glad.h"
 #define SDL_MAIN_HANDLED 1

@@ -21,23 +21,6 @@ namespace aio
 		sLastFrame = sCurrentTime;
 		sAppTime += sDeltaTime.count();
 	}
-
-	ProfileTimer::ProfileTimer()
-	{
-		mStartPoint = std::chrono::high_resolution_clock::now();
-	}
-
-	ProfileTimer::~ProfileTimer()
-	{
-		mEndPoint = std::chrono::high_resolution_clock::now();
-
-		auto start = std::chrono::time_point_cast<std::chrono::microseconds>(mStartPoint).time_since_epoch().count();
-		auto end = std::chrono::time_point_cast<std::chrono::microseconds>(mEndPoint).time_since_epoch().count();
-
-		auto duration = end - start;
-		double ms = duration * 0.001;
-		AIO_LOG_TRACE("{0}ms", ms);
-	}
 }
 
 
