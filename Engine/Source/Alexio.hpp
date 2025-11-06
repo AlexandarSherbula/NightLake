@@ -13,4 +13,5 @@
 #include "Utils/Utilities.hpp"
 #include "Utils/Math.hpp"
 #include "Utils/Timer.hpp"
+#include "Utils/Instrumentor.hpp"
 #include "Utils/FileReading.hpp"

@@ -19,6 +19,7 @@ namespace aio
 
 	Application::Application(AppSpecifications& appSpecs)
 	{
+		AIO_PROFILE_FUNCTION();
 		Log::Init();
 
 		sInstance = this;
@@ -26,15 +27,7 @@ namespace aio
 		mRunning = true;
 
 		mAppSpecs = appSpecs;
-	}
 
-	Application::~Application()
-	{		
-		sInstance = nullptr;
-	}
-
-	void Application::Run()
-	{
 		SET_API(mAppSpecs.graphicsAPI);
 
 		mAppSpecs.windowSpecs.eventCallback = AIO_BIND_EVENT_FN(Application::OnEvent);
@@ -46,14 +39,21 @@ namespace aio
 
 		sMainCamera = CreateRef<Camera>(static_cast<float>(mAppSpecs.windowSpecs.width) / static_cast<float>(mAppSpecs.windowSpecs.height));
 
-		Start();
-
 		imguiLayer = new ImGuiLayer();
 		PushOverlay(imguiLayer);
-		
+	}
+
+	Application::~Application()
+	{		
+		sInstance = nullptr;
+	}
+
+	void Application::Run()
+	{
 		AppTimer::Start();
 		while (mRunning)
 		{
+			AIO_PROFILE_FUNCTION();
 			AppTimer::Update();
 
 			mAppWindow->PollEvents();
