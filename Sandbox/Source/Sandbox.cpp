@@ -76,10 +76,17 @@ void MainLayer::OnUpdate()
 {
 	AIO_PROFILE_FUNCTION();
 
-	vi->Bind();
-	Assets::Get<Shader>("Quad")->Bind();
-	Assets::Get<Texture>("awesomeface")->Bind(0);
-	Renderer::Draw();
+	Renderer::ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
+
+	//vi->Bind();
+	//Assets::Get<Shader>("Quad")->Bind();
+	//Assets::Get<Texture>("awesomeface")->Bind(0);
+	//Renderer::Draw();
+	Renderer::DrawQuad(Vector2(-1.0f, -1.0f), Vector2(0.5f, 0.5f), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+	Renderer::DrawQuad(Vector2(0.0f, 0.0f), Vector2(0.5f, 0.5f), Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+
+	Renderer::DrawSprite(Assets::Get<Texture>("awesomeface"), Vector2(-0.5f, -0.5f), Vector2(1.0f, 1.0f));
+	Renderer::DrawSprite(Assets::Get<Texture>("awesomeface"), Vector2( 0.5f, -0.5f), Vector2(0.5f, 0.5f));
 }
 
 void MainLayer::OnImGuiRender()

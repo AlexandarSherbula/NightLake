@@ -8,6 +8,7 @@
 #include "Shader.hpp"
 #include "Texture.hpp"
 #include "Camera.hpp"
+#include "RendererInput.hpp"
 
 #include "Events/WindowEvent.hpp"
 
@@ -42,14 +43,59 @@ namespace aio
 	public:
 		static void Init();
 		static void Draw();
+		static void ClearColor(const Vector4& color);
 
 		static void OnWindowResize(WindowResizeEvent& e);
+
+		static void StartBatches();
+		static void Flush();
+		static void End();
 
 		inline static const Scope<RendererBackend>& Backend() { return sBackend; }
 		inline static const GraphicsAPI CheckAPI() { return sAPI; }
 #if defined (AIO_WINDOWS)
 		inline static void SetAPI(GraphicsAPI api) { sAPI = api; }
 #endif
+		static void DrawRect(const Vector2& position, const Vector2& size, const Vector4& color = Vector4(1.0f));
+		static void DrawRect(const Vector3& position, const Vector2& size, const Vector4& color = Vector4(1.0f));
+
+		static void DrawQuad(const Vector2& position, const Vector2& size, const Vector4& color = Vector4(1.0f));
+		static void DrawQuad(const Vector3& position, const Vector2& size, const Vector4& color = Vector4(1.0f));
+
+		static void DrawQuad(const Mat4x4& transform, const Vector4& color);
+
+		static void DrawRotatedQuad(const Vector2& position, const Vector2& size, const Vector4& color = Vector4(1.0f), float angle = 0.0f);
+		static void DrawRotatedQuad(const Vector3& position, const Vector2& size, const Vector4& color = Vector4(1.0f), float angle = 0.0f);
+
+		static void DrawSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector4& color = Vector4(1.0f));
+		static void DrawSprite(const Ref<Texture>& texture, const Vector3& position, const Vector2& size, const Vector4& color = Vector4(1.0f));
+
+		static void DrawPartialSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector2& tileOffset, const Vector2& tileSize, const Vector4& colorTint = Vector4(1.0f));
+		static void DrawPartialSprite(const Ref<Texture>& texture, const Vector3& position, const Vector2& size, const Vector2& tileOffset, const Vector2& tileSize, const Vector4& colorTint = Vector4(1.0f));
+
+		static void DrawRotatedSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector4& color = Vector4(1.0f), float angle = 0.0f);
+		static void DrawRotatedSprite(const Ref<Texture>& texture, const Vector3& position, const Vector2& size, const Vector4& color = Vector4(1.0f), float angle = 0.0f);
+	public:
+		struct Statistics
+		{
+			uint32_t Lines;
+			uint32_t DrawLine;
+
+			uint32_t Quads;
+			uint32_t DrawQuad;
+
+			uint32_t Circles;
+			uint32_t DrawCircle;
+
+			inline void Reset()
+			{
+				Lines = 0;
+				Quads = 0;
+				Circles = 0;
+			}
+		};
+
+		static Statistics Stats;
 	private:
 		static GraphicsAPI sAPI;
 		static Scope<RendererBackend> sBackend;

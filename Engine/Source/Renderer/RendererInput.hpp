@@ -1,0 +1,47 @@
+#pragma once
+
+#include "Utils/Utilities.hpp"
+#include "Utils/Math.hpp"
+
+#include "Renderer/Buffers.hpp"
+#include "Renderer/Shader.hpp"
+#include "Renderer/Texture.hpp"
+
+namespace aio
+{
+	struct QuadVertex
+	{
+		Vector3 position;
+		Vector4 color;
+		Vector2 texCoord;
+		uint32_t textureIndex;
+	};
+
+	class QuadRenderer
+	{
+	public:
+		static void Init();
+		static void StartNewBatch();
+		static void SubmitBatch();
+		static void End();
+	public:
+		static uint32_t QuadCount;
+		static uint32_t IndexCount;
+		static uint32_t TextureSlotIndex;
+		static uint32_t DrawingCount;
+
+		static QuadVertex* CurrentVertexPtr;
+		static const size_t MaxQuadsPerBatch = 1000;
+		static const uint32_t MaxTextureSlots = 32;
+		static std::array<uint32_t, MaxTextureSlots> TextureIDs;
+
+		static Ref<Texture>      WhiteTexture;
+	private:
+		static Ref<VertexBuffer> vertexBuffer;
+		static Ref<IndexBuffer>  indexBuffer;
+		static Ref<VertexInput> vertexInput;
+		static Ref<Shader>       shader;
+
+		static QuadVertex* baseVertexBuffer;
+	};
+}

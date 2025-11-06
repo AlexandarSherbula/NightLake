@@ -4,8 +4,8 @@ int main()
 {
 	aio::AppSpecifications appSpecs;
 	appSpecs.windowSpecs.title  = "Alexio Engine";
-	appSpecs.windowSpecs.width  = 424;
-	appSpecs.windowSpecs.height = 240;
+	appSpecs.windowSpecs.width  = 1280;
+	appSpecs.windowSpecs.height = 720;
 	appSpecs.windowSpecs.isFullScreen = false;
 	appSpecs.graphicsAPI = GraphicsAPI::DX11;
 

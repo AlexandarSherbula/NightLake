@@ -50,10 +50,10 @@ namespace aio
 
 	void Application::Run()
 	{
+		AIO_PROFILE_FUNCTION();
 		AppTimer::Start();
 		while (mRunning)
 		{
-			AIO_PROFILE_FUNCTION();
 			AppTimer::Update();
 
 			mAppWindow->PollEvents();
@@ -66,12 +66,15 @@ namespace aio
 			for (Layer* layer : mLayerStack)
 				layer->OnUpdate();
 
+			Renderer::Flush();
+
 			for (Layer* layer : mLayerStack)
 				layer->OnImGuiRender();
 
 			mAppWindow->SwapBuffers();
 		}
 
+		Renderer::End();
 		Input::Close();
 	}
 
