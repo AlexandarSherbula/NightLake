@@ -154,7 +154,7 @@ namespace aio
 #define AIO_PROFILE_FUNCTION() AIO_PROFILE_SCOPE(CLEAN_FUNC_SIG())
 #else
 #define CLEAN_FUNC_SIG()
-#define AIO_BEGIN_SESSION()
+#define AIO_BEGIN_SESSION(name, filepath)
 #define AIO_END_SESSION()
 #define AIO_PROFILE_SCOPE(name)
 #define AIO_PROFILE_FUNCTION()
