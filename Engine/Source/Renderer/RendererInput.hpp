@@ -44,4 +44,36 @@ namespace aio
 
 		static QuadVertex* baseVertexBuffer;
 	};
+
+	struct CircleVertex
+	{
+		Vector3 position;
+		Vector3 localPosition;
+		Vector4 color;
+		float thickness;
+		float fade;
+	};
+
+	class CircleRenderer
+	{
+	public:
+		static void Init();
+		static void StartNewBatch();
+		static void SubmitBatch();
+		static void End();
+	public:
+		static uint32_t CircleCount;
+		static uint32_t IndexCount;
+		static uint32_t DrawingCount;
+
+		static CircleVertex* CurrentVertexPtr;
+		static const size_t MaxCirclesPerBatch = 1000;
+	private:
+		static Ref<VertexInput>  vertexInput;
+		static Ref<VertexBuffer> vertexBuffer;
+		static Ref<IndexBuffer>  indexBuffer;
+		static Ref<Shader>       shader;
+
+		static CircleVertex* baseVertexBuffer;
+	};
 }

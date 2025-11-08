@@ -103,4 +103,93 @@ namespace aio
     {
         delete[] baseVertexBuffer;
     }
+
+    Ref<VertexInput>  CircleRenderer::vertexInput = nullptr;
+    Ref<VertexBuffer> CircleRenderer::vertexBuffer = nullptr;
+    Ref<IndexBuffer>  CircleRenderer::indexBuffer = nullptr;
+    Ref<Shader>       CircleRenderer::shader = nullptr;
+
+    uint32_t CircleRenderer::CircleCount = 0;
+    uint32_t CircleRenderer::IndexCount = 0;
+    uint32_t CircleRenderer::DrawingCount = 0;
+
+    CircleVertex* CircleRenderer::CurrentVertexPtr = nullptr;
+    CircleVertex* CircleRenderer::baseVertexBuffer = nullptr;
+
+    void CircleRenderer::Init()
+    {
+        const uint32_t maxVertexCount = 4 * MaxCirclesPerBatch;
+        const uint32_t maxIndexCount = 6 * MaxCirclesPerBatch;
+
+        baseVertexBuffer = new CircleVertex[maxVertexCount];
+
+        uint32_t* indices = new uint32_t[maxIndexCount];
+
+        int32_t indexOffset = 0;
+        for (size_t i = 0; i < MaxCirclesPerBatch; i++)
+        {
+            indices[i * 6 + 0] = 0 + indexOffset;
+            indices[i * 6 + 1] = 1 + indexOffset;
+            indices[i * 6 + 2] = 2 + indexOffset;
+            indices[i * 6 + 3] = 2 + indexOffset;
+            indices[i * 6 + 4] = 3 + indexOffset;
+            indices[i * 6 + 5] = 0 + indexOffset;
+
+            indexOffset += 4;
+        }
+
+        vertexInput = aio::VertexInput::Create();
+        vertexBuffer = VertexBuffer::Create(maxVertexCount * sizeof(CircleVertex));
+        indexBuffer = IndexBuffer::Create(indices, maxIndexCount);
+        delete[] indices;
+
+        BufferLayout layout =
+        {
+            {ShaderDataType::Float3, "aPosition"      },
+            {ShaderDataType::Float3, "aLocalPosition" },
+            {ShaderDataType::Float4, "aColor"         },
+            {ShaderDataType::Float,  "aThickness"     },
+            {ShaderDataType::Float,  "aFade"          }
+        };
+        vertexBuffer->SetLayout(layout);
+
+        vertexInput->SetVertexBuffer(vertexBuffer);
+        vertexInput->SetIndexBuffer(indexBuffer);
+
+        shader = Shader::Create(ASSETS_DIRECTORY / "shaders" / "Circle.slang", vertexInput);
+    }
+
+    void CircleRenderer::StartNewBatch()
+    {
+        CircleCount = 0;
+        IndexCount = 0;
+        DrawingCount = 0;
+
+        CurrentVertexPtr = baseVertexBuffer;
+    }
+
+    void CircleRenderer::SubmitBatch()
+    {
+        if (CircleCount)
+        {
+            uint32_t dataSize = (uint32_t)((uint8_t*)CurrentVertexPtr - (uint8_t*)baseVertexBuffer);
+            vertexBuffer->SetData(baseVertexBuffer, dataSize);
+
+            vertexInput->Bind();
+            shader->Bind();
+
+            Renderer::Backend()->DrawIndexed(IndexCount);
+            DrawingCount++;
+            Renderer::Stats.DrawCircle++;
+
+            shader->Unbind();
+            vertexInput->Unbind();
+        }
+        StartNewBatch();
+    }
+
+    void CircleRenderer::End()
+    {
+        delete[] baseVertexBuffer;
+    }
 }

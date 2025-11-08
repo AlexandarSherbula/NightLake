@@ -132,6 +132,9 @@ namespace aio
 
 	VertexArray::VertexArray()
 	{
+		mVertexBuffer = nullptr;
+		mIndexBuffer = nullptr;
+
 		glCreateVertexArrays(1, &mID);
 	}
 

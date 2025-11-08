@@ -22,13 +22,9 @@ namespace aio
 		sBackend->Init();
 
 		QuadRenderer::Init();
+		CircleRenderer::Init();
 
 		StartBatches();
-	}
-
-	void Renderer::Draw()
-	{
-		sBackend->DrawIndexed(6);
 	}
 
 	void Renderer::ClearColor(const Vector4& color)
@@ -45,16 +41,19 @@ namespace aio
 	void Renderer::StartBatches()
 	{
 		QuadRenderer::StartNewBatch();
+		CircleRenderer::StartNewBatch();
 	}
 
 	void Renderer::Flush()
 	{
 		QuadRenderer::SubmitBatch();
+		CircleRenderer::SubmitBatch();
 	}
 
 	void Renderer::End()
 	{
 		QuadRenderer::End();
+		CircleRenderer::End();
 	}
 
 	void Renderer::DrawRect(const Vector2& position, const Vector2& size, const Vector4& color)
@@ -525,5 +524,81 @@ namespace aio
 			QuadRenderer::TextureIDs[QuadRenderer::TextureSlotIndex] = texture->GetID();
 			QuadRenderer::TextureSlotIndex++;
 		}
+	}
+
+	void Renderer::DrawCircle(const Vector2& position, const Vector4& color, float radius, float thickness, float fade)
+	{
+		if (CircleRenderer::CircleCount >= CircleRenderer::MaxCirclesPerBatch)
+			CircleRenderer::SubmitBatch();
+
+		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x - radius, position.y - radius, 0.0f, 1.0f);
+		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(-1.0f, -1.0f, 0.0f, 1.0f);
+		CircleRenderer::CurrentVertexPtr->color = color;
+		CircleRenderer::CurrentVertexPtr->thickness = thickness;
+		CircleRenderer::CurrentVertexPtr->fade = fade;
+		CircleRenderer::CurrentVertexPtr++;
+
+		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x + radius, position.y - radius, 0.0f, 1.0f);
+		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(1.0f, -1.0f, 0.0f, 1.0f);
+		CircleRenderer::CurrentVertexPtr->color = color;
+		CircleRenderer::CurrentVertexPtr->thickness = thickness;
+		CircleRenderer::CurrentVertexPtr->fade = fade;
+		CircleRenderer::CurrentVertexPtr++;
+
+		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x + radius, position.y + radius, 0.0f, 1.0f);
+		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
+		CircleRenderer::CurrentVertexPtr->color = color;
+		CircleRenderer::CurrentVertexPtr->thickness = thickness;
+		CircleRenderer::CurrentVertexPtr->fade = fade;
+		CircleRenderer::CurrentVertexPtr++;
+
+		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x - radius, position.y + radius, 0.0f, 1.0f);
+		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(-1.0f, 1.0f, 0.0f, 1.0f);
+		CircleRenderer::CurrentVertexPtr->color = color;
+		CircleRenderer::CurrentVertexPtr->thickness = thickness;
+		CircleRenderer::CurrentVertexPtr->fade = fade;
+		CircleRenderer::CurrentVertexPtr++;
+
+		CircleRenderer::IndexCount += 6;
+		CircleRenderer::CircleCount++;
+		Stats.Circles++;
+	}
+
+	void Renderer::DrawCircle(const Vector3& position, const Vector4& color, float radius, float thickness, float fade)
+	{
+		if (CircleRenderer::CircleCount >= CircleRenderer::MaxCirclesPerBatch)
+			CircleRenderer::SubmitBatch();
+
+		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x - radius, position.y - radius, position.z, 1.0f);
+		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(-1.0f, -1.0f, 0.0f, 1.0f);
+		CircleRenderer::CurrentVertexPtr->color = color;
+		CircleRenderer::CurrentVertexPtr->thickness = thickness;
+		CircleRenderer::CurrentVertexPtr->fade = fade;
+		CircleRenderer::CurrentVertexPtr++;
+
+		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x + radius, position.y - radius, position.z, 1.0f);
+		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(1.0f, -1.0f, 0.0f, 1.0f);
+		CircleRenderer::CurrentVertexPtr->color = color;
+		CircleRenderer::CurrentVertexPtr->thickness = thickness;
+		CircleRenderer::CurrentVertexPtr->fade = fade;
+		CircleRenderer::CurrentVertexPtr++;
+
+		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x + radius, position.y + radius, position.z, 1.0f);
+		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
+		CircleRenderer::CurrentVertexPtr->color = color;
+		CircleRenderer::CurrentVertexPtr->thickness = thickness;
+		CircleRenderer::CurrentVertexPtr->fade = fade;
+		CircleRenderer::CurrentVertexPtr++;
+
+		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x - radius, position.y + radius, position.z, 1.0f);
+		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(-1.0f, 1.0f, 0.0f, 1.0f);
+		CircleRenderer::CurrentVertexPtr->color = color;
+		CircleRenderer::CurrentVertexPtr->thickness = thickness;
+		CircleRenderer::CurrentVertexPtr->fade = fade;
+		CircleRenderer::CurrentVertexPtr++;
+
+		CircleRenderer::IndexCount += 6;
+		CircleRenderer::CircleCount++;
+		Stats.Circles++;
 	}
 }

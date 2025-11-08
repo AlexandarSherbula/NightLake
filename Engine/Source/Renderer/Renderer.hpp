@@ -42,7 +42,6 @@ namespace aio
 	{
 	public:
 		static void Init();
-		static void Draw();
 		static void ClearColor(const Vector4& color);
 
 		static void OnWindowResize(WindowResizeEvent& e);
@@ -75,6 +74,9 @@ namespace aio
 
 		static void DrawRotatedSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector4& color = Vector4(1.0f), float angle = 0.0f);
 		static void DrawRotatedSprite(const Ref<Texture>& texture, const Vector3& position, const Vector2& size, const Vector4& color = Vector4(1.0f), float angle = 0.0f);
+
+		static void DrawCircle(const Vector2& position, const Vector4& color = Vector4(1.0f), float radius = 0.5f, float thickness = 1.0f, float fade = 0.005f);
+		static void DrawCircle(const Vector3& position, const Vector4& color = Vector4(1.0f), float radius = 0.5f, float thickness = 1.0f, float fade = 0.005f);
 	public:
 		struct Statistics
 		{

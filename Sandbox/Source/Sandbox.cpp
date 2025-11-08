@@ -36,6 +36,7 @@ void MainLayer::OnAttach()
 
 	TextureSpecification texSpec;
 	Assets::Create<Texture>(texSpec, "awesomeface.png");
+	Assets::Create<Texture>(texSpec, "AlexioLogo.png");
 }
 
 void MainLayer::OnUpdate()
@@ -45,10 +46,12 @@ void MainLayer::OnUpdate()
 	Renderer::ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
 
 	Renderer::DrawQuad(Vector2(-1.0f, -1.0f), Vector2(0.5f, 0.5f), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-	Renderer::DrawQuad(Vector2(1.0f, 0.0f), Vector2(0.5f, 0.5f), Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+	Renderer::DrawRotatedQuad(Vector2(1.0f, 0.0f), Vector2(0.5f, 0.5f), Vector4(1.0f, 0.0f, 0.0f, 1.0f), -3.0f * AppTimer::GetElapsedTime());
+	
+	Renderer::DrawSprite(Assets::Get<Texture>("AlexioLogo"), Vector2(-0.5f, -0.5f), Vector2(1.0f, 1.0f));
+	Renderer::DrawRotatedSprite(Assets::Get<Texture>("awesomeface"), Vector2( 0.8f, -0.5f), Vector2(0.5f, 0.5f), Vector4(1.0f), AppTimer::GetElapsedTime());
 
-	Renderer::DrawSprite(Assets::Get<Texture>("awesomeface"), Vector2(-0.5f, -0.5f), Vector2(1.0f, 1.0f));
-	Renderer::DrawSprite(Assets::Get<Texture>("awesomeface"), Vector2( 0.8f, -0.5f), Vector2(0.5f, 0.5f));
+	Renderer::DrawCircle(Vector2(-1.0f, 0.0f), Vector4(1.0f, 0.5f, 0.0f, 1.0f));
 }
 
 void MainLayer::OnImGuiRender()
