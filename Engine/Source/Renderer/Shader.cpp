@@ -341,52 +341,17 @@ namespace aio
 	{
 		CHECK_API
 		(
-			return R"(
-float4 GetSampledTexture(float2 texCoord, int texIndex)
-{
-	return textures[texIndex].Sample(texCoord);
-})",
+			return 
+			"float4 GetSampledTexture(float2 texCoord, int texIndex)"
+			"{"
+			"	return textures[texIndex].Sample(texCoord);"
+			"}",
 
-			return R"(
-float4 GetSampledTexture(float2 texCoord, int texIndex)
-{
-	switch (texIndex)
-	{
-		case 0: return textures[0].Sample(samplerState, texCoord);
-		case 1: return textures[1].Sample(samplerState, texCoord);
-		case 2: return textures[2].Sample(samplerState, texCoord);
-		case 3: return textures[3].Sample(samplerState, texCoord);
-		case 4: return textures[4].Sample(samplerState, texCoord);
-		case 5: return textures[5].Sample(samplerState, texCoord);
-		case 6: return textures[6].Sample(samplerState, texCoord);
-		case 7: return textures[7].Sample(samplerState, texCoord);
-		case 8: return textures[8].Sample(samplerState, texCoord);
-		case 9: return textures[9].Sample(samplerState, texCoord);
-		case 10: return textures[10].Sample(samplerState, texCoord);
-		case 11: return textures[11].Sample(samplerState, texCoord);
-		case 12: return textures[12].Sample(samplerState, texCoord);
-		case 13: return textures[13].Sample(samplerState, texCoord);
-		case 14: return textures[14].Sample(samplerState, texCoord);
-		case 15: return textures[15].Sample(samplerState, texCoord);
-		case 16: return textures[16].Sample(samplerState, texCoord);
-		case 17: return textures[17].Sample(samplerState, texCoord);
-		case 18: return textures[18].Sample(samplerState, texCoord);
-		case 19: return textures[19].Sample(samplerState, texCoord);
-		case 20: return textures[20].Sample(samplerState, texCoord);
-		case 21: return textures[21].Sample(samplerState, texCoord);
-		case 22: return textures[22].Sample(samplerState, texCoord);
-		case 23: return textures[23].Sample(samplerState, texCoord);
-		case 24: return textures[24].Sample(samplerState, texCoord);
-		case 25: return textures[25].Sample(samplerState, texCoord);
-		case 26: return textures[26].Sample(samplerState, texCoord);
-		case 27: return textures[27].Sample(samplerState, texCoord);
-		case 28: return textures[28].Sample(samplerState, texCoord);
-		case 29: return textures[29].Sample(samplerState, texCoord);
-		case 30: return textures[30].Sample(samplerState, texCoord);
-		case 31: return textures[31].Sample(samplerState, texCoord);
-	}
-	return float4(1.0, 1.0, 1.0, 1.0);
-})"
+			return 
+			"float4 GetSampledTexture(float2 texCoord, int texIndex)"
+			"{"
+			"	return textures[texIndex].Sample(samplerState, texCoord);"
+			"}"
 		);
 
 		return "";

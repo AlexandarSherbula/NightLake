@@ -57,7 +57,6 @@ namespace aio
         vertexBuffer->SetLayout(layout);
         vertexInput->SetVertexBuffer(vertexBuffer);
         vertexInput->SetIndexBuffer(indexBuffer);
-        
 
         shader = Shader::Create(ASSETS_DIRECTORY / "shaders" / "Quad.slang", vertexInput);
 
@@ -93,6 +92,7 @@ namespace aio
             DrawingCount++;
             Renderer::Stats.DrawQuad++;
 
+            WhiteTexture->Unbind();
             shader->Unbind();
             vertexInput->Unbind();
         }

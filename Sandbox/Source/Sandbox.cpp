@@ -33,43 +33,9 @@ MainLayer::MainLayer()
 void MainLayer::OnAttach()
 {
 	AIO_PROFILE_FUNCTION();
-	float positions[] = 
-	{
-		 0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    1.0f, 0.0f,    0.0f,
-		-0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    0.0f, 0.0f,    0.0f,
-		-0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    0.0f, 1.0f,    0.0f,
-		 0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    1.0f, 1.0f,    0.0f,
-	};
-
-	uint32_t indices[6] =
-	{
-		0, 1, 2,
-		2, 3, 0
-	};
-
-	vi = aio::VertexInput::Create();
-	vb = aio::VertexBuffer::Create(positions, sizeof(positions));
-	ib = aio::IndexBuffer::Create(indices, 6);
-
-	aio::BufferLayout layout =
-	{
-		{aio::ShaderDataType::Float3, "aPosition" },
-		{aio::ShaderDataType::Float4, "aColor"    },
-		{aio::ShaderDataType::Float2, "aTexCoord" },
-		{aio::ShaderDataType::Float,  "aTexIndex" }
-	};
 
 	TextureSpecification texSpec;
-
-	vb->SetLayout(layout);
-
-	vi->SetVertexBuffer(vb);
-	vi->SetIndexBuffer(ib);
-
-	Assets::Create<Shader>("Quad.slang", vi);
 	Assets::Create<Texture>(texSpec, "awesomeface.png");
-
-	texture = Texture::Create(texSpec);
 }
 
 void MainLayer::OnUpdate()
@@ -78,15 +44,11 @@ void MainLayer::OnUpdate()
 
 	Renderer::ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
 
-	//vi->Bind();
-	//Assets::Get<Shader>("Quad")->Bind();
-	//Assets::Get<Texture>("awesomeface")->Bind(0);
-	//Renderer::Draw();
 	Renderer::DrawQuad(Vector2(-1.0f, -1.0f), Vector2(0.5f, 0.5f), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-	Renderer::DrawQuad(Vector2(0.0f, 0.0f), Vector2(0.5f, 0.5f), Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+	Renderer::DrawQuad(Vector2(1.0f, 0.0f), Vector2(0.5f, 0.5f), Vector4(1.0f, 0.0f, 0.0f, 1.0f));
 
 	Renderer::DrawSprite(Assets::Get<Texture>("awesomeface"), Vector2(-0.5f, -0.5f), Vector2(1.0f, 1.0f));
-	Renderer::DrawSprite(Assets::Get<Texture>("awesomeface"), Vector2( 0.5f, -0.5f), Vector2(0.5f, 0.5f));
+	Renderer::DrawSprite(Assets::Get<Texture>("awesomeface"), Vector2( 0.8f, -0.5f), Vector2(0.5f, 0.5f));
 }
 
 void MainLayer::OnImGuiRender()

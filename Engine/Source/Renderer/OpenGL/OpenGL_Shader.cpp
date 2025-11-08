@@ -61,6 +61,25 @@ namespace aio
 		glDeleteProgram(mID);
 	}
 
+	void OpenGL_Shader::VertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer)
+	{
+		switch (type)
+		{
+		case GL_BYTE: case GL_UNSIGNED_BYTE: case GL_SHORT: case GL_UNSIGNED_SHORT: case GL_INT: case GL_UNSIGNED_INT:
+		{
+			glVertexAttribIPointer(index, size, type, stride, pointer);
+			break;
+		}
+		case GL_DOUBLE: 
+		{
+			glVertexAttribLPointer(index, size, type, stride, pointer);
+			break;
+		}
+		default:
+			glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+		}
+	}
+
 	void OpenGL_Shader::Compile(const Ref<VertexInput>& vertexInput)
 	{
 		AIO_ASSERT(vertexInput->GetVertexBuffer()->GetLayout().GetElements().size(), "VertexBuffer has no layout");
@@ -71,12 +90,13 @@ namespace aio
 		for (auto& element : layout)
 		{
 			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index,
+			VertexAttribPointer(index,
 				element.GetComponentCount(),
 				OpenGLBaseType(element.type),
 				element.normalized ? GL_TRUE : GL_FALSE,
 				layout.GetStride(),
 				(const void*)element.offset);
+			
 			index++;
 		}
 

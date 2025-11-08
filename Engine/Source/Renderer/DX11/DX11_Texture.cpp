@@ -125,7 +125,7 @@ namespace aio
 		}
 		else
 		{
-			int width, height, channels;
+			int32_t width, height, channels;
 			stbi_uc* data = nullptr;
 			data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 0);
 
@@ -134,10 +134,8 @@ namespace aio
 			if (data)
 			{
 				mName = name;
-				mSpecification = specification;
 				mSpecification.Width = width;
 				mSpecification.Height = height;
-				mID = sID;
 
 				textureDesc.Width = mSpecification.Width;
 				textureDesc.Height = mSpecification.Height;
