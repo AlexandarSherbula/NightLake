@@ -144,11 +144,9 @@ namespace aio
 
 #ifdef AIO_DEBUG
 #define PROFILING 1
-#else
-#define PROFILING 0
 #endif 
 
-#if PROFILING 1
+#if PROFILING == 1
 #define CLEAN_FUNC_SIG()                                            ::aio::CleanFunctionSignature(FUNCTION_SIG)
 #define AIO_BEGIN_SESSION(name, filepath)                           ::aio::Instrumentor::Get().BeginSession(name, filepath)
 #define AIO_END_SESSION()                                           ::aio::Instrumentor::Get().EndSession()
