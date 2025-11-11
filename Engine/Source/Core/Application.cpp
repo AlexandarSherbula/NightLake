@@ -50,28 +50,31 @@ namespace aio
 
 	void Application::Run()
 	{
+		AIO_PROFILE_FUNCTION();
 		AppTimer::Start();
 		while (mRunning)
 		{
-			AIO_PROFILE_FUNCTION();
 			AppTimer::Update();
 
 			mAppWindow->PollEvents();
 			Input::Scan();
 
-			imguiLayer->Begin();
+			//imguiLayer->Begin();
 
 			sMainCamera->OnUpdate(AppTimer::DeltaTime());
 
 			for (Layer* layer : mLayerStack)
 				layer->OnUpdate();
 
-			for (Layer* layer : mLayerStack)
-				layer->OnImGuiRender();
+			Renderer::Flush();
+
+			//for (Layer* layer : mLayerStack)
+			//	layer->OnImGuiRender();
 
 			mAppWindow->SwapBuffers();
 		}
 
+		Renderer::End();
 		Input::Close();
 	}
 

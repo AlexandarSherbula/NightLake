@@ -153,6 +153,8 @@ namespace aio
 
 	DX11_VertexInput::DX11_VertexInput()
 	{
+		mVertexBuffer = nullptr;
+		mIndexBuffer = nullptr;
 	}
 
 	DX11_VertexInput::~DX11_VertexInput()
@@ -162,7 +164,9 @@ namespace aio
 	void DX11_VertexInput::Bind() const
 	{
 		mVertexBuffer->Bind();
-		mIndexBuffer->Bind();
+
+		if (mIndexBuffer != nullptr)
+			mIndexBuffer->Bind();
 	}
 
 	void DX11_VertexInput::Unbind() const

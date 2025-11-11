@@ -33,53 +33,29 @@ MainLayer::MainLayer()
 void MainLayer::OnAttach()
 {
 	AIO_PROFILE_FUNCTION();
-	float positions[] = 
-	{
-		 0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    1.0f, 0.0f,    0.0f,
-		-0.5f, -0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    0.0f, 0.0f,    0.0f,
-		-0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    0.0f, 1.0f,    0.0f,
-		 0.5f,  0.5f, 0.0f,    1.0f, 1.0f, 1.0f, 1.0f,    1.0f, 1.0f,    0.0f,
-	};
-
-	uint32_t indices[6] =
-	{
-		0, 1, 2,
-		2, 3, 0
-	};
-
-	vi = aio::VertexInput::Create();
-	vb = aio::VertexBuffer::Create(positions, sizeof(positions));
-	ib = aio::IndexBuffer::Create(indices, 6);
-
-	aio::BufferLayout layout =
-	{
-		{aio::ShaderDataType::Float3, "aPosition" },
-		{aio::ShaderDataType::Float4, "aColor"    },
-		{aio::ShaderDataType::Float2, "aTexCoord" },
-		{aio::ShaderDataType::Float,  "aTexIndex" }
-	};
 
 	TextureSpecification texSpec;
-
-	vb->SetLayout(layout);
-
-	vi->SetVertexBuffer(vb);
-	vi->SetIndexBuffer(ib);
-
-	Assets::Create<Shader>("Quad.slang", vi);
 	Assets::Create<Texture>(texSpec, "awesomeface.png");
-
-	texture = Texture::Create(texSpec);
+	Assets::Create<Texture>(texSpec, "AlexioLogo.png");
 }
 
 void MainLayer::OnUpdate()
 {
 	AIO_PROFILE_FUNCTION();
 
-	vi->Bind();
-	Assets::Get<Shader>("Quad")->Bind();
-	Assets::Get<Texture>("awesomeface")->Bind(0);
-	Renderer::Draw();
+	Renderer::ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
+
+	Renderer::DrawLinedQuad(Vector2(-0.3f, -0.9f), Vector2( 0.4f, 0.4f), Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+	Renderer::DrawQuad(Vector2(-1.0f, -0.7f), Vector2(0.5f, 0.5f), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+	Renderer::DrawRotatedQuad(Vector2(1.0f, -0.8f), Vector2(0.5f, 0.5f), Vector4(1.0f, 0.0f, 0.0f, 1.0f), -3.0f * AppTimer::GetElapsedTime());
+	
+	Renderer::DrawSprite(Assets::Get<Texture>("AlexioLogo"), Vector2(-0.5f, -0.5f), Vector2(1.0f, 1.0f));
+	Renderer::DrawRotatedSprite(Assets::Get<Texture>("awesomeface"), Vector2( 0.3f, -0.8f), Vector2(0.5f, 0.5f), Vector4(1.0f), AppTimer::GetElapsedTime());
+	
+	Renderer::DrawCircle(Vector2(-1.3f, -0.5f), Vector4(1.0f, 0.5f, 0.0f, 1.0f), 0.25f);
+
+	Renderer::DrawLinedTriangle(Vector2(-1.5f, 0.9f), Vector2(-0.5f, 0.9f), Vector2(-1.0f,  0.0f), Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+	Renderer::DrawTriangle(Vector2( 1.5f, 0.9f), Vector2( 0.5f, 0.9f), Vector2( 1.0f,  0.0f), Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 }
 
 void MainLayer::OnImGuiRender()

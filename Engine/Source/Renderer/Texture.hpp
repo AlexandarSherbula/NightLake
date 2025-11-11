@@ -48,8 +48,6 @@ namespace aio
 		TextureFilter SamplerFilter = TextureFilter::Linear;
 
 		bool GenerateMips = true;
-
-		std::string DebugName;
 	};
 
 

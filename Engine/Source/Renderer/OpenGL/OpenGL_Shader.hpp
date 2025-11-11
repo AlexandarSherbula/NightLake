@@ -24,6 +24,7 @@ namespace aio
 		void SetMat3x3(const std::string& name, const glm::mat3x3& matrix);
 		void SetMat4x4(const std::string& name, const Mat4x4& matrix);
 	private:
+		void VertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer);		
 		void Compile(const Ref<VertexInput>& vertexBuffer);
 		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
 	private:

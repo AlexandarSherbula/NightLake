@@ -8,17 +8,20 @@ namespace aio
 	{
 		switch (type)
 		{
-		case ShaderDataType::Float:    return GL_FLOAT;
-		case ShaderDataType::Float2:   return GL_FLOAT;
-		case ShaderDataType::Float3:   return GL_FLOAT;
-		case ShaderDataType::Float4:   return GL_FLOAT;
-		case ShaderDataType::Mat3:     return GL_FLOAT;
-		case ShaderDataType::Mat4:     return GL_FLOAT;
-		case ShaderDataType::Int:      return GL_INT;
-		case ShaderDataType::Int2:     return GL_INT;
-		case ShaderDataType::Int3:     return GL_INT;
-		case ShaderDataType::Int4:     return GL_INT;
-		case ShaderDataType::Bool:     return GL_BOOL;
+		case ShaderDataType::Float:
+		case ShaderDataType::Float2:
+		case ShaderDataType::Float3:
+		case ShaderDataType::Float4:
+		case ShaderDataType::Mat3:
+		case ShaderDataType::Mat4:
+			return GL_FLOAT;
+		case ShaderDataType::Int:
+		case ShaderDataType::Int2:
+		case ShaderDataType::Int3:
+		case ShaderDataType::Int4:
+			return GL_INT;
+		case ShaderDataType::Bool:
+			return GL_BOOL;
 		}
 
 		AIO_ASSERT(false, "Unknown ShaderDataType!");
@@ -61,6 +64,25 @@ namespace aio
 		glDeleteProgram(mID);
 	}
 
+	void OpenGL_Shader::VertexAttribPointer(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid* pointer)
+	{
+		switch (type)
+		{
+		case GL_BYTE: case GL_UNSIGNED_BYTE: case GL_SHORT: case GL_UNSIGNED_SHORT: case GL_INT: case GL_UNSIGNED_INT:
+		{
+			glVertexAttribIPointer(index, size, type, stride, pointer);
+			break;
+		}
+		case GL_DOUBLE: 
+		{
+			glVertexAttribLPointer(index, size, type, stride, pointer);
+			break;
+		}
+		default:
+			glVertexAttribPointer(index, size, type, normalized, stride, pointer);
+		}
+	}
+
 	void OpenGL_Shader::Compile(const Ref<VertexInput>& vertexInput)
 	{
 		AIO_ASSERT(vertexInput->GetVertexBuffer()->GetLayout().GetElements().size(), "VertexBuffer has no layout");
@@ -71,12 +93,13 @@ namespace aio
 		for (auto& element : layout)
 		{
 			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index,
+			VertexAttribPointer(index,
 				element.GetComponentCount(),
 				OpenGLBaseType(element.type),
 				element.normalized ? GL_TRUE : GL_FALSE,
 				layout.GetStride(),
 				(const void*)element.offset);
+			
 			index++;
 		}
 

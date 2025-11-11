@@ -53,6 +53,7 @@ namespace aio
 
 	Ref<VertexInput> VertexInput::Create()
 	{
+
 		CHECK_API
 		(
 			return CreateRef<VertexArray>(),
