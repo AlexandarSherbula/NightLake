@@ -105,7 +105,14 @@ namespace aio
 		Stats.Triangles++;
 	}
 
-	void Renderer::DrawRect(const Vector2& position, const Vector2& size, const Vector4& color)
+	void Renderer::DrawLinedTriangle(const Vector2& p1, const Vector2& p2, const Vector2& p3, const Vector4& color)
+	{
+		DrawLine(p1, p2, color);
+		DrawLine(p2, p3, color);
+		DrawLine(p3, p1, color);
+	}
+
+	void Renderer::DrawLinedQuad(const Vector2& position, const Vector2& size, const Vector4& color)
 	{
 		AIO_PROFILE_FUNCTION();
 		Vector2 p0 = position;
