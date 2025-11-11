@@ -22,6 +22,7 @@ namespace aio
 		sBackend->Init();
 
 		LineRenderer::Init();
+		TriangleRenderer::Init();
 		QuadRenderer::Init();
 		CircleRenderer::Init();
 
@@ -42,6 +43,7 @@ namespace aio
 	void Renderer::StartBatches()
 	{
 		LineRenderer::StartNewBatch();
+		TriangleRenderer::StartNewBatch();
 		QuadRenderer::StartNewBatch();
 		CircleRenderer::StartNewBatch();
 	}
@@ -49,6 +51,7 @@ namespace aio
 	void Renderer::Flush()
 	{
 		LineRenderer::SubmitBatch();
+		TriangleRenderer::SubmitBatch();
 		QuadRenderer::SubmitBatch();
 		CircleRenderer::SubmitBatch();
 	}
@@ -56,6 +59,7 @@ namespace aio
 	void Renderer::End()
 	{
 		LineRenderer::End();
+		TriangleRenderer::End();
 		QuadRenderer::End();
 		CircleRenderer::End();
 	}
@@ -77,6 +81,28 @@ namespace aio
 
 		LineRenderer::LineCount++;
 		Stats.Lines++;
+	}
+
+	void Renderer::DrawTriangle(const Vector2& p1, const Vector2& p2, const Vector2& p3, const Vector4& color)
+	{
+		AIO_PROFILE_FUNCTION();
+		if (TriangleRenderer::TriangleCount >= TriangleRenderer::MaxTrisPerBatch)
+			TriangleRenderer::SubmitBatch();
+
+		TriangleRenderer::CurrentVertexPtr->position = Vector3(p1, 0.0f);
+		TriangleRenderer::CurrentVertexPtr->color = color;
+		TriangleRenderer::CurrentVertexPtr++;
+
+		TriangleRenderer::CurrentVertexPtr->position = Vector3(p2, 0.0f);
+		TriangleRenderer::CurrentVertexPtr->color = color;
+		TriangleRenderer::CurrentVertexPtr++;
+
+		TriangleRenderer::CurrentVertexPtr->position = Vector3(p3, 0.0f);
+		TriangleRenderer::CurrentVertexPtr->color = color;
+		TriangleRenderer::CurrentVertexPtr++;
+
+		TriangleRenderer::TriangleCount++;
+		Stats.Triangles++;
 	}
 
 	void Renderer::DrawRect(const Vector2& position, const Vector2& size, const Vector4& color)

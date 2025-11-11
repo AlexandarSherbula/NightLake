@@ -9,7 +9,7 @@
 
 namespace aio
 {
-	struct LineVertex
+	struct Vertex
 	{
 		Vector3 position;
 		Vector4 color;
@@ -24,15 +24,33 @@ namespace aio
 		static void End();
 	public:
 		static uint32_t LineCount;
-		static uint32_t DrawingCount;
 
-		static LineVertex* CurrentVertexPtr;
+		static Vertex* CurrentVertexPtr;
 		static const size_t MaxLinesPerBatch = 1000;
 	private:
 		static Ref<VertexBuffer> vertexBuffer;
 		static Ref<VertexInput>  vertexInput;
 		static Ref<Shader>       shader;
-		static LineVertex*       baseVertexBuffer;
+		static Vertex*       baseVertexBuffer;
+	};
+
+	class TriangleRenderer
+	{
+	public:
+		static void Init();
+		static void StartNewBatch();
+		static void SubmitBatch();
+		static void End();
+	public:
+		static uint32_t TriangleCount;
+
+		static Vertex* CurrentVertexPtr;
+		static const size_t MaxTrisPerBatch = 1000;
+	private:
+		static Ref<VertexBuffer> vertexBuffer;
+		static Ref<VertexInput>  vertexInput;
+		static Ref<Shader>       shader;
+		static Vertex* baseVertexBuffer;
 	};
 
 	struct QuadVertex
@@ -54,7 +72,6 @@ namespace aio
 		static uint32_t QuadCount;
 		static uint32_t IndexCount;
 		static uint32_t TextureSlotIndex;
-		static uint32_t DrawingCount;
 
 		static QuadVertex* CurrentVertexPtr;
 		static const size_t MaxQuadsPerBatch = 1000;
@@ -90,7 +107,6 @@ namespace aio
 	public:
 		static uint32_t CircleCount;
 		static uint32_t IndexCount;
-		static uint32_t DrawingCount;
 
 		static CircleVertex* CurrentVertexPtr;
 		static const size_t MaxCirclesPerBatch = 1000;

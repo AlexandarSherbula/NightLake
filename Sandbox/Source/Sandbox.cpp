@@ -45,14 +45,18 @@ void MainLayer::OnUpdate()
 
 	Renderer::ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
 
-	Renderer::DrawLine(Vector2(-0.8f,  0.8f), Vector2(-0.1f, 0.8f), Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-	Renderer::DrawQuad(Vector2(-1.0f, -1.0f), Vector2(0.5f, 0.5f), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-	Renderer::DrawRotatedQuad(Vector2(1.0f, 0.0f), Vector2(0.5f, 0.5f), Vector4(1.0f, 0.0f, 0.0f, 1.0f), -3.0f * AppTimer::GetElapsedTime());
+
+	Renderer::DrawLine(Vector2(-0.3f, -0.8f), Vector2( 0.3f, -0.8f), Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+	Renderer::DrawQuad(Vector2(-1.0f, -0.7f), Vector2(0.5f, 0.5f), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+	Renderer::DrawRotatedQuad(Vector2(1.0f, -0.8f), Vector2(0.5f, 0.5f), Vector4(1.0f, 0.0f, 0.0f, 1.0f), -3.0f * AppTimer::GetElapsedTime());
 	
 	Renderer::DrawSprite(Assets::Get<Texture>("AlexioLogo"), Vector2(-0.5f, -0.5f), Vector2(1.0f, 1.0f));
-	Renderer::DrawRotatedSprite(Assets::Get<Texture>("awesomeface"), Vector2( 0.8f, -0.5f), Vector2(0.5f, 0.5f), Vector4(1.0f), AppTimer::GetElapsedTime());
+	Renderer::DrawRotatedSprite(Assets::Get<Texture>("awesomeface"), Vector2( 0.3f, -0.8f), Vector2(0.5f, 0.5f), Vector4(1.0f), AppTimer::GetElapsedTime());
+	
+	Renderer::DrawCircle(Vector2(-1.3f, -0.5f), Vector4(1.0f, 0.5f, 0.0f, 1.0f), 0.25f);
 
-	Renderer::DrawCircle(Vector2(-1.0f, 0.0f), Vector4(1.0f, 0.5f, 0.0f, 1.0f));
+	Renderer::DrawTriangle(Vector2(-1.5f, 1.0f), Vector2(-0.5f, 1.0f), Vector2(-1.0f,  0.0f), Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+	Renderer::DrawTriangle(Vector2( 1.5f, 1.0f), Vector2( 0.5f, 1.0f), Vector2( 1.0f,  0.0f), Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 }
 
 void MainLayer::OnImGuiRender()

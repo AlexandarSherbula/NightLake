@@ -43,8 +43,8 @@ namespace aio
 
 		void Init() override {}
 		void SetViewport(const Vector2& position, const Vector2& size) override {}
-		void Draw(uint32_t vertexCount) override                                {}
-		void DrawIndexed(uint32_t indexCount) override                          {}
+		void Draw(DrawingMode mode, uint32_t vertexCount) override              {}
+		void DrawIndexed(DrawingMode mode, uint32_t indexCount) override        {}
 		void Clear(const Vector4& color) override                               {}
 		inline std::string GetName() const override                 { return ""; }
 	private:

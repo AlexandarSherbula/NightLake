@@ -9,19 +9,18 @@ namespace aio
     Ref<Shader>       LineRenderer::shader = nullptr;
 
     uint32_t LineRenderer::LineCount = 0;
-    uint32_t LineRenderer::DrawingCount = 0;
 
-    LineVertex* LineRenderer::CurrentVertexPtr = nullptr;
-    LineVertex* LineRenderer::baseVertexBuffer = nullptr;
+    Vertex* LineRenderer::CurrentVertexPtr = nullptr;
+    Vertex* LineRenderer::baseVertexBuffer = nullptr;
 
     void LineRenderer::Init()
     {
         const uint32_t maxVertexCount = 2 * MaxLinesPerBatch;
 
-        baseVertexBuffer = new LineVertex[maxVertexCount];
+        baseVertexBuffer = new Vertex[maxVertexCount];
 
         vertexInput = VertexInput::Create();
-        vertexBuffer = VertexBuffer::Create(maxVertexCount * sizeof(LineVertex));
+        vertexBuffer = VertexBuffer::Create(maxVertexCount * sizeof(Vertex));
 
         BufferLayout layout =
         {
@@ -31,13 +30,12 @@ namespace aio
         vertexBuffer->SetLayout(layout);
         vertexInput->SetVertexBuffer(vertexBuffer);
 
-        shader = Shader::Create(ASSETS_DIRECTORY / "shaders" / "Line.slang", vertexInput);
+        shader = Shader::Create(ASSETS_DIRECTORY / "shaders" / "Basic.slang", vertexInput);
     }
 
     void LineRenderer::StartNewBatch()
     {
         LineCount = 0;
-        DrawingCount = 0;
         CurrentVertexPtr = baseVertexBuffer;
     }
 
@@ -52,7 +50,6 @@ namespace aio
             shader->Bind();
 
             Renderer::Backend()->Draw(DrawingMode::Lines, LineCount * 2);
-            DrawingCount++;
             Renderer::Stats.DrawLine++;
 
             shader->Unbind();
@@ -66,6 +63,65 @@ namespace aio
         delete[] baseVertexBuffer;
     }
 
+    Ref<VertexBuffer> TriangleRenderer::vertexBuffer = nullptr;
+    Ref<VertexInput>  TriangleRenderer::vertexInput = nullptr;
+    Ref<Shader>       TriangleRenderer::shader = nullptr;
+
+    uint32_t TriangleRenderer::TriangleCount = 0;
+
+    Vertex* TriangleRenderer::CurrentVertexPtr = nullptr;
+    Vertex* TriangleRenderer::baseVertexBuffer = nullptr;
+
+    void TriangleRenderer::Init()
+    {
+        const uint32_t maxVertexCount = 3 * MaxTrisPerBatch;
+
+        baseVertexBuffer = new Vertex[maxVertexCount];
+
+        vertexInput = VertexInput::Create();
+        vertexBuffer = VertexBuffer::Create(maxVertexCount * sizeof(Vertex));
+
+        BufferLayout layout =
+        {
+            {ShaderDataType::Float3, "aPosition" },
+            {ShaderDataType::Float4, "aColor"    }
+        };
+        vertexBuffer->SetLayout(layout);
+        vertexInput->SetVertexBuffer(vertexBuffer);
+
+        shader = Shader::Create(ASSETS_DIRECTORY / "shaders" / "Basic.slang", vertexInput);
+    }
+
+    void TriangleRenderer::StartNewBatch()
+    {
+        TriangleCount = 0;
+        CurrentVertexPtr = baseVertexBuffer;
+    }
+
+    void TriangleRenderer::SubmitBatch()
+    {
+        if (TriangleCount)
+        {
+            uint32_t dataSize = (uint32_t)((uint8_t*)CurrentVertexPtr - (uint8_t*)baseVertexBuffer);
+            vertexBuffer->SetData(baseVertexBuffer, dataSize);
+
+            vertexInput->Bind();
+            shader->Bind();
+
+            Renderer::Backend()->Draw(DrawingMode::Triangles, TriangleCount * 3);
+            Renderer::Stats.DrawLine++;
+
+            shader->Unbind();
+            vertexInput->Unbind();
+        }
+        StartNewBatch();
+    }
+
+    void TriangleRenderer::End()
+    {
+        delete[] baseVertexBuffer;
+    }
+
     Ref<VertexBuffer> QuadRenderer::vertexBuffer = nullptr;
     Ref<IndexBuffer>  QuadRenderer::indexBuffer = nullptr;
     Ref<VertexInput>  QuadRenderer::vertexInput = nullptr;
@@ -75,7 +131,6 @@ namespace aio
     uint32_t QuadRenderer::QuadCount = 0;
     uint32_t QuadRenderer::IndexCount = 0;
     uint32_t QuadRenderer::TextureSlotIndex = 0;
-    uint32_t QuadRenderer::DrawingCount = 0;
 
     std::array<uint32_t, QuadRenderer::MaxTextureSlots> QuadRenderer::TextureIDs = { 0 };
 
@@ -134,7 +189,6 @@ namespace aio
         QuadCount = 0;
         IndexCount = 0;
         TextureSlotIndex = 1;
-        DrawingCount = 0;
 
         CurrentVertexPtr = baseVertexBuffer;
     }
@@ -151,7 +205,6 @@ namespace aio
             WhiteTexture->Bind(0);
 
             Renderer::Backend()->DrawIndexed(DrawingMode::Triangles, IndexCount);
-            DrawingCount++;
             Renderer::Stats.DrawQuad++;
 
             WhiteTexture->Unbind();
@@ -173,7 +226,6 @@ namespace aio
 
     uint32_t CircleRenderer::CircleCount = 0;
     uint32_t CircleRenderer::IndexCount = 0;
-    uint32_t CircleRenderer::DrawingCount = 0;
 
     CircleVertex* CircleRenderer::CurrentVertexPtr = nullptr;
     CircleVertex* CircleRenderer::baseVertexBuffer = nullptr;
@@ -225,7 +277,6 @@ namespace aio
     {
         CircleCount = 0;
         IndexCount = 0;
-        DrawingCount = 0;
 
         CurrentVertexPtr = baseVertexBuffer;
     }
@@ -241,7 +292,6 @@ namespace aio
             shader->Bind();
 
             Renderer::Backend()->DrawIndexed(DrawingMode::Triangles, IndexCount);
-            DrawingCount++;
             Renderer::Stats.DrawCircle++;
 
             shader->Unbind();

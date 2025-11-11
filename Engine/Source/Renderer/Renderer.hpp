@@ -55,7 +55,8 @@ namespace aio
 #if defined (AIO_WINDOWS)
 		inline static void SetAPI(GraphicsAPI api) { sAPI = api; }
 #endif
-		static void DrawLine(const Vector2& p0, const Vector2& p1, const Vector4& color = Vector4(1.0f));
+		static void DrawLine(const Vector2& p1, const Vector2& p2, const Vector4& color = Vector4(1.0f));
+		static void DrawTriangle(const Vector2& p1, const Vector2& p2, const Vector2& p3, const Vector4& color = Vector4(1.0f));
 		static void DrawRect(const Vector2& position, const Vector2& size, const Vector4& color = Vector4(1.0f));
 		static void DrawQuad(const Vector2& position, const Vector2& size, const Vector4& color = Vector4(1.0f));
 		static void DrawQuad(const Mat4x4& transform, const Vector4& color);
@@ -71,6 +72,9 @@ namespace aio
 			uint32_t Lines;
 			uint32_t DrawLine;
 
+			uint32_t Triangles;
+			uint32_t DrawTriangles;
+
 			uint32_t Quads;
 			uint32_t DrawQuad;
 
@@ -80,6 +84,7 @@ namespace aio
 			inline void Reset()
 			{
 				Lines = 0;
+				Triangles = 0;
 				Quads = 0;
 				Circles = 0;
 			}
