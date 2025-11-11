@@ -33,6 +33,18 @@ namespace aio
 		}
 	}
 
+	D3D_PRIMITIVE_TOPOLOGY DX11DrawingMode(DrawingMode mode)
+	{
+		switch (mode)
+		{
+		case DrawingMode::Point: return D3D11_PRIMITIVE_TOPOLOGY_POINTLIST;
+		case DrawingMode::Lines: return D3D11_PRIMITIVE_TOPOLOGY_LINELIST;
+		case DrawingMode::Triangles: return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		default:
+			return D3D11_PRIMITIVE_TOPOLOGY_UNDEFINED;
+		}
+	}
+
 	DX11_Backend::DX11_Backend()
 	{
 	}
@@ -43,6 +55,8 @@ namespace aio
 
 	void DX11_Backend::Init()
 	{
+		AIO_PROFILE_FUNCTION();
+
 		mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
 		mDevice = mContext->GetDevice();
@@ -75,15 +89,19 @@ namespace aio
 		mContext->ResizeBuffer(size);
 	}
 
-	void DX11_Backend::Draw(uint32_t vertexCount)
+	void DX11_Backend::Draw(DrawingMode mode, uint32_t vertexCount)
 	{
-		mDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+		AIO_PROFILE_FUNCTION();
+
+		mDeviceContext->IASetPrimitiveTopology(DX11DrawingMode(mode));
 		mDeviceContext->Draw(vertexCount, 0);
 	}
 
-	void DX11_Backend::DrawIndexed(uint32_t indexCount)
+	void DX11_Backend::DrawIndexed(DrawingMode mode, uint32_t indexCount)
 	{
-		mDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		AIO_PROFILE_FUNCTION();
+
+		mDeviceContext->IASetPrimitiveTopology(DX11DrawingMode(mode));
 		mDeviceContext->DrawIndexed(indexCount, 0, 0);
 	}
 

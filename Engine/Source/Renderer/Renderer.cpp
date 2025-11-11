@@ -21,6 +21,7 @@ namespace aio
 		sBackend = RendererBackend::Create();
 		sBackend->Init();
 
+		LineRenderer::Init();
 		QuadRenderer::Init();
 		CircleRenderer::Init();
 
@@ -40,33 +41,62 @@ namespace aio
 
 	void Renderer::StartBatches()
 	{
+		LineRenderer::StartNewBatch();
 		QuadRenderer::StartNewBatch();
 		CircleRenderer::StartNewBatch();
 	}
 
 	void Renderer::Flush()
 	{
+		LineRenderer::SubmitBatch();
 		QuadRenderer::SubmitBatch();
 		CircleRenderer::SubmitBatch();
 	}
 
 	void Renderer::End()
 	{
+		LineRenderer::End();
 		QuadRenderer::End();
 		CircleRenderer::End();
 	}
 
+	void Renderer::DrawLine(const Vector2& p0, const Vector2& p1, const Vector4& color)
+	{
+		AIO_PROFILE_FUNCTION();
+
+		if (LineRenderer::LineCount >= LineRenderer::MaxLinesPerBatch)
+			LineRenderer::SubmitBatch();
+
+		LineRenderer::CurrentVertexPtr->position = Vector3(p0, 0.0f);
+		LineRenderer::CurrentVertexPtr->color = color;
+		LineRenderer::CurrentVertexPtr++;
+
+		LineRenderer::CurrentVertexPtr->position = Vector3(p1, 0.0f);
+		LineRenderer::CurrentVertexPtr->color = color;
+		LineRenderer::CurrentVertexPtr++;
+
+		LineRenderer::LineCount++;
+		Stats.Lines++;
+	}
+
 	void Renderer::DrawRect(const Vector2& position, const Vector2& size, const Vector4& color)
 	{
+		AIO_PROFILE_FUNCTION();
+		Vector2 p0 = position;
+		Vector2 p1 = { position.x + size.x, position.y };
+		Vector2 p2 = { position.x + size.x, position.y + size.y };
+		Vector2 p3 = { position.x, position.y + size.y };
 
+		DrawLine(p0, p1, color);
+		DrawLine(p1, p2, color);
+		DrawLine(p2, p3, color);
+		DrawLine(p3, p0, color);
 	}
 
-	void Renderer::DrawRect(const Vector3& position, const Vector2& size, const Vector4& color)
-	{
-	}
 
 	void Renderer::DrawQuad(const Vector2& position, const Vector2& size, const Vector4& color)
 	{
+		AIO_PROFILE_FUNCTION();
 		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch)
 			QuadRenderer::SubmitBatch();
 
@@ -99,42 +129,10 @@ namespace aio
 		Stats.Quads++;
 	}
 
-	void Renderer::DrawQuad(const Vector3& position, const Vector2& size, const Vector4& color)
-	{
-		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch)
-			QuadRenderer::SubmitBatch();
-
-		QuadRenderer::CurrentVertexPtr->position = { position.x, position.y, position.z };
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 0.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = { position.x + size.x, position.y, position.z };
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 0.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = { position.x + size.x, position.y + size.y, position.z };
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 1.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = { position.x, position.y + size.y, position.z };
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 1.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::IndexCount += 6;
-		QuadRenderer::QuadCount++;
-		Stats.Quads++;
-	}
 
 	void Renderer::DrawQuad(const Mat4x4& transform, const Vector4& color)
 	{
+		AIO_PROFILE_FUNCTION();
 		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch)
 			QuadRenderer::SubmitBatch();
 
@@ -169,6 +167,7 @@ namespace aio
 
 	void Renderer::DrawRotatedQuad(const Vector2& position, const Vector2& size, const Vector4& color, float angle)
 	{
+		AIO_PROFILE_FUNCTION();
 		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch)
 			QuadRenderer::SubmitBatch();
 
@@ -205,46 +204,9 @@ namespace aio
 		Stats.Quads++;
 	}
 
-	void Renderer::DrawRotatedQuad(const Vector3& position, const Vector2& size, const Vector4& color, float angle)
-	{
-		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch)
-			QuadRenderer::SubmitBatch();
-
-		Vector3 originPoint = position + Vector3(size * 0.5f, 0.0f);
-		Mat4x4 transform = glm::translate(Mat4x4(1.0f), originPoint) *
-			glm::rotate(Mat4x4(1.0f), angle, Vector3(0, 0, 1)) * glm::scale(Mat4x4(1.0f), Vector3(size, 1.0f));
-
-		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[0], 1.0f);
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 0.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[1], 1.0f);
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 0.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[2], 1.0f);
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 1.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[3], 1.0f);
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 1.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::IndexCount += 6;
-		QuadRenderer::QuadCount++;
-		Stats.Quads++;
-	}
-
 	void Renderer::DrawSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector4& color)
 	{
+		AIO_PROFILE_FUNCTION();
 		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch ||
 			QuadRenderer::TextureSlotIndex >= QuadRenderer::MaxTextureSlots)
 			QuadRenderer::SubmitBatch();
@@ -295,60 +257,10 @@ namespace aio
 		}
 	}
 
-	void Renderer::DrawSprite(const Ref<Texture>& texture, const Vector3& position, const Vector2& size, const Vector4& color)
-	{
-		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch ||
-			QuadRenderer::TextureSlotIndex >= QuadRenderer::MaxTextureSlots)
-			QuadRenderer::SubmitBatch();
-
-		uint32_t texIndex = QuadRenderer::TextureSlotIndex;
-		for (int i = 1; i < QuadRenderer::TextureSlotIndex; i++)
-		{
-			if (QuadRenderer::TextureIDs[i] == texture->GetID())
-			{
-				texIndex = i;
-				break;
-			}
-		}
-
-		QuadRenderer::CurrentVertexPtr->position = { position.x, position.y, position.z };
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 0.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = texIndex;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = { position.x + size.x, position.y, position.z };
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 0.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = texIndex;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = { position.x + size.x, position.y + size.y, position.z };
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 1.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = texIndex;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = { position.x, position.y + size.y, position.z };
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 1.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = texIndex;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::IndexCount += 6;
-		QuadRenderer::QuadCount++;
-		Stats.Quads++;
-
-		texture->Bind(texIndex);
-		if (texIndex == QuadRenderer::TextureSlotIndex)
-		{
-			QuadRenderer::TextureIDs[QuadRenderer::TextureSlotIndex] = texture->GetID();
-			QuadRenderer::TextureSlotIndex++;
-		}
-	}
-
 	void Renderer::DrawPartialSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector2& tileOffset, const Vector2& tileSize, const Vector4& colorTint)
 	{
+		AIO_PROFILE_FUNCTION();
+
 		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch ||
 			QuadRenderer::TextureSlotIndex >= QuadRenderer::MaxTextureSlots)
 			QuadRenderer::SubmitBatch();
@@ -409,13 +321,9 @@ namespace aio
 		}
 	}
 
-	void Renderer::DrawPartialSprite(const Ref<Texture>& texture, const Vector3& position, const Vector2& size, const Vector2& tileOffset, const Vector2& tileSize, const Vector4& colorTint)
-	{
-
-	}
-
 	void Renderer::DrawRotatedSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector4& color, float angle)
 	{
+		AIO_PROFILE_FUNCTION();
 		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch ||
 			QuadRenderer::TextureSlotIndex >= QuadRenderer::MaxTextureSlots)
 			QuadRenderer::SubmitBatch();
@@ -470,64 +378,9 @@ namespace aio
 		}
 	}
 
-	void Renderer::DrawRotatedSprite(const Ref<Texture>& texture, const Vector3& position, const Vector2& size, const Vector4& color, float angle)
-	{
-		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch ||
-			QuadRenderer::TextureSlotIndex >= QuadRenderer::MaxTextureSlots)
-			QuadRenderer::SubmitBatch();
-
-		uint32_t texIndex = QuadRenderer::TextureSlotIndex;
-		for (int i = 1; i < QuadRenderer::TextureSlotIndex; i++)
-		{
-			if (QuadRenderer::TextureIDs[i] == texture->GetID())
-			{
-				texIndex = i;
-				break;
-			}
-		}
-
-		Vector3 originPoint = position + Vector3(size * 0.5f, 0.0f);
-		Mat4x4 transform = glm::translate(Mat4x4(1.0f), originPoint) *
-			glm::rotate(Mat4x4(1.0f), angle, Vector3(0, 0, 1)) * glm::scale(Mat4x4(1.0f), Vector3(size, 1.0f));
-
-		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[0], 1.0f);
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 0.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = texIndex;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[1], 1.0f);
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 0.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = texIndex;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[2], 1.0f);
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 1.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = texIndex;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[3], 1.0f);
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 1.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = texIndex;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::IndexCount += 6;
-		QuadRenderer::QuadCount++;
-		Stats.Quads++;
-
-		texture->Bind(texIndex);
-		if (texIndex == QuadRenderer::TextureSlotIndex)
-		{
-			QuadRenderer::TextureIDs[QuadRenderer::TextureSlotIndex] = texture->GetID();
-			QuadRenderer::TextureSlotIndex++;
-		}
-	}
-
 	void Renderer::DrawCircle(const Vector2& position, const Vector4& color, float radius, float thickness, float fade)
 	{
+		AIO_PROFILE_FUNCTION();
 		if (CircleRenderer::CircleCount >= CircleRenderer::MaxCirclesPerBatch)
 			CircleRenderer::SubmitBatch();
 
@@ -553,44 +406,6 @@ namespace aio
 		CircleRenderer::CurrentVertexPtr++;
 
 		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x - radius, position.y + radius, 0.0f, 1.0f);
-		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(-1.0f, 1.0f, 0.0f, 1.0f);
-		CircleRenderer::CurrentVertexPtr->color = color;
-		CircleRenderer::CurrentVertexPtr->thickness = thickness;
-		CircleRenderer::CurrentVertexPtr->fade = fade;
-		CircleRenderer::CurrentVertexPtr++;
-
-		CircleRenderer::IndexCount += 6;
-		CircleRenderer::CircleCount++;
-		Stats.Circles++;
-	}
-
-	void Renderer::DrawCircle(const Vector3& position, const Vector4& color, float radius, float thickness, float fade)
-	{
-		if (CircleRenderer::CircleCount >= CircleRenderer::MaxCirclesPerBatch)
-			CircleRenderer::SubmitBatch();
-
-		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x - radius, position.y - radius, position.z, 1.0f);
-		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(-1.0f, -1.0f, 0.0f, 1.0f);
-		CircleRenderer::CurrentVertexPtr->color = color;
-		CircleRenderer::CurrentVertexPtr->thickness = thickness;
-		CircleRenderer::CurrentVertexPtr->fade = fade;
-		CircleRenderer::CurrentVertexPtr++;
-
-		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x + radius, position.y - radius, position.z, 1.0f);
-		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(1.0f, -1.0f, 0.0f, 1.0f);
-		CircleRenderer::CurrentVertexPtr->color = color;
-		CircleRenderer::CurrentVertexPtr->thickness = thickness;
-		CircleRenderer::CurrentVertexPtr->fade = fade;
-		CircleRenderer::CurrentVertexPtr++;
-
-		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x + radius, position.y + radius, position.z, 1.0f);
-		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(1.0f, 1.0f, 0.0f, 1.0f);
-		CircleRenderer::CurrentVertexPtr->color = color;
-		CircleRenderer::CurrentVertexPtr->thickness = thickness;
-		CircleRenderer::CurrentVertexPtr->fade = fade;
-		CircleRenderer::CurrentVertexPtr++;
-
-		CircleRenderer::CurrentVertexPtr->position = Vector4(position.x - radius, position.y + radius, position.z, 1.0f);
 		CircleRenderer::CurrentVertexPtr->localPosition = Vector4(-1.0f, 1.0f, 0.0f, 1.0f);
 		CircleRenderer::CurrentVertexPtr->color = color;
 		CircleRenderer::CurrentVertexPtr->thickness = thickness;

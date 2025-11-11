@@ -4,6 +4,68 @@
 
 namespace aio
 {
+    Ref<VertexBuffer> LineRenderer::vertexBuffer = nullptr;
+    Ref<VertexInput>  LineRenderer::vertexInput = nullptr;
+    Ref<Shader>       LineRenderer::shader = nullptr;
+
+    uint32_t LineRenderer::LineCount = 0;
+    uint32_t LineRenderer::DrawingCount = 0;
+
+    LineVertex* LineRenderer::CurrentVertexPtr = nullptr;
+    LineVertex* LineRenderer::baseVertexBuffer = nullptr;
+
+    void LineRenderer::Init()
+    {
+        const uint32_t maxVertexCount = 2 * MaxLinesPerBatch;
+
+        baseVertexBuffer = new LineVertex[maxVertexCount];
+
+        vertexInput = VertexInput::Create();
+        vertexBuffer = VertexBuffer::Create(maxVertexCount * sizeof(LineVertex));
+
+        BufferLayout layout =
+        {
+            {ShaderDataType::Float3, "aPosition" },
+            {ShaderDataType::Float4, "aColor"    }
+        };
+        vertexBuffer->SetLayout(layout);
+        vertexInput->SetVertexBuffer(vertexBuffer);
+
+        shader = Shader::Create(ASSETS_DIRECTORY / "shaders" / "Line.slang", vertexInput);
+    }
+
+    void LineRenderer::StartNewBatch()
+    {
+        LineCount = 0;
+        DrawingCount = 0;
+        CurrentVertexPtr = baseVertexBuffer;
+    }
+
+    void LineRenderer::SubmitBatch()
+    {
+        if (LineCount)
+        {
+            uint32_t dataSize = (uint32_t)((uint8_t*)CurrentVertexPtr - (uint8_t*)baseVertexBuffer);
+            vertexBuffer->SetData(baseVertexBuffer, dataSize);
+
+            vertexInput->Bind();
+            shader->Bind();
+
+            Renderer::Backend()->Draw(DrawingMode::Lines, LineCount * 2);
+            DrawingCount++;
+            Renderer::Stats.DrawLine++;
+
+            shader->Unbind();
+            vertexInput->Unbind();
+        }
+        StartNewBatch();
+    }
+
+    void LineRenderer::End()
+    {
+        delete[] baseVertexBuffer;
+    }
+
     Ref<VertexBuffer> QuadRenderer::vertexBuffer = nullptr;
     Ref<IndexBuffer>  QuadRenderer::indexBuffer = nullptr;
     Ref<VertexInput>  QuadRenderer::vertexInput = nullptr;
@@ -88,7 +150,7 @@ namespace aio
             shader->Bind();
             WhiteTexture->Bind(0);
 
-            Renderer::Backend()->DrawIndexed(IndexCount);
+            Renderer::Backend()->DrawIndexed(DrawingMode::Triangles, IndexCount);
             DrawingCount++;
             Renderer::Stats.DrawQuad++;
 
@@ -178,7 +240,7 @@ namespace aio
             vertexInput->Bind();
             shader->Bind();
 
-            Renderer::Backend()->DrawIndexed(IndexCount);
+            Renderer::Backend()->DrawIndexed(DrawingMode::Triangles, IndexCount);
             DrawingCount++;
             Renderer::Stats.DrawCircle++;
 

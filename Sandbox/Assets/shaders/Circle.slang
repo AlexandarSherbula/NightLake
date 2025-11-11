@@ -1,6 +1,6 @@
 struct Camera 
 {
-    float4x4 mvp;
+    float4x4 projection;
 }
 
 ConstantBuffer<Camera> camera : register(b0);
@@ -32,7 +32,7 @@ VS_OUTPUT VSMain(VS_INPUT input)
     output.Thickness = input.Thickness;
     output.Fade = input.Fade;
 
-    output.Pos = mul(float4(input.Pos, 1.0), camera.mvp);
+    output.Pos = mul(float4(input.Pos, 1.0), camera.projection);
     return output;
 }
 

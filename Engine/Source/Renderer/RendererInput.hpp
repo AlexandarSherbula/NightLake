@@ -9,6 +9,32 @@
 
 namespace aio
 {
+	struct LineVertex
+	{
+		Vector3 position;
+		Vector4 color;
+	};
+
+	class LineRenderer
+	{
+	public:
+		static void Init();
+		static void StartNewBatch();
+		static void SubmitBatch();
+		static void End();
+	public:
+		static uint32_t LineCount;
+		static uint32_t DrawingCount;
+
+		static LineVertex* CurrentVertexPtr;
+		static const size_t MaxLinesPerBatch = 1000;
+	private:
+		static Ref<VertexBuffer> vertexBuffer;
+		static Ref<VertexInput>  vertexInput;
+		static Ref<Shader>       shader;
+		static LineVertex*       baseVertexBuffer;
+	};
+
 	struct QuadVertex
 	{
 		Vector3 position;

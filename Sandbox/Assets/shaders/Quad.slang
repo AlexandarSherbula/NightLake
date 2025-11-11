@@ -10,7 +10,7 @@ struct VS_INPUT
 
 struct Camera
 {
-    float4x4 mvp;
+    float4x4 projection;
 }
 
 ConstantBuffer<Camera> camera : register(b0);
@@ -29,7 +29,7 @@ struct VS_OUTPUT
 VS_OUTPUT VSMain(VS_INPUT input)
 {
     VS_OUTPUT output;
-    output.Pos = mul(float4(input.Pos, 1.0), camera.mvp);
+    output.Pos = mul(float4(input.Pos, 1.0), camera.projection);
     output.Color = input.Color;
     output.TexCoord = input.TexCoord;
     output.TexIndex = input.TexIndex;

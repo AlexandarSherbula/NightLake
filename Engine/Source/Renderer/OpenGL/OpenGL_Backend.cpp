@@ -5,6 +5,18 @@ namespace aio
 {
 	OpenGL_Backend* OpenGL_Backend::sInstance = nullptr;
 
+	GLenum OpenGLDrawingMode(DrawingMode mode)
+	{
+		switch (mode)
+		{
+		case DrawingMode::Point: return GL_POINT;
+		case DrawingMode::Lines: return GL_LINES;
+		case DrawingMode::Triangles: return GL_TRIANGLES;
+		default:
+			return 0;	// this is also return GL_POINTS;
+		}
+	}
+
 	static void OpenGLMessageCallback(
 		unsigned source,
 		unsigned type,
@@ -38,6 +50,8 @@ namespace aio
 
 	void OpenGL_Backend::Init()
 	{
+		AIO_PROFILE_FUNCTION();
+
 #ifdef AIO_DEBUG
 		glEnable(GL_DEBUG_OUTPUT);
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -60,14 +74,18 @@ namespace aio
 		glViewport(position.x, position.y, size.x, size.y);
 	}
 
-	void OpenGL_Backend::Draw(uint32_t vertexCount)
+	void OpenGL_Backend::Draw(DrawingMode mode, uint32_t vertexCount)
 	{
-		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+		AIO_PROFILE_FUNCTION();
+
+		glDrawArrays(OpenGLDrawingMode(mode), 0, vertexCount);
 	}
 
-	void OpenGL_Backend::DrawIndexed(uint32_t indexCount)
+	void OpenGL_Backend::DrawIndexed(DrawingMode mode, uint32_t indexCount)
 	{
-		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+		AIO_PROFILE_FUNCTION();
+
+		glDrawElements(OpenGLDrawingMode(mode), indexCount, GL_UNSIGNED_INT, 0);
 	}
 
 	void OpenGL_Backend::Clear(const Vector4& color)

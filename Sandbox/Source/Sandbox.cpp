@@ -45,6 +45,7 @@ void MainLayer::OnUpdate()
 
 	Renderer::ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
 
+	Renderer::DrawLine(Vector2(-0.8f,  0.8f), Vector2(-0.1f, 0.8f), Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 	Renderer::DrawQuad(Vector2(-1.0f, -1.0f), Vector2(0.5f, 0.5f), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 	Renderer::DrawRotatedQuad(Vector2(1.0f, 0.0f), Vector2(0.5f, 0.5f), Vector4(1.0f, 0.0f, 0.0f, 1.0f), -3.0f * AppTimer::GetElapsedTime());
 	
