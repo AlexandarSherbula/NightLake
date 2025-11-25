@@ -1,6 +1,10 @@
 #include "aio_pch.hpp"
 #include "Audio.hpp"
+
 #include "VorbisAudio.hpp"
+#include "MP3_Audio.hpp"
+#include "WAV_Audio.hpp"
+#include "FLAC_Audio.hpp"
 
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
@@ -13,12 +17,12 @@ namespace aio
 		{
 			if (filepath.extension() == ".ogg")
 				return CreateRef<Vorbis_Audio>(filepath);
-			//else if (filepath.extension() == ".mp3")
-			//	return std::make_shared<MP3_Audio>(filepath);
-			//else if (filepath.extension() == ".wav")
-			//	return std::make_shared<WAV_Audio>(filepath);
-			//else if (filepath.extension() == ".flac")
-			//	return std::make_shared<FLAC_Audio>(filepath);
+			else if (filepath.extension() == ".mp3")
+				return std::make_shared<MP3_Audio>(filepath);
+			else if (filepath.extension() == ".wav")
+				return std::make_shared<WAV_Audio>(filepath);
+			else if (filepath.extension() == ".flac")
+				return std::make_shared<FLAC_Audio>(filepath);
 
 			AIO_LOG_ERROR("Unsupported audio file type: {0}", filepath.extension().string());
 		}

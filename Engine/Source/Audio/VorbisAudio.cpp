@@ -27,13 +27,13 @@ namespace aio
 
 	void Vorbis_Audio::SeekInSeconds(float seconds)
 	{
-		mSource.currentFrame = (ma_uint64)(seconds * mSource.sampleRate);
+		mSource.currentFrame = (uint32_t)(seconds * mSource.sampleRate);
 		stb_vorbis_seek((stb_vorbis*)mSource.decoder, mSource.currentFrame);
 	}
 
 	void Vorbis_Audio::SeekInMiliseconds(float miliseconds)
 	{
-		mSource.currentFrame = (ma_uint64)((miliseconds / 1000.0f) * mSource.sampleRate);
+		mSource.currentFrame = (uint32_t)((miliseconds / 1000.0f) * mSource.sampleRate);
 		stb_vorbis_seek((stb_vorbis*)mSource.decoder, mSource.currentFrame);
 	}
 

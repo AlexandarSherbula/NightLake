@@ -38,10 +38,10 @@ void MainLayer::OnAttach()
 	Assets::Create<Texture>(texSpec, "awesomeface.png");
 	Assets::Create<Texture>(texSpec, "AlexioLogo.png");
 
-	audio = aio::Audio::Create(ASSETS_DIRECTORY / "audio" / "GreenHill1.ogg");
+	audio = aio::Audio::Create(ASSETS_DIRECTORY / "audio" / "GreenHill1.flac");
 
-	audio->SeekInSeconds(50.0f);
-	audio->LoopInSeconds(17.6f);
+	audio->SeekInMiliseconds(50000.0f);
+	audio->LoopInMiliseconds(17600.0f);
 	audio->Play();
 }
 

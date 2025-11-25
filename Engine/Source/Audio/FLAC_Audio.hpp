@@ -2,12 +2,14 @@
 
 #include "Audio.hpp"
 
+#include "dr_flac.h"
+
 namespace aio
 {
-	class Vorbis_Audio : public Audio
+	class FLAC_Audio : public Audio
 	{
 	public:
-		Vorbis_Audio(const std::filesystem::path& filepath);
+		FLAC_Audio(const std::filesystem::path& filepath);
 
 		void SeekInSeconds(float seconds) override;
 		void SeekInMiliseconds(float miliseconds) override;
@@ -17,4 +19,3 @@ namespace aio
 		static void DataCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
 	};
 }
-
