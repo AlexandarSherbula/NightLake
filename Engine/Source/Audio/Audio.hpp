@@ -27,6 +27,12 @@ namespace aio
 	{
 	public:
 		static Ref<Audio> Create(const std::filesystem::path& filepath);
+
+		static Ref<Audio> CreateAsset(const std::string& audioFile, std::string name = "");
+		static Ref<Audio> Get(const std::string& name);
+		static void Add(const Ref<Audio>& audio, const std::string& name = "");
+		static bool Exists(const std::string& name);
+
 		~Audio();
 
 		void Play();
@@ -49,5 +55,8 @@ namespace aio
 		ma_device mDevice;
 		AudioSource mSource;
 		std::filesystem::path mFilePath;
+		std::string mName;
+	private:
+		static std::unordered_map<std::string, Ref<Audio>> sAudios;
 	};
 }

@@ -6,11 +6,15 @@
 #include "WAV_Audio.hpp"
 #include "FLAC_Audio.hpp"
 
+#include "Utils/FileReading.hpp"
+
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"
 
 namespace aio
 {
+	std::unordered_map<std::string, Ref<Audio>> Audio::sAudios;
+
 	Ref<Audio> Audio::Create(const std::filesystem::path& filepath)
 	{
 		if (std::filesystem::exists(filepath))
@@ -32,6 +36,35 @@ namespace aio
 		}
 		
 		return nullptr;
+	}
+
+	Ref<Audio> Audio::CreateAsset(const std::string& audioFile, std::string name)
+	{
+		std::filesystem::path audioFilePath = ASSETS_DIRECTORY / "audio" / audioFile;
+
+		if (name == "")
+			name = GetFileName(audioFilePath);
+
+		auto audio = Create(audioFilePath);
+		Audio::Add(audio, name);
+		return audio;
+	}
+
+	Ref<Audio> Audio::Get(const std::string& name)
+	{
+		AIO_ASSERT(Exists(name), "Audio doesn't exist!");
+		return sAudios[name];
+	}
+
+	void Audio::Add(const Ref<Audio>& audio, const std::string& name)
+	{
+		AIO_ASSERT(!Exists(name), "Audio already exists!");
+		sAudios[name] = audio;
+	}
+
+	bool Audio::Exists(const std::string& name)
+	{
+		return sAudios.find(name) != sAudios.end();
 	}
 
 	Audio::~Audio()
