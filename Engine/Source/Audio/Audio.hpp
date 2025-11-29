@@ -10,10 +10,10 @@ namespace aio
 {
 	struct AudioSource
 	{
-		uint32_t channels = 0;
-		uint32_t sampleRate = 0;
-		uint32_t currentFrame = 0;
-		uint32_t totalFrames = 0;
+		uint64_t channels = 0;
+		uint64_t sampleRate = 0;
+		uint64_t currentFrame = 0;
+		uint64_t totalFrames = 0;
 		float endPoint = 0.0f;
 		bool isLooping = false;
 		float loopStartPoint = 0.0f;

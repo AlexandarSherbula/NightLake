@@ -52,30 +52,30 @@ namespace aio
 
 	void Vorbis_Audio::DataCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 	{
-		AudioSource* source = (AudioSource*)pDevice->pUserData;
-		int16_t* out = (int16_t*)pOutput;
+		AudioSource* source = static_cast<AudioSource*>(pDevice->pUserData);
+		int16_t* out = static_cast<int16_t*>(pOutput);
 
-		int16_t framesRead = stb_vorbis_get_samples_short_interleaved(
-			(stb_vorbis*)source->decoder,
+		uint64_t framesRead = stb_vorbis_get_samples_short_interleaved(
+			static_cast<stb_vorbis*>(source->decoder),
 			source->channels,
 			out,
-			frameCount * source->channels
+			static_cast<uint64_t>(frameCount) * source->channels
 		);
 
-		for (int i = 0; i < framesRead * source->channels; ++i)
-			out[i] = (int16_t)(out[i] * source->volume);
+		for (uint64_t i = 0; i < framesRead * source->channels; ++i)
+			out[i] = static_cast<int16_t>(out[i] * source->volume);
 
 		if (source->endPoint != 0.0f)
 		{
-			source->currentFrame = stb_vorbis_get_sample_offset((stb_vorbis*)source->decoder);
-			int32_t endFrame = (int32_t)(source->endPoint * source->sampleRate);
+			source->currentFrame = stb_vorbis_get_sample_offset(static_cast<stb_vorbis*>(source->decoder));
+			uint64_t endFrame = static_cast<uint64_t>(source->endPoint * source->sampleRate);
 
 			if (source->currentFrame >= endFrame)
 			{
 				framesRead = 0;
 			}
 
-			int32_t framesUntilEnd = endFrame - source->currentFrame;
+			uint64_t framesUntilEnd = endFrame - source->currentFrame;
 			if (framesUntilEnd < frameCount)
 			{
 				frameCount = framesUntilEnd;
@@ -83,25 +83,25 @@ namespace aio
 		}
 
 
-		if (framesRead < (int)frameCount && source->isLooping) 
+		if (framesRead < frameCount) 
 		{
-			int32_t targetFrame = (int32_t)(source->loopStartPoint * source->sampleRate);
-			stb_vorbis_seek((stb_vorbis*)source->decoder, targetFrame);
+			if (source->isLooping)
+			{
+				int32_t targetFrame = static_cast<int32_t>(source->loopStartPoint * source->sampleRate);
+				stb_vorbis_seek(static_cast<stb_vorbis*>(source->decoder), targetFrame);
 
-			int remainingFrames = (int)frameCount - framesRead;
-			int framesRead2 = stb_vorbis_get_samples_short_interleaved(
-				(stb_vorbis*)source->decoder,
-				source->channels,
-				out + framesRead * source->channels,
-				remainingFrames * source->channels
-			);
-			framesRead += framesRead2;
-		}
-
-		if (framesRead < (int)frameCount) 
-		{
+				uint64_t remainingFrames = frameCount - framesRead;
+				uint64_t framesRead2 = stb_vorbis_get_samples_short_interleaved(
+					static_cast<stb_vorbis*>(source->decoder),
+					source->channels,
+					out + framesRead * source->channels,
+					remainingFrames * source->channels
+				);
+				framesRead += framesRead2;
+			}
+			
 			memset(out + framesRead * source->channels, 0,
-				((int)frameCount - framesRead) * source->channels * sizeof(short));
+				(frameCount - framesRead) * source->channels * sizeof(short));
 		}
 	}
 }

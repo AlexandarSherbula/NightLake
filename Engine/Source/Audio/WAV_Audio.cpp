@@ -52,57 +52,57 @@ namespace aio
 	void WAV_Audio::DataCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount)
 	{
         AudioSource* source = (AudioSource*)pDevice->pUserData;
-        float* out = (float*)pOutput;
+        float* out = static_cast<float*>(pOutput);
 
-        drwav* wav = (drwav*)source->decoder;
+        drwav* wav = static_cast<drwav*>(source->decoder);
         wav->channels;
         wav->sampleRate;
 
-        // Decode PCM frames
         drwav_uint64 framesRead = drwav_read_pcm_frames_f32(
             wav,
             frameCount,
             out
         );
 
-        for (int i = 0; i < framesRead * source->channels; ++i)
+        for (drwav_uint64 i = 0; i < framesRead * source->channels; ++i)
             out[i] *= source->volume;
 
         source->currentFrame += framesRead;
 
         if (source->endPoint != 0.0f)
         {
-            drwav_uint64 endFrame = (drwav_uint64)(source->endPoint * source->sampleRate);
+            drwav_uint64 endFrame = static_cast<drwav_uint64>(source->endPoint * source->sampleRate);
 
             if (source->currentFrame >= endFrame) {
                 framesRead = 0;
             }
 
-            drwav_uint64 framesUntilEnd = endFrame - (drwav_uint64)source->currentFrame;
-            if (framesUntilEnd < (int32_t)frameCount) {
+            drwav_uint64 framesUntilEnd = endFrame - static_cast<drwav_uint64>(source->currentFrame);
+            if (framesUntilEnd < static_cast<drwav_uint64>(frameCount)) {
                 frameCount = framesUntilEnd;
             }
         }
 
-        if (framesRead < frameCount && source->isLooping) {
-            int32_t targetFrame = (int32_t)(source->loopStartPoint * source->sampleRate);
-            if (drwav_seek_to_pcm_frame(wav, targetFrame))
+        if (framesRead < frameCount)
+        {
+            if (source->isLooping)
             {
-                source->currentFrame = targetFrame;
+                uint64_t targetFrame = static_cast<uint64_t>(source->loopStartPoint * source->sampleRate);
+                if (drwav_seek_to_pcm_frame(wav, targetFrame))
+                {
+                    source->currentFrame = targetFrame;
 
-                uint64_t remainingFrames = frameCount - framesRead;
-                uint64_t framesRead2 = drwav_read_pcm_frames_f32(
-                    wav,
-                    remainingFrames,
-                    out + framesRead * source->channels
-                );
-                framesRead += framesRead2;
-                source->currentFrame += framesRead2;
+                    uint64_t remainingFrames = frameCount - framesRead;
+                    uint64_t framesRead2 = drwav_read_pcm_frames_f32(
+                        wav,
+                        remainingFrames,
+                        out + framesRead * source->channels
+                    );
+                    framesRead += framesRead2;
+                    source->currentFrame += framesRead2;
+                }
             }
-        }
 
-        // If still short (no loop or insufficient data), zero-fill the remainder
-        if (framesRead < frameCount) {
             memset(out + framesRead * source->channels, 0,
                 (frameCount - framesRead) * source->channels * sizeof(float));
         }

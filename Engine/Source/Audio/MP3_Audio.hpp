@@ -16,7 +16,7 @@ namespace aio
 	private:
 		AudioSource CreateAudioSource() override;
 
-		static void DataCallback(ma_device* pDevice, void* pOutput, const void* pInput, ma_uint32 frameCount);
+		static void DataCallback(ma_device* pDevice, void* pOutput, const void* pInput, drmp3_uint32 frameCount);
 	private:
 		drmp3 mDecoder;
 	};
